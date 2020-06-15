@@ -13,13 +13,11 @@ class WishScene extends Scene {
         bg.y = 290
         this.addChild(bg)
 
-        let label = new egret.TextField
-        label.text = '发布一个祝福'
-        label.size = 60
+        let label = Util.setTitle('V宝正闭着眼睛竖起耳朵听你的祝福。\n你想对他/她说什么呢？', 36, Config.COLOR_DOC)
         label.x = this.center(label)
         label.y = 345
-        label.strokeColor = Config.COLOR_DOC
-        label.stroke = 2
+        label.textAlign = 'center'
+        label.lineSpacing = 6
         this.addChild(label)
 
         let write_bg: egret.Shape = Util.drawRoundRect(0, 0, 0xffffff, 560, 360, 20)
@@ -62,12 +60,14 @@ class WishScene extends Scene {
             Http.getInstance().post(Url.HTTP_TASK_FINISHTASK, {
                 taskId: this.item.id,
                 score: this.item.score
-            }, null)
+            }, res => {
+                if (res.data.code) {
+                    let scene = new IndexScene()
+                    ViewManager.getInstance().changeScene(scene)
+                }
+            })
 
             Http.getInstance().post(Url.HTTP_SENDINFO, { content }, null)
-
-            let scene = new IndexScene()
-            ViewManager.getInstance().changeScene(scene)
         }, this)
         this.addChild(btn)
     }

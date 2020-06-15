@@ -12,7 +12,6 @@ var Head = (function (_super) {
     __extends(Head, _super);
     function Head(data) {
         var _this = _super.call(this) || this;
-        _this.foodList = [];
         _this.init(data);
         return _this;
     }
@@ -40,9 +39,9 @@ var Head = (function (_super) {
         var foodList = [
             { name: 'V宝典', image: 'icon_dir', num: data.v_bfood },
             { name: 'V拳套', image: 'icon_glove', num: data.v_tfood },
-            { name: 'V飞机', image: 'icon_air', num: data.v_ffood },
+            { name: 'V飞机', image: 'icon_air', num: data.v_ffood }
         ];
-        this.foodList = foodList;
+        window.localStorage.setItem('foodList', JSON.stringify(foodList));
         var header_group = new eui.Group;
         header_group.x = 180;
         header_group.y = 48;

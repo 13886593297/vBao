@@ -28,6 +28,8 @@ var Bones = (function (_super) {
         var tex_png = RES.getRes("" + arr[id] + level + "_tex_png");
         var bone = ViewManager.getInstance().getBones("" + id + level);
         if (bone) {
+            bone.x = x;
+            bone.y = y;
             this.addChild(bone);
             return;
         }
@@ -39,7 +41,7 @@ var Bones = (function (_super) {
             this.addChild(armatureDisplay);
             armatureDisplay.x = x;
             armatureDisplay.y = y;
-            var scale = level == 1 ? 0.4 : 0.2;
+            var scale = level == 1 ? 0.4 : 0.25;
             armatureDisplay.scaleX = scale;
             armatureDisplay.scaleY = scale;
             armatureDisplay.animation.play('newAnimation');

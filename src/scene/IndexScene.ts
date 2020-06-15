@@ -7,25 +7,34 @@ class IndexScene extends Scene {
 
     public init() {
         Http.getInstance().get(Url.HTTP_USER_INFO, (res) => {
+            console.log(res.data.isUpdate)
             this.userId = res.data.id
-            let head = new Head(res.data)
-            this.head = head
-            this.addChild(head)
+            if (res.data.isUpdate) {
+                let scene = new GetVbaoScene(res.data.kind_id, 2)
+                ViewManager.getInstance().changeScene(scene)
+            } else {
+                let head = new Head(res.data)
+                this.head = head
+                this.addChild(head)
 
-            if (res.data.level_id == 2) {
-                head.food_list(res.data)
-                this.legendary()
-            }
+                if (res.data.level_id == 2) {
+                    head.food_list(res.data)
+                    this.legendary()
+                }
 
-            this.daily_task(res.data)
-            this.vBao(res.data)
+                this.daily_task(res.data)
+                this.vBao(res.data)
 
-            if (res.data.level_id == 2) {
-                this.feed(res.data)
-                this.decorate()
-                this.around()
+                if (res.data.level_id == 2) {
+                    this.feed(res.data)
+                    this.decorate()
+                    this.around()
+                }
             }
         })
+
+        onMenuShareAppMessage(() => console.log(1111))
+        onMenuShareTimeline(() => console.log(1111))
     }
 
     private daily_task(data) {
@@ -52,7 +61,7 @@ class IndexScene extends Scene {
 
         group.touchEnabled = true
         group.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            let task = new Task(data, this.head.foodList)
+            let task = new Task(data)
             this.addChild(task)
         }, this)
     }
@@ -72,7 +81,7 @@ class IndexScene extends Scene {
 
     private vBao(data) {
         let id = data.kind_id - 1
-        let y = data.level_id == 1 ? 880 : 780
+        let y = data.level_id == 2 ? 780 : 880
         let bones = new Bones(id, data.level_id, 380, y)
         this.addChild(bones)
 
@@ -111,9 +120,12 @@ class IndexScene extends Scene {
         feedTipNone.visible = false
         this.addChild(feedTipNone)
         
-        let foodCount = this.head.foodList[data.food_type_id - 1].num
+        
         let total_score = data.total_score
         feed.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
+            let foodList = JSON.parse(window.localStorage.getItem('foodList'))
+            let foodCount = foodList[data.food_type_id - 1].num
+
             if (foodCount > 0) {
                 Http.getInstance().post(Url.HTTP_FEED, {
                     feedId: data.id,
@@ -129,7 +141,6 @@ class IndexScene extends Scene {
                         ]
                         let score = this.head.score
                         score.text = `积分：${total_score}`
-                        // score.fontFamily = "dynamic"
 
                         this.animate(feedTip)
                     } else {
@@ -188,14 +199,14 @@ class IndexScene extends Scene {
         this.addChild(group)
 
         let around_bg = Util.createBitmapByName('around_bg')
-        group.width = around_bg.width
+        group.width = around_bg.width = this.stage.stageWidth
         group.height = around_bg.height
         group.y = this.stage.stageHeight - group.height
         group.addChild(around_bg)
 
         let label = Util.setTitle('去串门', 52, Config.COLOR_DOC)
         label.x = 32
-        label.y = 35
+        label.y = 40
         group.addChild(label)
 
         let invite = new BtnBase('invite')

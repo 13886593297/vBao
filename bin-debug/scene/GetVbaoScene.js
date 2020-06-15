@@ -10,13 +10,25 @@ r.prototype = e.prototype, t.prototype = new r();
 };
 var GetVbaoScene = (function (_super) {
     __extends(GetVbaoScene, _super);
-    function GetVbaoScene(id) {
+    function GetVbaoScene(id, level) {
         var _this = _super.call(this) || this;
         _this.id = id;
+        _this.level = level;
         return _this;
     }
     GetVbaoScene.prototype.init = function () {
         var _this = this;
+        if (this.level == 1) {
+            var sceneBg = Util.createBitmapByName('getVbao_bg');
+            sceneBg.width = this.stage.stageWidth;
+            sceneBg.height = this.stage.stageHeight;
+            this.addChild(sceneBg);
+        }
+        else {
+            Http.getInstance().get(Url.HTTP_UPDATE, function () {
+                console.log('升级成功');
+            });
+        }
         var group = new eui.Group();
         group.width = this.stage.stageWidth;
         group.height = this.stage.stageHeight;
@@ -31,15 +43,13 @@ var GetVbaoScene = (function (_super) {
         group.addChild(bg);
         // 炫光效果
         var light = Util.createBitmapByName('getVbao_light');
-        light.width = this.stage.stageWidth;
-        light.height = this.stage.stageHeight;
-        light.x = light.width / 2;
+        light.x = this.stage.stageWidth / 2;
         light.y = light.height / 2;
         light.anchorOffsetX = light.width / 2;
         light.anchorOffsetY = light.height / 2;
         group.addChild(light);
-        egret.Tween.get(light, { loop: true }).to({ rotation: 180 }, 3000);
-        var bones = new Bones(this.id, 1, 370, 640);
+        egret.Tween.get(light, { loop: true }).to({ rotation: 360 }, 6000);
+        var bones = new Bones(this.id, this.level, 370, 640);
         group.addChild(bones);
         var type = Util.setTitle(VbaoType[this.id].label, 90, VbaoType[this.id].color);
         type.x = this.center(type);
@@ -52,11 +62,12 @@ var GetVbaoScene = (function (_super) {
             .to({ scaleX: 1, scaleY: 1 }, 800)
             .call(function () {
             setTimeout(function () {
-                var scene = new InfoScene(_this.id);
+                var scene = _this.level == 1 ? new InfoScene(_this.id) : new IndexScene();
                 ViewManager.getInstance().changeScene(scene);
             }, 3000);
         });
-        var label = Util.setTitle('恭喜获得V宝!', 60, VbaoType[this.id].color);
+        var text = this.level == 1 ? '恭喜获得V宝!' : 'V宝进化啦!';
+        var label = Util.setTitle(text, 60, VbaoType[this.id].color);
         label.x = this.center(label);
         label.y = 206;
         this.addChild(label);

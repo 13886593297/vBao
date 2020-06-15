@@ -16,22 +16,31 @@ var IndexScene = (function (_super) {
     IndexScene.prototype.init = function () {
         var _this = this;
         Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
+            console.log(res.data.isUpdate);
             _this.userId = res.data.id;
-            var head = new Head(res.data);
-            _this.head = head;
-            _this.addChild(head);
-            if (res.data.level_id == 2) {
-                head.food_list(res.data);
-                _this.legendary();
+            if (res.data.isUpdate) {
+                var scene = new GetVbaoScene(res.data.kind_id, 2);
+                ViewManager.getInstance().changeScene(scene);
             }
-            _this.daily_task(res.data);
-            _this.vBao(res.data);
-            if (res.data.level_id == 2) {
-                _this.feed(res.data);
-                _this.decorate();
-                _this.around();
+            else {
+                var head = new Head(res.data);
+                _this.head = head;
+                _this.addChild(head);
+                if (res.data.level_id == 2) {
+                    head.food_list(res.data);
+                    _this.legendary();
+                }
+                _this.daily_task(res.data);
+                _this.vBao(res.data);
+                if (res.data.level_id == 2) {
+                    _this.feed(res.data);
+                    _this.decorate();
+                    _this.around();
+                }
             }
         });
+        onMenuShareAppMessage(function () { return console.log(1111); });
+        onMenuShareTimeline(function () { return console.log(1111); });
     };
     IndexScene.prototype.daily_task = function (data) {
         var _this = this;
@@ -55,7 +64,7 @@ var IndexScene = (function (_super) {
         group.addChild(daily_task_tips);
         group.touchEnabled = true;
         group.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            var task = new Task(data, _this.head.foodList);
+            var task = new Task(data);
             _this.addChild(task);
         }, this);
     };
@@ -73,7 +82,7 @@ var IndexScene = (function (_super) {
     };
     IndexScene.prototype.vBao = function (data) {
         var id = data.kind_id - 1;
-        var y = data.level_id == 1 ? 880 : 780;
+        var y = data.level_id == 2 ? 780 : 880;
         var bones = new Bones(id, data.level_id, 380, y);
         this.addChild(bones);
         // 昵称
@@ -107,9 +116,10 @@ var IndexScene = (function (_super) {
         feedTipNone.y = 600;
         feedTipNone.visible = false;
         this.addChild(feedTipNone);
-        var foodCount = this.head.foodList[data.food_type_id - 1].num;
         var total_score = data.total_score;
         feed.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
+            var foodList = JSON.parse(window.localStorage.getItem('foodList'));
+            var foodCount = foodList[data.food_type_id - 1].num;
             if (foodCount > 0) {
                 Http.getInstance().post(Url.HTTP_FEED, {
                     feedId: data.id,
@@ -125,7 +135,6 @@ var IndexScene = (function (_super) {
                         ];
                         var score = _this.head.score;
                         score.text = "\u79EF\u5206\uFF1A" + total_score;
-                        // score.fontFamily = "dynamic"
                         _this.animate(feedTip);
                     }
                     else {
@@ -178,13 +187,13 @@ var IndexScene = (function (_super) {
         this.aroundGroup = group;
         this.addChild(group);
         var around_bg = Util.createBitmapByName('around_bg');
-        group.width = around_bg.width;
+        group.width = around_bg.width = this.stage.stageWidth;
         group.height = around_bg.height;
         group.y = this.stage.stageHeight - group.height;
         group.addChild(around_bg);
         var label = Util.setTitle('去串门', 52, Config.COLOR_DOC);
         label.x = 32;
-        label.y = 35;
+        label.y = 40;
         group.addChild(label);
         var invite = new BtnBase('invite');
         invite.x = this.stage.stageWidth - invite.width - 100;

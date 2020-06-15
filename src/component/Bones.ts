@@ -18,6 +18,8 @@ class Bones extends egret.DisplayObjectContainer {
 
         let bone = ViewManager.getInstance().getBones(`${id}${level}`)
         if (bone) {
+            bone.x = x
+            bone.y = y
             this.addChild(bone)
             return 
         } else {
@@ -29,7 +31,7 @@ class Bones extends egret.DisplayObjectContainer {
             this.addChild(armatureDisplay)
             armatureDisplay.x = x
             armatureDisplay.y = y
-            let scale = level == 1 ? 0.4 : 0.2
+            let scale = level == 1 ? 0.4 : 0.25
             armatureDisplay.scaleX = scale
             armatureDisplay.scaleY = scale
             armatureDisplay.animation.play('newAnimation')

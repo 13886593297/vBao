@@ -1,10 +1,10 @@
 class Task extends eui.Group {
-    constructor(data, foodList) {
+    constructor(data) {
         super()
-        this.init(data, foodList)
+        this.init(data)
     }
 
-    private init(data, foodList) {
+    private init(data) {
         let stage = ViewManager.getInstance().stage
         this.width = stage.stageWidth
         this.height = stage.stageHeight
@@ -26,6 +26,14 @@ class Task extends eui.Group {
         this.addChild(close)
         close.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             this.parent.removeChild(this)
+            if (data.level_id == 1) {
+                Http.getInstance().get(Url.HTTP_USER_INFO, res => {
+                    if (res.data.isUpdate) {
+                        let scene = new GetVbaoScene(res.data.kind_id, 2)
+                        ViewManager.getInstance().changeScene(scene)
+                    }
+                })
+            }
         }, this)
 
         Http.getInstance().get(Url.HTTP_TASK_TASKLIST, res => {
@@ -43,6 +51,10 @@ class Task extends eui.Group {
                                 if (res.data.code) {
                                     Http.getInstance().get(Url.HTTP_LEGENDARY, res => {
                                         location.href = res.data.content
+                                        this.removeChild(this.$children[4])
+                                        this.$children.forEach((item, i) => {
+                                            if (i > 3) item.y -= 210
+                                        })
                                     })
                                 }
                             })
@@ -58,16 +70,20 @@ class Task extends eui.Group {
                     case 4:
                         // 签到
                         cb = () => {
+                            let foodList = JSON.parse(window.localStorage.getItem('foodList'))
                             Http.getInstance().get(Url.HTTP_USER_SIGN, () => {
                                 // 食物数量都加1，积分加1，删除签到项
-                                foodList.forEach((item, i) => {
-                                    let num = item.num + 1
+                                foodList = foodList.map((item, i) => {
+                                    item.num += 1
                                     let text: any = this.parent.$children[0].$children[2].$children[i + 1].$children[2]
                                     text.textFlow = [
                                         {text: 'X', style: { size: 20 }},
-                                        {text: '  ' + num, style: { size: 24 }}
+                                        {text: '  ' + item.num, style: { size: 24 }}
                                     ]
+                                    return item
                                 })
+                                window.localStorage.setItem('foodList', JSON.stringify(foodList))
+                                
                                 let score: any = this.parent.$children[0].$children[1]
                                 score.text = `积分：${data.total_score + 1}`
                                 
@@ -93,6 +109,7 @@ class Task extends eui.Group {
                         }
                         break;
                 }
+                
                 if (item.taskStatus) return
                 let task = this.taskList(item, cb)
                 task.x = (stage.stageWidth - task.width) / 2
@@ -103,20 +120,19 @@ class Task extends eui.Group {
         })
 
         let tips = new egret.TextField
-        tips.text = data.level_id == 1 ? '完成任务可获取相应的积分，完成所有任务后可进入下一个形态。' : '完成每个任务都能增加积分哦。那积分可以做什么呢？你猜呀~'
+        tips.text = '完成每个任务都能增加积分哦。那积分可以做什么呢？你猜呀~'
         tips.width = 510
         tips.x = (stage.stageWidth - tips.width) / 2
         tips.y = 1060
         tips.textAlign = 'center'
         tips.lineSpacing = 25
         tips.bold = true
-        tips.textColor = Config.COLOR_DOC
         this.addChild(tips)
     }
 
     private taskList(item, cb) {
         let group = new eui.Group
-        let bg = Util.drawRoundRect(0, 0xffffff, 0xffffff, 580, item.id == 4 ? 120 : 190, 40)
+        let bg = Util.drawRoundRect(0, 0xffffff, 0xffffff, 580, item.id == 3 ? 280 : item.id == 4 ? 120 : 190, 40)
         group.width = bg.width
         group.height = bg.height
         group.addChild(bg)
@@ -133,6 +149,17 @@ class Task extends eui.Group {
         title.x = 105
         title.y = 30
         group.addChild(title)
+
+        if (item.id == 3) {
+            let des = new egret.TextField
+            des.text = '小宝宝总在眨眼间就长大了。不信？试\n着给V宝发送一个祝福吧！'
+            des.x = flag.x
+            des.y = 88
+            des.textAlign = 'center'
+            des.textColor = Config.COLOR_DOC
+            des.lineSpacing = 6
+            group.addChild(des)
+        }
 
         let progress = new egret.TextField
         progress.textColor = title.textColor
@@ -158,7 +185,7 @@ class Task extends eui.Group {
 
         let btn = new BtnBase(item.id == 4 ? 'btn_sign' : 'btn_go')
         btn.x = item.id == 4 ? 422 : (group.width - btn.width) / 2
-        btn.y = item.id == 4 ? 16 : 98
+        btn.y = item.id == 3 ? 175 : item.id == 4 ? 16 : 98
         group.addChild(btn)
         btn.addEventListener(egret.TouchEvent.TOUCH_TAP, cb, this)
 

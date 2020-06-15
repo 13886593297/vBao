@@ -26,15 +26,14 @@ class Head extends egret.DisplayObjectContainer {
         this.score = score
     }
 
-    public foodList = []
     public header_group
     public food_list(data) {
         let foodList = [
             {name: 'V宝典', image: 'icon_dir', num: data.v_bfood},
             {name: 'V拳套', image: 'icon_glove', num: data.v_tfood},
-            {name: 'V飞机', image: 'icon_air', num: data.v_ffood},
+            {name: 'V飞机', image: 'icon_air', num: data.v_ffood}
         ]
-        this.foodList = foodList
+        window.localStorage.setItem('foodList', JSON.stringify(foodList))
 
         let header_group = new eui.Group
         header_group.x = 180

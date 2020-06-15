@@ -50,9 +50,8 @@ var InfoScene = (function (_super) {
         des_Group.addChild(des_bg);
         var x = 45;
         var label = new egret.TextField;
-        label.text = '请为你的V宝填写基本信息吧！';
-        label.x = x;
-        label.y = x;
+        label.text = '你心中独一无二的V宝是什么样的呢？\n快点写下来！';
+        label.x = label.y = x;
         label.textColor = VbaoType[this.id].color;
         des_Group.addChild(label);
         var size = 50;

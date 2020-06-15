@@ -133,7 +133,7 @@
     <script src="https://res.wx.qq.com/open/libs/weuijs/1.1.4/weui.min.js"></script>
     <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
     <script>
-        // new VConsole()
+        new VConsole()
 
         var loadScript = function (list, callback) {
             var loaded = 0;
@@ -251,12 +251,13 @@
             wx.config(config);
         }
 
-        function onMenuShareAppMessage(title, desc, link, imgurl, callback) {
+        // 分享到好友
+        function onMenuShareAppMessage(callback) {
             wx.onMenuShareAppMessage({
-                title: title || 'V宝养成记',
-                desc: desc || '快来投喂我的V宝吧！',
-                link: link || window.localStorage.getItem('host'),
-                imgUrl: 'https://gamiwechat-taltz-q.lillyadmin.cn/games/resource/assets/share.jpg',
+                title: 'V宝养成记',
+                desc: '快来投喂我的V宝吧！',
+                link: window.localStorage.getItem('host'),
+                imgUrl: './resource/assets/header/icon_glove.png',
                 trigger: function (res) {
 
                 },
@@ -268,11 +269,12 @@
             });
         }
 
-        function onMenuShareTimeline(title, link, imgUrl, callback) {
+        // 分享到朋友圈
+        function onMenuShareTimeline(callback) {
             wx.onMenuShareTimeline({
-                title: title || 'V宝养成记',
-                link: link || window.localStorage.getItem('host'),
-                imgUrl: imgUrl || 'https://gamiwechat-taltz-q.lillyadmin.cn/games/resource/assets/share.jpg',
+                title: 'V宝养成记',
+                link: window.localStorage.getItem('host'),
+                imgUrl: './resource/assets/header/icon_glove.png',
                 trigger: function (res) {
                     // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
                 },

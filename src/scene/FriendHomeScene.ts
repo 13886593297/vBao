@@ -28,7 +28,6 @@ class FriendHomeScene extends Scene {
     }
 
     private vBaoInfo(data) {
-        console.log(data)
         let group = new eui.Group
         this.addChild(group)
 
@@ -87,7 +86,8 @@ class FriendHomeScene extends Scene {
         feedTipNone.visible = false
         this.addChild(feedTipNone)
 
-        let getGiftTips = new GiftTip(this.head.foodList[data.visitInfo.kind_id - 1].image)
+        let foodList = JSON.parse(window.localStorage.getItem('foodList'))
+        let getGiftTips = new GiftTip(foodList[data.visitInfo.kind_id - 1].image)
         getGiftTips.x = this.stage.stageWidth - getGiftTips.width - 50
         getGiftTips.y = 600
         getGiftTips.visible = false
@@ -95,8 +95,8 @@ class FriendHomeScene extends Scene {
 
         let animate = new IndexScene().animate
         
-        let selfFoodTypeCount = this.head.foodList[data.visitInfo.food_type_id - 1].num
-        let friendFoodTypeCount = this.head.foodList[data.visitedInfo.food_type_id - 1].num
+        let selfFoodTypeCount = foodList[data.visitInfo.food_type_id - 1].num
+        let friendFoodTypeCount = foodList[data.visitedInfo.food_type_id - 1].num
         let total_score = data.visitInfo.total_score
         present.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             if (friendFoodTypeCount > 0) {

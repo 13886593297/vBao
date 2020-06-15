@@ -32,7 +32,6 @@ var FriendHomeScene = (function (_super) {
         });
     };
     FriendHomeScene.prototype.vBaoInfo = function (data) {
-        console.log(data);
         var group = new eui.Group;
         this.addChild(group);
         var bg = Util.drawRoundRect(0, 0x000000, 0x000000, 260, 230, 10, 0.3);
@@ -83,14 +82,15 @@ var FriendHomeScene = (function (_super) {
         feedTipNone.y = 600;
         feedTipNone.visible = false;
         this.addChild(feedTipNone);
-        var getGiftTips = new GiftTip(this.head.foodList[data.visitInfo.kind_id - 1].image);
+        var foodList = JSON.parse(window.localStorage.getItem('foodList'));
+        var getGiftTips = new GiftTip(foodList[data.visitInfo.kind_id - 1].image);
         getGiftTips.x = this.stage.stageWidth - getGiftTips.width - 50;
         getGiftTips.y = 600;
         getGiftTips.visible = false;
         this.addChild(getGiftTips);
         var animate = new IndexScene().animate;
-        var selfFoodTypeCount = this.head.foodList[data.visitInfo.food_type_id - 1].num;
-        var friendFoodTypeCount = this.head.foodList[data.visitedInfo.food_type_id - 1].num;
+        var selfFoodTypeCount = foodList[data.visitInfo.food_type_id - 1].num;
+        var friendFoodTypeCount = foodList[data.visitedInfo.food_type_id - 1].num;
         var total_score = data.visitInfo.total_score;
         present.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             if (friendFoodTypeCount > 0) {

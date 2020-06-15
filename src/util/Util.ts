@@ -92,3 +92,6 @@ class Util {
         return label
     }
 }
+
+declare function onMenuShareAppMessage(callback)
+declare function onMenuShareTimeline(callback)

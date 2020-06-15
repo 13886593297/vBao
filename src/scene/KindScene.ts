@@ -69,9 +69,14 @@ class Vbao extends eui.Group {
         text.lineSpacing = 15
         this.addChild(text)
 
+        let rightText = Util.setTitle('就是你啦', 30, VbaoType[id].color)
+        rightText.x = this.width - rightText.width - 35
+        rightText.y = 98
+        this.addChild(rightText)
+
         this.touchEnabled = true
         this.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            let scene = new GetVbaoScene(id)
+            let scene = new GetVbaoScene(id, 1)
             ViewManager.getInstance().changeScene(scene)
         }, this)
     }

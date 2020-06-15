@@ -23,13 +23,11 @@ var WishScene = (function (_super) {
         bg.x = this.center(bg);
         bg.y = 290;
         this.addChild(bg);
-        var label = new egret.TextField;
-        label.text = '发布一个祝福';
-        label.size = 60;
+        var label = Util.setTitle('V宝正闭着眼睛竖起耳朵听你的祝福。\n你想对他/她说什么呢？', 36, Config.COLOR_DOC);
         label.x = this.center(label);
         label.y = 345;
-        label.strokeColor = Config.COLOR_DOC;
-        label.stroke = 2;
+        label.textAlign = 'center';
+        label.lineSpacing = 6;
         this.addChild(label);
         var write_bg = Util.drawRoundRect(0, 0, 0xffffff, 560, 360, 20);
         write_bg.x = this.center(write_bg);
@@ -67,10 +65,13 @@ var WishScene = (function (_super) {
             Http.getInstance().post(Url.HTTP_TASK_FINISHTASK, {
                 taskId: _this.item.id,
                 score: _this.item.score
-            }, null);
+            }, function (res) {
+                if (res.data.code) {
+                    var scene = new IndexScene();
+                    ViewManager.getInstance().changeScene(scene);
+                }
+            });
             Http.getInstance().post(Url.HTTP_SENDINFO, { content: content }, null);
-            var scene = new IndexScene();
-            ViewManager.getInstance().changeScene(scene);
         }, this);
         this.addChild(btn);
     };

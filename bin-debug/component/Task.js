@@ -10,12 +10,12 @@ r.prototype = e.prototype, t.prototype = new r();
 };
 var Task = (function (_super) {
     __extends(Task, _super);
-    function Task(data, foodList) {
+    function Task(data) {
         var _this = _super.call(this) || this;
-        _this.init(data, foodList);
+        _this.init(data);
         return _this;
     }
-    Task.prototype.init = function (data, foodList) {
+    Task.prototype.init = function (data) {
         var _this = this;
         var stage = ViewManager.getInstance().stage;
         this.width = stage.stageWidth;
@@ -35,6 +35,14 @@ var Task = (function (_super) {
         this.addChild(close);
         close.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             _this.parent.removeChild(_this);
+            if (data.level_id == 1) {
+                Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
+                    if (res.data.isUpdate) {
+                        var scene = new GetVbaoScene(res.data.kind_id, 2);
+                        ViewManager.getInstance().changeScene(scene);
+                    }
+                });
+            }
         }, this);
         Http.getInstance().get(Url.HTTP_TASK_TASKLIST, function (res) {
             var y = 400;
@@ -51,6 +59,11 @@ var Task = (function (_super) {
                                 if (res.data.code) {
                                     Http.getInstance().get(Url.HTTP_LEGENDARY, function (res) {
                                         location.href = res.data.content;
+                                        _this.removeChild(_this.$children[4]);
+                                        _this.$children.forEach(function (item, i) {
+                                            if (i > 3)
+                                                item.y -= 210;
+                                        });
                                     });
                                 }
                             });
@@ -66,16 +79,19 @@ var Task = (function (_super) {
                     case 4:
                         // 签到
                         cb = function () {
+                            var foodList = JSON.parse(window.localStorage.getItem('foodList'));
                             Http.getInstance().get(Url.HTTP_USER_SIGN, function () {
                                 // 食物数量都加1，积分加1，删除签到项
-                                foodList.forEach(function (item, i) {
-                                    var num = item.num + 1;
+                                foodList = foodList.map(function (item, i) {
+                                    item.num += 1;
                                     var text = _this.parent.$children[0].$children[2].$children[i + 1].$children[2];
                                     text.textFlow = [
                                         { text: 'X', style: { size: 20 } },
-                                        { text: '  ' + num, style: { size: 24 } }
+                                        { text: '  ' + item.num, style: { size: 24 } }
                                     ];
+                                    return item;
                                 });
+                                window.localStorage.setItem('foodList', JSON.stringify(foodList));
                                 var score = _this.parent.$children[0].$children[1];
                                 score.text = "\u79EF\u5206\uFF1A" + (data.total_score + 1);
                                 _this.removeChild(_this.$children[4]);
@@ -111,19 +127,18 @@ var Task = (function (_super) {
             });
         });
         var tips = new egret.TextField;
-        tips.text = data.level_id == 1 ? '完成任务可获取相应的积分，完成所有任务后可进入下一个形态。' : '完成每个任务都能增加积分哦。那积分可以做什么呢？你猜呀~';
+        tips.text = '完成每个任务都能增加积分哦。那积分可以做什么呢？你猜呀~';
         tips.width = 510;
         tips.x = (stage.stageWidth - tips.width) / 2;
         tips.y = 1060;
         tips.textAlign = 'center';
         tips.lineSpacing = 25;
         tips.bold = true;
-        tips.textColor = Config.COLOR_DOC;
         this.addChild(tips);
     };
     Task.prototype.taskList = function (item, cb) {
         var group = new eui.Group;
-        var bg = Util.drawRoundRect(0, 0xffffff, 0xffffff, 580, item.id == 4 ? 120 : 190, 40);
+        var bg = Util.drawRoundRect(0, 0xffffff, 0xffffff, 580, item.id == 3 ? 280 : item.id == 4 ? 120 : 190, 40);
         group.width = bg.width;
         group.height = bg.height;
         group.addChild(bg);
@@ -138,6 +153,16 @@ var Task = (function (_super) {
         title.x = 105;
         title.y = 30;
         group.addChild(title);
+        if (item.id == 3) {
+            var des = new egret.TextField;
+            des.text = '小宝宝总在眨眼间就长大了。不信？试\n着给V宝发送一个祝福吧！';
+            des.x = flag.x;
+            des.y = 88;
+            des.textAlign = 'center';
+            des.textColor = Config.COLOR_DOC;
+            des.lineSpacing = 6;
+            group.addChild(des);
+        }
         var progress = new egret.TextField;
         progress.textColor = title.textColor;
         progress.size = title.size;
@@ -161,7 +186,7 @@ var Task = (function (_super) {
         group.addChild(score);
         var btn = new BtnBase(item.id == 4 ? 'btn_sign' : 'btn_go');
         btn.x = item.id == 4 ? 422 : (group.width - btn.width) / 2;
-        btn.y = item.id == 4 ? 16 : 98;
+        btn.y = item.id == 3 ? 175 : item.id == 4 ? 16 : 98;
         group.addChild(btn);
         btn.addEventListener(egret.TouchEvent.TOUCH_TAP, cb, this);
         return group;

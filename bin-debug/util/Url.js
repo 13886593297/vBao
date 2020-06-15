@@ -28,6 +28,8 @@ var Url = (function () {
     Url.HTTP_AROUND = '/game/api/around/around';
     // 刷出礼物接口
     Url.HTTP_GIFT = '/game/api/around/sunRandom';
+    // V宝升级接口
+    Url.HTTP_UPDATE = '/game/api/task/isUpdate';
     return Url;
 }());
 __reflect(Url.prototype, "Url");
