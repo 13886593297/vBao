@@ -141,9 +141,23 @@ var Main = (function (_super) {
      * 创建游戏场景
      */
     Main.prototype.createGameScene = function () {
+        // 邀请id
+        var obj = {};
+        var searchArr = location.search.slice(1).split('&');
+        searchArr.forEach(function (item) {
+            obj[item.split('=')[0]] = item.split('=')[1];
+        });
         var userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
-        var home = userInfo.level_id == 0 ? new KindScene() : new IndexScene();
-        ViewManager.getInstance().changeScene(home);
+        if (obj.inviteId) {
+            var url = location.href.split('?')[0];
+            history.replaceState({}, '', url);
+            var friendScene = new FriendHomeScene(userInfo.id, obj.inviteId);
+            ViewManager.getInstance().changeScene(friendScene);
+        }
+        else {
+            var home = userInfo.level_id == 0 ? new KindScene() : new IndexScene();
+            ViewManager.getInstance().changeScene(home);
+        }
     };
     return Main;
 }(egret.DisplayObjectContainer));

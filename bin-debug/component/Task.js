@@ -38,7 +38,7 @@ var Task = (function (_super) {
             if (data.level_id == 1) {
                 Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
                     if (res.data.isUpdate) {
-                        var scene = new GetVbaoScene(res.data.kind_id, 2);
+                        var scene = new GetVbaoScene(res.data.kind_id - 1, 2);
                         ViewManager.getInstance().changeScene(scene);
                     }
                 });
@@ -84,7 +84,7 @@ var Task = (function (_super) {
                                 // 食物数量都加1，积分加1，删除签到项
                                 foodList = foodList.map(function (item, i) {
                                     item.num += 1;
-                                    var text = _this.parent.$children[0].$children[2].$children[i + 1].$children[2];
+                                    var text = _this.parent.getChildByName('head').$children[2].$children[i + 1].$children[2];
                                     text.textFlow = [
                                         { text: 'X', style: { size: 20 } },
                                         { text: '  ' + item.num, style: { size: 24 } }
@@ -105,14 +105,14 @@ var Task = (function (_super) {
                     case 5:
                         // 投喂
                         cb = function () {
-                            _this.parent.$children[5].dispatchEventWith(egret.TouchEvent.TOUCH_TAP);
+                            _this.parent.getChildByName('feed').dispatchEventWith(egret.TouchEvent.TOUCH_TAP);
                             _this.parent.removeChild(_this);
                         };
                         break;
                     case 6:
                         // 送礼
                         cb = function () {
-                            _this.parent.$children[11].dispatchEventWith(egret.TouchEvent.TOUCH_TAP);
+                            _this.parent.getChildByName('around').dispatchEventWith(egret.TouchEvent.TOUCH_TAP);
                             _this.parent.removeChild(_this);
                         };
                         break;

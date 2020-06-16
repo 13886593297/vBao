@@ -7,11 +7,12 @@ class Head extends egret.DisplayObjectContainer {
     public score
     private init(data) {
         // 头像
-        // let avatar = Util.setAvatar(data.avatar)
-        let avatar = Util.setAvatar('/resource/assets/avatar.jpg')
+        let avatar = Util.setAvatar(data.avatar)
+        // let avatar = Util.setAvatar('/resource/assets/avatar.jpg')
         avatar.x = 30
         avatar.y = 45
         this.addChild(avatar)
+        this.name = 'head'
 
         // 分数
         let score = new egret.TextField

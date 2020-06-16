@@ -93,5 +93,5 @@ class Util {
     }
 }
 
-declare function onMenuShareAppMessage(callback)
-declare function onMenuShareTimeline(callback)
+declare function onMenuShareAppMessage(id, callback)
+declare function onMenuShareTimeline(id, callback)

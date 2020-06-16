@@ -14,9 +14,7 @@ class GetVbaoScene extends Scene {
             sceneBg.height = this.stage.stageHeight
             this.addChild(sceneBg)            
         } else {
-            Http.getInstance().get(Url.HTTP_UPDATE, () => {
-                console.log('升级成功')
-            })
+            Http.getInstance().get(Url.HTTP_UPDATE, null)
         }
 
         let group = new eui.Group()
@@ -42,7 +40,7 @@ class GetVbaoScene extends Scene {
         group.addChild(light)
         egret.Tween.get(light, { loop: true }).to({ rotation: 360 }, 6000)
 
-        let bones = new Bones(this.id, this.level, 370, 640)
+        let bones = new Bones(this.id, this.level, 380, 650)
         group.addChild(bones)
 
         let type = Util.setTitle(VbaoType[this.id].label, 90, VbaoType[this.id].color)

@@ -25,9 +25,7 @@ var GetVbaoScene = (function (_super) {
             this.addChild(sceneBg);
         }
         else {
-            Http.getInstance().get(Url.HTTP_UPDATE, function () {
-                console.log('升级成功');
-            });
+            Http.getInstance().get(Url.HTTP_UPDATE, null);
         }
         var group = new eui.Group();
         group.width = this.stage.stageWidth;
@@ -49,7 +47,7 @@ var GetVbaoScene = (function (_super) {
         light.anchorOffsetY = light.height / 2;
         group.addChild(light);
         egret.Tween.get(light, { loop: true }).to({ rotation: 360 }, 6000);
-        var bones = new Bones(this.id, this.level, 370, 640);
+        var bones = new Bones(this.id, this.level, 380, 650);
         group.addChild(bones);
         var type = Util.setTitle(VbaoType[this.id].label, 90, VbaoType[this.id].color);
         type.x = this.center(type);

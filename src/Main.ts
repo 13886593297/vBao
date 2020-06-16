@@ -80,8 +80,22 @@ class Main extends egret.DisplayObjectContainer {
      * 创建游戏场景
      */
     private createGameScene() {
+        // 邀请id
+        let obj: any = {}
+        let searchArr = location.search.slice(1).split('&')
+        searchArr.forEach(item => {
+            obj[item.split('=')[0]] = item.split('=')[1]
+        })
+        
         let userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
-        let home = userInfo.level_id == 0 ? new KindScene() : new IndexScene()
-        ViewManager.getInstance().changeScene(home)
+        if (obj.inviteId) {
+            let url = location.href.split('?')[0]
+            history.replaceState({}, '', url)
+            let friendScene = new FriendHomeScene(userInfo.id, obj.inviteId)
+            ViewManager.getInstance().changeScene(friendScene)
+        } else {
+            let home = userInfo.level_id == 0 ? new KindScene() : new IndexScene()
+            ViewManager.getInstance().changeScene(home)
+        }
     }
 }

@@ -11,36 +11,39 @@ r.prototype = e.prototype, t.prototype = new r();
 var IndexScene = (function (_super) {
     __extends(IndexScene, _super);
     function IndexScene() {
-        return _super.call(this) || this;
+        var _this = _super.call(this) || this;
+        _this.currentIdx = 1; // 好友列表当前页数
+        return _this;
     }
     IndexScene.prototype.init = function () {
         var _this = this;
         Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
-            console.log(res.data.isUpdate);
             _this.userId = res.data.id;
             if (res.data.isUpdate) {
-                var scene = new GetVbaoScene(res.data.kind_id, 2);
+                var scene = new GetVbaoScene(res.data.kind_id - 1, 2);
                 ViewManager.getInstance().changeScene(scene);
             }
             else {
                 var head = new Head(res.data);
                 _this.head = head;
                 _this.addChild(head);
-                if (res.data.level_id == 2) {
-                    head.food_list(res.data);
-                    _this.legendary();
-                }
                 _this.daily_task(res.data);
                 _this.vBao(res.data);
                 if (res.data.level_id == 2) {
+                    head.food_list(res.data);
+                    _this.legendary();
                     _this.feed(res.data);
                     _this.decorate();
                     _this.around();
                 }
             }
+            onMenuShareAppMessage(_this.userId, function () {
+                _this.removeChild(_this.shareScene);
+            });
+            onMenuShareTimeline(_this.userId, function () {
+                _this.removeChild(_this.shareScene);
+            });
         });
-        onMenuShareAppMessage(function () { return console.log(1111); });
-        onMenuShareTimeline(function () { return console.log(1111); });
     };
     IndexScene.prototype.daily_task = function (data) {
         var _this = this;
@@ -100,6 +103,7 @@ var IndexScene = (function (_super) {
         var feed = new BtnBase('feed');
         feed.x = 110;
         feed.y = this.stage.stageHeight - feed.height - 40;
+        feed.name = 'feed';
         this.addChild(feed);
         var feedTip = new Alert('谢谢主人！好吃又营养！');
         feedTip.x = 32;
@@ -174,6 +178,7 @@ var IndexScene = (function (_super) {
         var around = new BtnBase('around');
         around.x = 310;
         around.y = this.stage.stageHeight - around.height - 40;
+        around.name = 'around';
         this.addChild(around);
         this.showAround();
         around.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
@@ -201,6 +206,7 @@ var IndexScene = (function (_super) {
         group.addChild(invite);
         invite.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             var share = new Share();
+            _this.shareScene = share;
             _this.addChild(share);
         }, this);
         var around_close = new BtnBase('around_close');
@@ -211,10 +217,12 @@ var IndexScene = (function (_super) {
             group.visible = false;
         }, this);
         Http.getInstance().post(Url.HTTP_AROUNDLIST, {
-            page: 1,
+            page: this.currentIdx,
             pageSize: 10
         }, function (res) {
+            _this.aroundSize = res.data.length;
             var friendList = new eui.Group;
+            _this.friendList = friendList;
             var myScroller = new eui.Scroller();
             myScroller.width = _this.stage.stageWidth;
             myScroller.height = 190;
@@ -222,21 +230,41 @@ var IndexScene = (function (_super) {
             myScroller.scrollPolicyV = 'false';
             myScroller.viewport = friendList;
             group.addChild(myScroller);
-            var x = 42;
-            res.data.forEach(function (item, i) {
-                var rankImg = '';
-                if (i < 3) {
-                    rankImg = "rank_0" + (i + 1);
+            myScroller.addEventListener(eui.UIEvent.CHANGE_END, function () {
+                if (myScroller.viewport.scrollH + _this.stage.stageWidth + 100 > myScroller.viewport.contentWidth) {
+                    _this.loadMoreData();
                 }
-                else {
-                    rankImg = 'rank_04';
-                }
-                var friend = _this.friendAvatar(item, rankImg, i + 1);
-                friend.x = x;
-                friend.y = 45;
-                friendList.addChild(friend);
-                x += friend.width + 42;
+            }, _this);
+            _this.addItem(res.data);
+        });
+    };
+    IndexScene.prototype.loadMoreData = function () {
+        var _this = this;
+        if (this.aroundSize == 10) {
+            this.currentIdx += 1;
+            Http.getInstance().post(Url.HTTP_AROUNDLIST, {
+                page: this.currentIdx,
+                pageSize: 10
+            }, function (res) {
+                _this.aroundSize = res.data.length;
+                _this.addItem(res.data);
             });
+        }
+    };
+    IndexScene.prototype.addItem = function (data) {
+        var _this = this;
+        data.forEach(function (item) {
+            var rankImg = '';
+            if (item.serialNo <= 3) {
+                rankImg = "rank_0" + item.serialNo;
+            }
+            else {
+                rankImg = 'rank_04';
+            }
+            var friend = _this.friendAvatar(item, rankImg, item.serialNo);
+            friend.x = (item.serialNo - 1) * (friend.width + 42) + 42;
+            friend.y = 45;
+            _this.friendList.addChild(friend);
         });
     };
     // 好友头像

@@ -1,40 +1,41 @@
 class IndexScene extends Scene {
     private userId
     private head
+    private shareScene
     public constructor() {
         super()
     }
 
     public init() {
         Http.getInstance().get(Url.HTTP_USER_INFO, (res) => {
-            console.log(res.data.isUpdate)
             this.userId = res.data.id
             if (res.data.isUpdate) {
-                let scene = new GetVbaoScene(res.data.kind_id, 2)
+                let scene = new GetVbaoScene(res.data.kind_id - 1, 2)
                 ViewManager.getInstance().changeScene(scene)
             } else {
                 let head = new Head(res.data)
                 this.head = head
                 this.addChild(head)
 
-                if (res.data.level_id == 2) {
-                    head.food_list(res.data)
-                    this.legendary()
-                }
-
                 this.daily_task(res.data)
                 this.vBao(res.data)
 
                 if (res.data.level_id == 2) {
+                    head.food_list(res.data)
+                    this.legendary()
                     this.feed(res.data)
                     this.decorate()
                     this.around()
                 }
             }
-        })
 
-        onMenuShareAppMessage(() => console.log(1111))
-        onMenuShareTimeline(() => console.log(1111))
+            onMenuShareAppMessage(this.userId, () => {
+                this.removeChild(this.shareScene)
+            })
+            onMenuShareTimeline(this.userId, () => {
+                this.removeChild(this.shareScene)
+            })
+        })
     }
 
     private daily_task(data) {
@@ -100,6 +101,7 @@ class IndexScene extends Scene {
         let feed = new BtnBase('feed')
         feed.x = 110
         feed.y = this.stage.stageHeight - feed.height - 40
+        feed.name = 'feed'
         this.addChild(feed)
 
         let feedTip = new Alert('谢谢主人！好吃又营养！')
@@ -184,6 +186,7 @@ class IndexScene extends Scene {
         let around = new BtnBase('around')
         around.x = 310
         around.y = this.stage.stageHeight - around.height - 40
+        around.name = 'around'
         this.addChild(around)
         this.showAround()
 
@@ -192,6 +195,9 @@ class IndexScene extends Scene {
         }, this)
     }
 
+    private currentIdx = 1  // 好友列表当前页数
+    private aroundSize: number  // 当前页数好友数量
+    private friendList  // 好友列表
     private showAround() {
         let group = new eui.Group
         group.visible = false
@@ -215,6 +221,7 @@ class IndexScene extends Scene {
         group.addChild(invite)
         invite.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             let share = new Share()
+            this.shareScene = share
             this.addChild(share)
         }, this)
 
@@ -227,10 +234,13 @@ class IndexScene extends Scene {
         }, this)
 
         Http.getInstance().post(Url.HTTP_AROUNDLIST, {
-            page: 1,
+            page: this.currentIdx,
             pageSize: 10
         }, res => {
+            this.aroundSize = res.data.length
             let friendList = new eui.Group
+            this.friendList = friendList
+
             var myScroller: eui.Scroller = new eui.Scroller()
             myScroller.width = this.stage.stageWidth
             myScroller.height = 190
@@ -239,21 +249,42 @@ class IndexScene extends Scene {
             myScroller.viewport = friendList
             group.addChild(myScroller)
 
-            let x = 42
-            res.data.forEach((item, i) => {
-                let rankImg = ''
-                if (i < 3) {
-                    rankImg = `rank_0${i + 1}`
-                } else {
-                    rankImg = 'rank_04'
+            myScroller.addEventListener(eui.UIEvent.CHANGE_END, () => {
+                if (myScroller.viewport.scrollH + this.stage.stageWidth + 100 > myScroller.viewport.contentWidth) {
+                    this.loadMoreData()
                 }
+            }, this)
 
-                let friend = this.friendAvatar(item, rankImg, i + 1)
-                friend.x = x
-                friend.y = 45
-                friendList.addChild(friend)
-                x += friend.width + 42
+            this.addItem(res.data)
+        })
+    }
+
+    private loadMoreData() {
+        if (this.aroundSize == 10) {
+            this.currentIdx += 1
+            Http.getInstance().post(Url.HTTP_AROUNDLIST, {
+                page: this.currentIdx,
+                pageSize: 10
+            }, res => {
+                this.aroundSize = res.data.length
+                this.addItem(res.data)
             })
+        }
+    }
+
+    private addItem(data) {
+        data.forEach(item => {
+            let rankImg = ''
+            if (item.serialNo <= 3) {
+                rankImg = `rank_0${item.serialNo}`
+            } else {
+                rankImg = 'rank_04'
+            }
+
+            let friend = this.friendAvatar(item, rankImg, item.serialNo)
+            friend.x = (item.serialNo - 1) * (friend.width + 42) + 42
+            friend.y = 45
+            this.friendList.addChild(friend)
         })
     }
 

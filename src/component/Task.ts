@@ -29,7 +29,7 @@ class Task extends eui.Group {
             if (data.level_id == 1) {
                 Http.getInstance().get(Url.HTTP_USER_INFO, res => {
                     if (res.data.isUpdate) {
-                        let scene = new GetVbaoScene(res.data.kind_id, 2)
+                        let scene = new GetVbaoScene(res.data.kind_id - 1, 2)
                         ViewManager.getInstance().changeScene(scene)
                     }
                 })
@@ -75,7 +75,7 @@ class Task extends eui.Group {
                                 // 食物数量都加1，积分加1，删除签到项
                                 foodList = foodList.map((item, i) => {
                                     item.num += 1
-                                    let text: any = this.parent.$children[0].$children[2].$children[i + 1].$children[2]
+                                    let text: any = this.parent.getChildByName('head').$children[2].$children[i + 1].$children[2]
                                     text.textFlow = [
                                         {text: 'X', style: { size: 20 }},
                                         {text: '  ' + item.num, style: { size: 24 }}
@@ -97,14 +97,14 @@ class Task extends eui.Group {
                     case 5:
                         // 投喂
                         cb = () => {
-                            this.parent.$children[5].dispatchEventWith(egret.TouchEvent.TOUCH_TAP)
+                            this.parent.getChildByName('feed').dispatchEventWith(egret.TouchEvent.TOUCH_TAP)
                             this.parent.removeChild(this)
                         }
                         break;
                     case 6:
                         // 送礼
                         cb = () => {
-                            this.parent.$children[11].dispatchEventWith(egret.TouchEvent.TOUCH_TAP)
+                            this.parent.getChildByName('around').dispatchEventWith(egret.TouchEvent.TOUCH_TAP)
                             this.parent.removeChild(this)
                         }
                         break;

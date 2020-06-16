@@ -17,11 +17,12 @@ var Head = (function (_super) {
     }
     Head.prototype.init = function (data) {
         // 头像
-        // let avatar = Util.setAvatar(data.avatar)
-        var avatar = Util.setAvatar('/resource/assets/avatar.jpg');
+        var avatar = Util.setAvatar(data.avatar);
+        // let avatar = Util.setAvatar('/resource/assets/avatar.jpg')
         avatar.x = 30;
         avatar.y = 45;
         this.addChild(avatar);
+        this.name = 'head';
         // 分数
         var score = new egret.TextField;
         score.text = "\u79EF\u5206\uFF1A" + data.total_score;
