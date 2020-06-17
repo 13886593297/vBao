@@ -35,6 +35,9 @@ class Url {
     // 刷出礼物接口
     public static readonly HTTP_GIFT = '/game/api/around/sunRandom'
 
-    // V宝升级接口
-    public static readonly HTTP_UPDATE = '/game/api/task/isUpdate'
+    // V宝是否已经升级接口
+    public static readonly HTTP_ISUPDATE = '/game/api/task/findIsUpdate'
+
+    // 通知后台V宝已升级
+    public static readonly HTTP_UPDATED = '/game/api/task/isUpdate'
 }

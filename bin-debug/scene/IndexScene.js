@@ -18,34 +18,34 @@ var IndexScene = (function (_super) {
     IndexScene.prototype.init = function () {
         var _this = this;
         Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
-            _this.userId = res.data.id;
-            if (res.data.isUpdate) {
-                var scene = new GetVbaoScene(res.data.kind_id - 1, 2);
+            _this.userInfo = res.data;
+            ViewManager.getInstance().setUserInfo(res.data);
+            window.localStorage.setItem('userInfo', JSON.stringify(_this.userInfo));
+            if (_this.userInfo.isUpdate) {
+                var scene = new GetVbaoScene(_this.userInfo.kind_id - 1, 2);
                 ViewManager.getInstance().changeScene(scene);
             }
             else {
-                var head = new Head(res.data);
+                var head = new Head();
                 _this.head = head;
                 _this.addChild(head);
-                _this.daily_task(res.data);
-                _this.vBao(res.data);
-                if (res.data.level_id == 2) {
-                    head.food_list(res.data);
-                    _this.legendary();
-                    _this.feed(res.data);
+                _this.daily_task();
+                _this.vBao();
+                if (_this.userInfo.level_id == 2) {
+                    _this.feed();
                     _this.decorate();
                     _this.around();
                 }
             }
-            onMenuShareAppMessage(_this.userId, function () {
+            onMenuShareAppMessage(_this.userInfo.id, function () {
                 _this.removeChild(_this.shareScene);
             });
-            onMenuShareTimeline(_this.userId, function () {
+            onMenuShareTimeline(_this.userInfo.id, function () {
                 _this.removeChild(_this.shareScene);
             });
         });
     };
-    IndexScene.prototype.daily_task = function (data) {
+    IndexScene.prototype.daily_task = function () {
         var _this = this;
         // 每日任务
         var group = new eui.Group;
@@ -63,11 +63,11 @@ var IndexScene = (function (_super) {
         var daily_task_tips = Util.createBitmapByName('daily_task_tips');
         daily_task_tips.x = 0;
         daily_task_tips.y = 0;
-        daily_task_tips.visible = data.isfinish == 0;
+        daily_task_tips.visible = this.userInfo.isfinish == 0;
         group.addChild(daily_task_tips);
         group.touchEnabled = true;
         group.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            var task = new Task(data);
+            var task = new Task();
             _this.addChild(task);
         }, this);
     };
@@ -83,14 +83,14 @@ var IndexScene = (function (_super) {
             });
         }, this);
     };
-    IndexScene.prototype.vBao = function (data) {
-        var id = data.kind_id - 1;
-        var y = data.level_id == 2 ? 780 : 880;
-        var bones = new Bones(id, data.level_id, 380, y);
+    IndexScene.prototype.vBao = function () {
+        var id = this.userInfo.kind_id - 1;
+        var y = this.userInfo.level_id == 2 ? 780 : 880;
+        var bones = new Bones(id, this.userInfo.level_id, 380, y);
         this.addChild(bones);
         // 昵称
         var nickname = new egret.TextField;
-        nickname.text = data.nick_name;
+        nickname.text = this.userInfo.nick_name;
         nickname.x = this.center(nickname);
         nickname.y = y + bones.height / 2;
         nickname.size = 24;
@@ -98,7 +98,7 @@ var IndexScene = (function (_super) {
         this.addChild(nickname);
     };
     // 投喂
-    IndexScene.prototype.feed = function (data) {
+    IndexScene.prototype.feed = function () {
         var _this = this;
         var feed = new BtnBase('feed');
         feed.x = 110;
@@ -120,25 +120,26 @@ var IndexScene = (function (_super) {
         feedTipNone.y = 600;
         feedTipNone.visible = false;
         this.addChild(feedTipNone);
-        var total_score = data.total_score;
         feed.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
+            var userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
             var foodList = JSON.parse(window.localStorage.getItem('foodList'));
-            var foodCount = foodList[data.food_type_id - 1].num;
-            if (foodCount > 0) {
+            if (foodList[_this.userInfo.food_type_id - 1].num > 0) {
                 Http.getInstance().post(Url.HTTP_FEED, {
-                    feedId: data.id,
+                    feedId: _this.userInfo.id,
                     type: 5,
                 }, function (res) {
                     if (res.data.code == 1) {
-                        foodCount--;
-                        total_score++;
-                        var count = _this.head.header_group.$children[data.food_type_id].$children[2];
+                        foodList[_this.userInfo.food_type_id - 1].num -= 1;
+                        window.localStorage.setItem('foodList', JSON.stringify(foodList));
+                        userInfo.total_score += 1;
+                        window.localStorage.setItem('userInfo', JSON.stringify(userInfo));
+                        var count = _this.head.header_group.$children[_this.userInfo.food_type_id].$children[2];
                         count.textFlow = [
                             { text: 'X', style: { size: 20 } },
-                            { text: '  ' + foodCount, style: { size: 24 } }
+                            { text: '  ' + foodList[_this.userInfo.food_type_id - 1].num, style: { size: 24 } }
                         ];
                         var score = _this.head.score;
-                        score.text = "\u79EF\u5206\uFF1A" + total_score;
+                        score.text = "\u79EF\u5206\uFF1A" + userInfo.total_score;
                         _this.animate(feedTip);
                     }
                     else {
@@ -337,7 +338,7 @@ var IndexScene = (function (_super) {
         group.touchEnabled = true;
         group.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             _this.aroundGroup.visible = false;
-            var friendHome = new FriendHomeScene(_this.userId, item.id);
+            var friendHome = new FriendHomeScene(_this.userInfo.id, item.id);
             ViewManager.getInstance().changeScene(friendHome);
         }, this);
         return group;

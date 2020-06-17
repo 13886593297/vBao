@@ -76,4 +76,19 @@ class ViewManager {
     public setBones(id, bone) {
         this.bones[id] = bone
     }
+
+    private userInfo = {}
+    public getUserInfo() {
+        return this.userInfo
+    }
+    public setUserInfo(userInfo) {
+        this.userInfo = {
+            total_score: userInfo.total_score,
+            food: {
+                v_bfood: userInfo.v_bfood,
+                v_tfood: userInfo.v_tfood,
+                v_ffood: userInfo.v_ffood
+            }
+        }
+    }
 }

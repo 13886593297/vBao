@@ -25,7 +25,7 @@ var GetVbaoScene = (function (_super) {
             this.addChild(sceneBg);
         }
         else {
-            Http.getInstance().get(Url.HTTP_UPDATE, null);
+            Http.getInstance().get(Url.HTTP_UPDATED, null);
         }
         var group = new eui.Group();
         group.width = this.stage.stageWidth;

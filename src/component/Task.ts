@@ -1,10 +1,12 @@
 class Task extends eui.Group {
-    constructor(data) {
+    private userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
+    private foodList = JSON.parse(window.localStorage.getItem('foodList'))
+    constructor() {
         super()
-        this.init(data)
+        this.init()
     }
 
-    private init(data) {
+    private init() {
         let stage = ViewManager.getInstance().stage
         this.width = stage.stageWidth
         this.height = stage.stageHeight
@@ -26,9 +28,9 @@ class Task extends eui.Group {
         this.addChild(close)
         close.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             this.parent.removeChild(this)
-            if (data.level_id == 1) {
-                Http.getInstance().get(Url.HTTP_USER_INFO, res => {
-                    if (res.data.isUpdate) {
+            if (this.userInfo.level_id == 1) {
+                Http.getInstance().get(Url.HTTP_ISUPDATE, res => {
+                    if (res.data.info.isUpdate) {
                         let scene = new GetVbaoScene(res.data.kind_id - 1, 2)
                         ViewManager.getInstance().changeScene(scene)
                     }
@@ -38,7 +40,7 @@ class Task extends eui.Group {
 
         Http.getInstance().get(Url.HTTP_TASK_TASKLIST, res => {
             let y = 400
-            let cb: Function        
+            let cb: Function 
             res.data.forEach(item => {
                 switch (item.id) {
                     case 1:
@@ -70,10 +72,9 @@ class Task extends eui.Group {
                     case 4:
                         // 签到
                         cb = () => {
-                            let foodList = JSON.parse(window.localStorage.getItem('foodList'))
                             Http.getInstance().get(Url.HTTP_USER_SIGN, () => {
                                 // 食物数量都加1，积分加1，删除签到项
-                                foodList = foodList.map((item, i) => {
+                                this.foodList = this.foodList.map((item, i) => {
                                     item.num += 1
                                     let text: any = this.parent.getChildByName('head').$children[2].$children[i + 1].$children[2]
                                     text.textFlow = [
@@ -82,10 +83,12 @@ class Task extends eui.Group {
                                     ]
                                     return item
                                 })
-                                window.localStorage.setItem('foodList', JSON.stringify(foodList))
+                                window.localStorage.setItem('foodList', JSON.stringify(this.foodList))
                                 
+                                this.userInfo.total_score += 1
+                                window.localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
                                 let score: any = this.parent.$children[0].$children[1]
-                                score.text = `积分：${data.total_score + 1}`
+                                score.text = `积分：${this.userInfo.total_score}`
                                 
                                 this.removeChild(this.$children[4])
                                 this.$children.forEach((item, i) => {

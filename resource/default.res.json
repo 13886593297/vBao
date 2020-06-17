@@ -7,7 +7,7 @@
 	],
 	"resources": [
         {
-            "url":"./MyFont.ttf",
+            "url":"MyFont.ttf",
             "type":"ttf",
             "name":"MyFont_ttf"
         },
@@ -248,137 +248,137 @@
 			"name": "getVbao_bg"
 		},
 		{
-			"url": "assets/index/daily_task_btn.png",
+			"url": "assets/Index/daily_task_btn.png",
 			"type": "image",
 			"name": "daily_task_btn"
         },
         {
-			"url": "assets/index/daily_task_btn_down.png",
+			"url": "assets/Index/daily_task_btn_down.png",
 			"type": "image",
 			"name": "daily_task_btn_down"
 		},
 		{
-			"url": "assets/index/daily_task_tips.png",
+			"url": "assets/Index/daily_task_tips.png",
 			"type": "image",
 			"name": "daily_task_tips"
 		},
 		{
-			"url": "assets/index/flag.png",
+			"url": "assets/Index/flag.png",
 			"type": "image",
 			"name": "flag"
         },
         {
-			"url": "assets/index/legendary.png",
+			"url": "assets/Index/legendary.png",
 			"type": "image",
 			"name": "legendary"
 		},
         {
-			"url": "assets/index/legendary_down.png",
+			"url": "assets/Index/legendary_down.png",
 			"type": "image",
 			"name": "legendary_down"
         },
         {
-			"url": "assets/index/feed.png",
+			"url": "assets/Index/feed.png",
 			"type": "image",
 			"name": "feed"
 		},
         {
-			"url": "assets/index/feed_down.png",
+			"url": "assets/Index/feed_down.png",
 			"type": "image",
 			"name": "feed_down"
         },
         {
-			"url": "assets/index/tail_left.png",
+			"url": "assets/Index/tail_left.png",
 			"type": "image",
 			"name": "tail_left"
         },
         {
-			"url": "assets/index/tail_right.png",
+			"url": "assets/Index/tail_right.png",
 			"type": "image",
 			"name": "tail_right"
         },
         {
-			"url": "assets/index/around.png",
+			"url": "assets/Index/around.png",
 			"type": "image",
 			"name": "around"
         },
         {
-			"url": "assets/index/around_down.png",
+			"url": "assets/Index/around_down.png",
 			"type": "image",
 			"name": "around_down"
         },
         {
-			"url": "assets/index/decorate.png",
+			"url": "assets/Index/decorate.png",
 			"type": "image",
 			"name": "decorate"
         },
         {
-			"url": "assets/index/decorate_down.png",
+			"url": "assets/Index/decorate_down.png",
 			"type": "image",
 			"name": "decorate_down"
         },
         {
-			"url": "assets/index/goHome.png",
+			"url": "assets/Index/goHome.png",
 			"type": "image",
 			"name": "goHome"
         },
         {
-			"url": "assets/index/goHome_down.png",
+			"url": "assets/Index/goHome_down.png",
 			"type": "image",
 			"name": "goHome_down"
         },
         {
-			"url": "assets/index/present.png",
+			"url": "assets/Index/present.png",
 			"type": "image",
 			"name": "present"
         },
         {
-			"url": "assets/index/present_down.png",
+			"url": "assets/Index/present_down.png",
 			"type": "image",
 			"name": "present_down"
         },
         {
-			"url": "assets/index/around_bg.png",
+			"url": "assets/Index/around_bg.png",
 			"type": "image",
 			"name": "around_bg"
         },
         {
-			"url": "assets/index/invite.png",
+			"url": "assets/Index/invite.png",
 			"type": "image",
 			"name": "invite"
         },
         {
-			"url": "assets/index/invite_down.png",
+			"url": "assets/Index/invite_down.png",
 			"type": "image",
 			"name": "invite_down"
         },
         {
-			"url": "assets/index/around_close.png",
+			"url": "assets/Index/around_close.png",
 			"type": "image",
 			"name": "around_close"
         },
         {
-			"url": "assets/index/around_close_down.png",
+			"url": "assets/Index/around_close_down.png",
 			"type": "image",
 			"name": "around_close_down"
         },
         {
-			"url": "assets/index/rank_01.png",
+			"url": "assets/Index/rank_01.png",
 			"type": "image",
 			"name": "rank_01"
         },
         {
-			"url": "assets/index/rank_02.png",
+			"url": "assets/Index/rank_02.png",
 			"type": "image",
 			"name": "rank_02"
         },
         {
-			"url": "assets/index/rank_03.png",
+			"url": "assets/Index/rank_03.png",
 			"type": "image",
 			"name": "rank_03"
         },
         {
-			"url": "assets/index/rank_04.png",
+			"url": "assets/Index/rank_04.png",
 			"type": "image",
 			"name": "rank_04"
         },

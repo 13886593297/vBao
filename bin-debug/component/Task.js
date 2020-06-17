@@ -10,12 +10,14 @@ r.prototype = e.prototype, t.prototype = new r();
 };
 var Task = (function (_super) {
     __extends(Task, _super);
-    function Task(data) {
+    function Task() {
         var _this = _super.call(this) || this;
-        _this.init(data);
+        _this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
+        _this.foodList = JSON.parse(window.localStorage.getItem('foodList'));
+        _this.init();
         return _this;
     }
-    Task.prototype.init = function (data) {
+    Task.prototype.init = function () {
         var _this = this;
         var stage = ViewManager.getInstance().stage;
         this.width = stage.stageWidth;
@@ -35,9 +37,9 @@ var Task = (function (_super) {
         this.addChild(close);
         close.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             _this.parent.removeChild(_this);
-            if (data.level_id == 1) {
-                Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
-                    if (res.data.isUpdate) {
+            if (_this.userInfo.level_id == 1) {
+                Http.getInstance().get(Url.HTTP_ISUPDATE, function (res) {
+                    if (res.data.info.isUpdate) {
                         var scene = new GetVbaoScene(res.data.kind_id - 1, 2);
                         ViewManager.getInstance().changeScene(scene);
                     }
@@ -79,10 +81,9 @@ var Task = (function (_super) {
                     case 4:
                         // 签到
                         cb = function () {
-                            var foodList = JSON.parse(window.localStorage.getItem('foodList'));
                             Http.getInstance().get(Url.HTTP_USER_SIGN, function () {
                                 // 食物数量都加1，积分加1，删除签到项
-                                foodList = foodList.map(function (item, i) {
+                                _this.foodList = _this.foodList.map(function (item, i) {
                                     item.num += 1;
                                     var text = _this.parent.getChildByName('head').$children[2].$children[i + 1].$children[2];
                                     text.textFlow = [
@@ -91,9 +92,11 @@ var Task = (function (_super) {
                                     ];
                                     return item;
                                 });
-                                window.localStorage.setItem('foodList', JSON.stringify(foodList));
+                                window.localStorage.setItem('foodList', JSON.stringify(_this.foodList));
+                                _this.userInfo.total_score += 1;
+                                window.localStorage.setItem('userInfo', JSON.stringify(_this.userInfo));
                                 var score = _this.parent.$children[0].$children[1];
-                                score.text = "\u79EF\u5206\uFF1A" + (data.total_score + 1);
+                                score.text = "\u79EF\u5206\uFF1A" + _this.userInfo.total_score;
                                 _this.removeChild(_this.$children[4]);
                                 _this.$children.forEach(function (item, i) {
                                     if (i > 3)

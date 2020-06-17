@@ -28,7 +28,7 @@ class KindScene extends Scene {
         let y = 280
         Http.getInstance().get(Url.HTTP_KIND_INFO, res => {
             res.data.forEach((item, index) => {
-                let vBao = new Vbao(item.description, VbaoType[index].color, index)
+                let vBao = new Kind(item.description, VbaoType[index].color, index)
                 vBao.x = this.center(vBao)
                 vBao.y = y
                 this.addChild(vBao)
@@ -38,7 +38,7 @@ class KindScene extends Scene {
     }
 }
 
-class Vbao extends eui.Group {
+class Kind extends eui.Group {
     public constructor(des: string, color: number, id: number) {
         super()
         this.init(des, color, id)

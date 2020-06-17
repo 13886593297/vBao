@@ -21,10 +21,10 @@ var FriendHomeScene = (function (_super) {
         Http.getInstance().post(Url.HTTP_AROUND, {
             visitedId: this.befeedId
         }, function (res) {
-            var head = new Head(res.data.visitInfo);
+            var head = new Head();
             _this.head = head;
             _this.addChild(head);
-            head.food_list(res.data.visitInfo);
+            head.food_list();
             _this.vBaoInfo(res.data.visitedInfo);
             _this.vBao(res.data.visitedInfo);
             _this.present(res.data);

@@ -1,14 +1,23 @@
 class Head extends egret.DisplayObjectContainer {
-    constructor(data) {
+    private userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
+    private foodList = [
+        {name: 'V宝典', image: 'icon_dir', num: this.userInfo.v_bfood},
+        {name: 'V拳套', image: 'icon_glove', num: this.userInfo.v_tfood},
+        {name: 'V飞机', image: 'icon_air', num: this.userInfo.v_ffood}
+    ]
+    /**
+     * 公用头部
+     */
+    constructor() {
         super()
-        this.init(data)
+        this.init()
+        window.localStorage.setItem('foodList', JSON.stringify(this.foodList))
     }
 
     public score
-    private init(data) {
+    private init() {
         // 头像
-        let avatar = Util.setAvatar(data.avatar)
-        // let avatar = Util.setAvatar('/resource/assets/avatar.jpg')
+        let avatar = Util.setAvatar(this.userInfo.avatar)
         avatar.x = 30
         avatar.y = 45
         this.addChild(avatar)
@@ -16,26 +25,23 @@ class Head extends egret.DisplayObjectContainer {
 
         // 分数
         let score = new egret.TextField
-        score.text = `积分：${data.total_score}`
+        score.text = `积分：${this.userInfo.total_score}`
         score.x = 200
-        score.y = data.level_id == 1 ? 100 : 150
+        score.y = this.userInfo.level_id == 1 ? 100 : 150
         score.size = 24
         score.bold = true
         score.strokeColor = Config.COLOR_DOC
         score.stroke = 1
         this.addChild(score)
         this.score = score
+
+        if (this.userInfo.level_id == 2) {
+            this.food_list()
+        }
     }
 
     public header_group
-    public food_list(data) {
-        let foodList = [
-            {name: 'V宝典', image: 'icon_dir', num: data.v_bfood},
-            {name: 'V拳套', image: 'icon_glove', num: data.v_tfood},
-            {name: 'V飞机', image: 'icon_air', num: data.v_ffood}
-        ]
-        window.localStorage.setItem('foodList', JSON.stringify(foodList))
-
+    public food_list() {
         let header_group = new eui.Group
         header_group.x = 180
         header_group.y = 48
@@ -48,8 +54,8 @@ class Head extends egret.DisplayObjectContainer {
         header_group.addChild(header_bg)
 
         let x = 30
-        foodList.forEach(item => {
-            let header_item = this.food(item.image, item.name, item.num)
+        this.foodList.forEach(item => {
+            let header_item = this.food(item)
             header_item.x = x
             header_item.y = 16
             header_group.addChild(header_item)
@@ -57,29 +63,27 @@ class Head extends egret.DisplayObjectContainer {
         })
     }
 
-    private food(textureName, text, num) {
+    private food(item) {
         let group = new eui.Group
         group.width = 170
 
-        let icon = Util.createBitmapByName(textureName)
+        let icon = Util.createBitmapByName(item.image)
         group.addChild(icon)
 
-        let label = Util.setTitle(text, 18, Config.COLOR_DOC) 
+        let label = Util.setTitle(item.name, 18, Config.COLOR_DOC) 
         label.x = icon.width + 8
         label.y = 8
-        label.fontFamily = 'dynamic'
         group.addChild(label)
 
         let count = new egret.TextField
         count.textFlow = [
             {text: 'X', style: { size: 20 }},
-            {text: '  ' + num, style: { size: 24 }}
+            {text: '  ' + item.num, style: { size: 24 }}
         ]
         count.strokeColor = Config.COLOR_DOC
         count.stroke = 2
         count.x = label.x
         count.y = label.y + label.height + 6
-        count.fontFamily = 'dynamic'
         group.addChild(count)
         return group
     }

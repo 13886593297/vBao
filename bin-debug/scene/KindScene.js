@@ -36,7 +36,7 @@ var KindScene = (function (_super) {
         var y = 280;
         Http.getInstance().get(Url.HTTP_KIND_INFO, function (res) {
             res.data.forEach(function (item, index) {
-                var vBao = new Vbao(item.description, VbaoType[index].color, index);
+                var vBao = new Kind(item.description, VbaoType[index].color, index);
                 vBao.x = _this.center(vBao);
                 vBao.y = y;
                 _this.addChild(vBao);
@@ -47,14 +47,14 @@ var KindScene = (function (_super) {
     return KindScene;
 }(Scene));
 __reflect(KindScene.prototype, "KindScene");
-var Vbao = (function (_super) {
-    __extends(Vbao, _super);
-    function Vbao(des, color, id) {
+var Kind = (function (_super) {
+    __extends(Kind, _super);
+    function Kind(des, color, id) {
         var _this = _super.call(this) || this;
         _this.init(des, color, id);
         return _this;
     }
-    Vbao.prototype.init = function (des, color, id) {
+    Kind.prototype.init = function (des, color, id) {
         var box = new BtnBase("chooseVbao_" + VbaoType[id].name);
         this.width = box.width;
         this.height = box.height + 30;
@@ -85,6 +85,6 @@ var Vbao = (function (_super) {
             ViewManager.getInstance().changeScene(scene);
         }, this);
     };
-    return Vbao;
+    return Kind;
 }(eui.Group));
-__reflect(Vbao.prototype, "Vbao");
+__reflect(Kind.prototype, "Kind");

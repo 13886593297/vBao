@@ -14,7 +14,7 @@ class GetVbaoScene extends Scene {
             sceneBg.height = this.stage.stageHeight
             this.addChild(sceneBg)            
         } else {
-            Http.getInstance().get(Url.HTTP_UPDATE, null)
+            Http.getInstance().get(Url.HTTP_UPDATED, null)
         }
 
         let group = new eui.Group()

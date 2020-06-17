@@ -28,8 +28,10 @@ var Url = (function () {
     Url.HTTP_AROUND = '/game/api/around/around';
     // 刷出礼物接口
     Url.HTTP_GIFT = '/game/api/around/sunRandom';
-    // V宝升级接口
-    Url.HTTP_UPDATE = '/game/api/task/isUpdate';
+    // V宝是否已经升级接口
+    Url.HTTP_ISUPDATE = '/game/api/task/findIsUpdate';
+    // 通知后台V宝已升级
+    Url.HTTP_UPDATED = '/game/api/task/isUpdate';
     return Url;
 }());
 __reflect(Url.prototype, "Url");

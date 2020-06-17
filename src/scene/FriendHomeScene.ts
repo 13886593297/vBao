@@ -12,11 +12,11 @@ class FriendHomeScene extends Scene {
         Http.getInstance().post(Url.HTTP_AROUND, {
             visitedId: this.befeedId
         }, (res) => {
-            let head = new Head(res.data.visitInfo)
+            let head = new Head()
             this.head = head
             this.addChild(head)
 
-            head.food_list(res.data.visitInfo)
+            head.food_list()
 
             this.vBaoInfo(res.data.visitedInfo)
 

@@ -10,39 +10,45 @@ r.prototype = e.prototype, t.prototype = new r();
 };
 var Head = (function (_super) {
     __extends(Head, _super);
-    function Head(data) {
+    /**
+     * 公用头部
+     */
+    function Head() {
         var _this = _super.call(this) || this;
-        _this.init(data);
+        _this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
+        _this.foodList = [
+            { name: 'V宝典', image: 'icon_dir', num: _this.userInfo.v_bfood },
+            { name: 'V拳套', image: 'icon_glove', num: _this.userInfo.v_tfood },
+            { name: 'V飞机', image: 'icon_air', num: _this.userInfo.v_ffood }
+        ];
+        _this.init();
+        window.localStorage.setItem('foodList', JSON.stringify(_this.foodList));
         return _this;
     }
-    Head.prototype.init = function (data) {
+    Head.prototype.init = function () {
         // 头像
-        var avatar = Util.setAvatar(data.avatar);
-        // let avatar = Util.setAvatar('/resource/assets/avatar.jpg')
+        var avatar = Util.setAvatar(this.userInfo.avatar);
         avatar.x = 30;
         avatar.y = 45;
         this.addChild(avatar);
         this.name = 'head';
         // 分数
         var score = new egret.TextField;
-        score.text = "\u79EF\u5206\uFF1A" + data.total_score;
+        score.text = "\u79EF\u5206\uFF1A" + this.userInfo.total_score;
         score.x = 200;
-        score.y = data.level_id == 1 ? 100 : 150;
+        score.y = this.userInfo.level_id == 1 ? 100 : 150;
         score.size = 24;
         score.bold = true;
         score.strokeColor = Config.COLOR_DOC;
         score.stroke = 1;
         this.addChild(score);
         this.score = score;
+        if (this.userInfo.level_id == 2) {
+            this.food_list();
+        }
     };
-    Head.prototype.food_list = function (data) {
+    Head.prototype.food_list = function () {
         var _this = this;
-        var foodList = [
-            { name: 'V宝典', image: 'icon_dir', num: data.v_bfood },
-            { name: 'V拳套', image: 'icon_glove', num: data.v_tfood },
-            { name: 'V飞机', image: 'icon_air', num: data.v_ffood }
-        ];
-        window.localStorage.setItem('foodList', JSON.stringify(foodList));
         var header_group = new eui.Group;
         header_group.x = 180;
         header_group.y = 48;
@@ -53,34 +59,32 @@ var Head = (function (_super) {
         header_group.height = header_bg.height;
         header_group.addChild(header_bg);
         var x = 30;
-        foodList.forEach(function (item) {
-            var header_item = _this.food(item.image, item.name, item.num);
+        this.foodList.forEach(function (item) {
+            var header_item = _this.food(item);
             header_item.x = x;
             header_item.y = 16;
             header_group.addChild(header_item);
             x += header_item.width;
         });
     };
-    Head.prototype.food = function (textureName, text, num) {
+    Head.prototype.food = function (item) {
         var group = new eui.Group;
         group.width = 170;
-        var icon = Util.createBitmapByName(textureName);
+        var icon = Util.createBitmapByName(item.image);
         group.addChild(icon);
-        var label = Util.setTitle(text, 18, Config.COLOR_DOC);
+        var label = Util.setTitle(item.name, 18, Config.COLOR_DOC);
         label.x = icon.width + 8;
         label.y = 8;
-        label.fontFamily = 'dynamic';
         group.addChild(label);
         var count = new egret.TextField;
         count.textFlow = [
             { text: 'X', style: { size: 20 } },
-            { text: '  ' + num, style: { size: 24 } }
+            { text: '  ' + item.num, style: { size: 24 } }
         ];
         count.strokeColor = Config.COLOR_DOC;
         count.stroke = 2;
         count.x = label.x;
         count.y = label.y + label.height + 6;
-        count.fontFamily = 'dynamic';
         group.addChild(count);
         return group;
     };

@@ -1,44 +1,44 @@
 class IndexScene extends Scene {
-    private userId
-    private head
-    private shareScene
+    private userInfo // 用户信息
+    private head // 公用头部
+    private shareScene // 分享
     public constructor() {
         super()
     }
 
     public init() {
         Http.getInstance().get(Url.HTTP_USER_INFO, (res) => {
-            this.userId = res.data.id
-            if (res.data.isUpdate) {
-                let scene = new GetVbaoScene(res.data.kind_id - 1, 2)
+            this.userInfo = res.data
+            ViewManager.getInstance().setUserInfo(res.data)
+            window.localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+            if (this.userInfo.isUpdate) {
+                let scene = new GetVbaoScene(this.userInfo.kind_id - 1, 2)
                 ViewManager.getInstance().changeScene(scene)
             } else {
-                let head = new Head(res.data)
+                let head = new Head()
                 this.head = head
                 this.addChild(head)
 
-                this.daily_task(res.data)
-                this.vBao(res.data)
+                this.daily_task()
+                this.vBao()
 
-                if (res.data.level_id == 2) {
-                    head.food_list(res.data)
-                    this.legendary()
-                    this.feed(res.data)
+                if (this.userInfo.level_id == 2) {
+                    this.feed()
                     this.decorate()
                     this.around()
                 }
             }
 
-            onMenuShareAppMessage(this.userId, () => {
+            onMenuShareAppMessage(this.userInfo.id, () => {
                 this.removeChild(this.shareScene)
             })
-            onMenuShareTimeline(this.userId, () => {
+            onMenuShareTimeline(this.userInfo.id, () => {
                 this.removeChild(this.shareScene)
             })
         })
     }
 
-    private daily_task(data) {
+    private daily_task() {
         // 每日任务
         let group = new eui.Group
         group.width = 110
@@ -57,12 +57,12 @@ class IndexScene extends Scene {
         let daily_task_tips = Util.createBitmapByName('daily_task_tips')
         daily_task_tips.x = 0
         daily_task_tips.y = 0
-        daily_task_tips.visible = data.isfinish == 0
+        daily_task_tips.visible = this.userInfo.isfinish == 0
         group.addChild(daily_task_tips)
 
         group.touchEnabled = true
         group.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            let task = new Task(data)
+            let task = new Task()
             this.addChild(task)
         }, this)
     }
@@ -80,15 +80,15 @@ class IndexScene extends Scene {
         }, this)
     }
 
-    private vBao(data) {
-        let id = data.kind_id - 1
-        let y = data.level_id == 2 ? 780 : 880
-        let bones = new Bones(id, data.level_id, 380, y)
+    private vBao() {
+        let id = this.userInfo.kind_id - 1
+        let y = this.userInfo.level_id == 2 ? 780 : 880
+        let bones = new Bones(id, this.userInfo.level_id, 380, y)
         this.addChild(bones)
 
         // 昵称
         let nickname = new egret.TextField
-        nickname.text = data.nick_name
+        nickname.text = this.userInfo.nick_name
         nickname.x = this.center(nickname)
         nickname.y = y + bones.height / 2
         nickname.size = 24
@@ -97,7 +97,7 @@ class IndexScene extends Scene {
     }
 
     // 投喂
-    private feed(data) {
+    private feed() {
         let feed = new BtnBase('feed')
         feed.x = 110
         feed.y = this.stage.stageHeight - feed.height - 40
@@ -123,26 +123,28 @@ class IndexScene extends Scene {
         this.addChild(feedTipNone)
         
         
-        let total_score = data.total_score
         feed.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
+            let userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
             let foodList = JSON.parse(window.localStorage.getItem('foodList'))
-            let foodCount = foodList[data.food_type_id - 1].num
 
-            if (foodCount > 0) {
+            if (foodList[this.userInfo.food_type_id - 1].num > 0) {
                 Http.getInstance().post(Url.HTTP_FEED, {
-                    feedId: data.id,
+                    feedId: this.userInfo.id,
                     type: 5,
                 }, res => {
                     if (res.data.code == 1) {
-                        foodCount--
-                        total_score++
-                        let count = this.head.header_group.$children[data.food_type_id].$children[2]
+                        foodList[this.userInfo.food_type_id - 1].num -= 1
+                        window.localStorage.setItem('foodList', JSON.stringify(foodList))
+                        userInfo.total_score += 1
+                        window.localStorage.setItem('userInfo', JSON.stringify(userInfo))
+
+                        let count = this.head.header_group.$children[this.userInfo.food_type_id].$children[2]
                         count.textFlow = [
                             {text: 'X', style: { size: 20 }},
-                            {text: '  ' + foodCount, style: { size: 24 }}
+                            {text: '  ' + foodList[this.userInfo.food_type_id - 1].num, style: { size: 24 }}
                         ]
                         let score = this.head.score
-                        score.text = `积分：${total_score}`
+                        score.text = `积分：${userInfo.total_score}`
 
                         this.animate(feedTip)
                     } else {
@@ -364,7 +366,7 @@ class IndexScene extends Scene {
         group.touchEnabled = true
         group.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             this.aroundGroup.visible = false
-            let friendHome = new FriendHomeScene(this.userId, item.id)
+            let friendHome = new FriendHomeScene(this.userInfo.id, item.id)
             ViewManager.getInstance().changeScene(friendHome)
         }, this)
 
