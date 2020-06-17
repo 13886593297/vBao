@@ -6,7 +6,6 @@ var ViewManager = (function () {
         this.views = [];
         // 骨骼动画唯一
         this.bones = {};
-        this.userInfo = {};
     }
     ViewManager.getInstance = function () {
         if (this.instance == null) {
@@ -70,19 +69,6 @@ var ViewManager = (function () {
     };
     ViewManager.prototype.setBones = function (id, bone) {
         this.bones[id] = bone;
-    };
-    ViewManager.prototype.getUserInfo = function () {
-        return this.userInfo;
-    };
-    ViewManager.prototype.setUserInfo = function (userInfo) {
-        this.userInfo = {
-            total_score: userInfo.total_score,
-            food: {
-                v_bfood: userInfo.v_bfood,
-                v_tfood: userInfo.v_tfood,
-                v_ffood: userInfo.v_ffood
-            }
-        };
     };
     return ViewManager;
 }());

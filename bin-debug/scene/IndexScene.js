@@ -19,17 +19,19 @@ var IndexScene = (function (_super) {
         var _this = this;
         Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
             _this.userInfo = res.data;
-            ViewManager.getInstance().setUserInfo(res.data);
             window.localStorage.setItem('userInfo', JSON.stringify(_this.userInfo));
             if (_this.userInfo.isUpdate) {
                 var scene = new GetVbaoScene(_this.userInfo.kind_id - 1, 2);
                 ViewManager.getInstance().changeScene(scene);
             }
             else {
-                var head = new Head();
+                var head = new Head(_this.userInfo);
                 _this.head = head;
                 _this.addChild(head);
                 _this.daily_task();
+                if (_this.userInfo.isfinishV) {
+                    _this.legendary();
+                }
                 _this.vBao();
                 if (_this.userInfo.level_id == 2) {
                     _this.feed();
@@ -128,7 +130,7 @@ var IndexScene = (function (_super) {
                     feedId: _this.userInfo.id,
                     type: 5,
                 }, function (res) {
-                    if (res.data.code == 1) {
+                    if (res.data.code) {
                         foodList[_this.userInfo.food_type_id - 1].num -= 1;
                         window.localStorage.setItem('foodList', JSON.stringify(foodList));
                         userInfo.total_score += 1;
@@ -140,27 +142,20 @@ var IndexScene = (function (_super) {
                         ];
                         var score = _this.head.score;
                         score.text = "\u79EF\u5206\uFF1A" + userInfo.total_score;
-                        _this.animate(feedTip);
+                        Util.animate(feedTip);
                     }
                     else {
-                        _this.animate(feedTipDone);
+                        Util.animate(feedTipDone);
                     }
                 });
             }
             else {
-                _this.animate(feedTipNone);
+                Util.animate(feedTipNone);
             }
         }, this);
     };
-    IndexScene.prototype.animate = function (el) {
-        el.visible = true;
-        setTimeout(function () {
-            el.visible = false;
-        }, 2000);
-    };
     // 装扮
     IndexScene.prototype.decorate = function () {
-        var _this = this;
         var decorate = new BtnBase('decorate');
         decorate.x = 510;
         decorate.y = this.stage.stageHeight - decorate.height - 40;
@@ -171,7 +166,7 @@ var IndexScene = (function (_super) {
         tips.visible = false;
         this.addChild(tips);
         decorate.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            _this.animate(tips);
+            Util.animate(tips);
         }, this);
     };
     IndexScene.prototype.around = function () {

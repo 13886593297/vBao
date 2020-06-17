@@ -12,8 +12,6 @@ var Task = (function (_super) {
     __extends(Task, _super);
     function Task() {
         var _this = _super.call(this) || this;
-        _this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
-        _this.foodList = JSON.parse(window.localStorage.getItem('foodList'));
         _this.init();
         return _this;
     }
@@ -35,9 +33,10 @@ var Task = (function (_super) {
         close.x = stage.stageWidth - close.width - 68;
         close.y = 246;
         this.addChild(close);
+        var userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
         close.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             _this.parent.removeChild(_this);
-            if (_this.userInfo.level_id == 1) {
+            if (userInfo.level_id == 1) {
                 Http.getInstance().get(Url.HTTP_ISUPDATE, function (res) {
                     if (res.data.info.isUpdate) {
                         var scene = new GetVbaoScene(res.data.kind_id - 1, 2);
@@ -81,9 +80,11 @@ var Task = (function (_super) {
                     case 4:
                         // 签到
                         cb = function () {
+                            var userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
+                            var foodList = JSON.parse(window.localStorage.getItem('foodList'));
                             Http.getInstance().get(Url.HTTP_USER_SIGN, function () {
                                 // 食物数量都加1，积分加1，删除签到项
-                                _this.foodList = _this.foodList.map(function (item, i) {
+                                foodList = foodList.map(function (item, i) {
                                     item.num += 1;
                                     var text = _this.parent.getChildByName('head').$children[2].$children[i + 1].$children[2];
                                     text.textFlow = [
@@ -92,11 +93,11 @@ var Task = (function (_super) {
                                     ];
                                     return item;
                                 });
-                                window.localStorage.setItem('foodList', JSON.stringify(_this.foodList));
-                                _this.userInfo.total_score += 1;
-                                window.localStorage.setItem('userInfo', JSON.stringify(_this.userInfo));
+                                window.localStorage.setItem('foodList', JSON.stringify(foodList));
+                                userInfo.total_score += 1;
+                                window.localStorage.setItem('userInfo', JSON.stringify(userInfo));
                                 var score = _this.parent.$children[0].$children[1];
-                                score.text = "\u79EF\u5206\uFF1A" + _this.userInfo.total_score;
+                                score.text = "\u79EF\u5206\uFF1A" + userInfo.total_score;
                                 _this.removeChild(_this.$children[4]);
                                 _this.$children.forEach(function (item, i) {
                                     if (i > 3)

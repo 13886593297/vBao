@@ -21,10 +21,9 @@ var FriendHomeScene = (function (_super) {
         Http.getInstance().post(Url.HTTP_AROUND, {
             visitedId: this.befeedId
         }, function (res) {
-            var head = new Head();
+            var head = new Head(res.data.visitInfo);
             _this.head = head;
             _this.addChild(head);
-            head.food_list();
             _this.vBaoInfo(res.data.visitedInfo);
             _this.vBao(res.data.visitedInfo);
             _this.present(res.data);
@@ -88,7 +87,6 @@ var FriendHomeScene = (function (_super) {
         getGiftTips.y = 600;
         getGiftTips.visible = false;
         this.addChild(getGiftTips);
-        var animate = new IndexScene().animate;
         var selfFoodTypeCount = foodList[data.visitInfo.food_type_id - 1].num;
         var friendFoodTypeCount = foodList[data.visitedInfo.food_type_id - 1].num;
         var total_score = data.visitInfo.total_score;
@@ -105,7 +103,7 @@ var FriendHomeScene = (function (_super) {
                             selfFoodTypeCount++;
                             _this.setFoodCount(data.visitInfo.food_type_id, selfFoodTypeCount);
                         }
-                        animate(getGiftTips);
+                        Util.animate(getGiftTips);
                     }
                     Http.getInstance().post(Url.HTTP_FEED, {
                         feedId: _this.userId,
@@ -120,16 +118,16 @@ var FriendHomeScene = (function (_super) {
                             _this.setFoodCount(data.visitedInfo.food_type_id, friendFoodTypeCount);
                             var score = _this.head.score;
                             score.text = "\u79EF\u5206\uFF1A" + total_score;
-                            animate(feedTip);
+                            Util.animate(feedTip);
                         }
                         else {
-                            animate(feedTipNone);
+                            Util.animate(feedTipNone);
                         }
                     });
                 });
             }
             else {
-                animate(feedTipNone);
+                Util.animate(feedTipNone);
             }
         }, this);
     };

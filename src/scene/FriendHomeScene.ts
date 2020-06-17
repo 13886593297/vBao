@@ -12,11 +12,9 @@ class FriendHomeScene extends Scene {
         Http.getInstance().post(Url.HTTP_AROUND, {
             visitedId: this.befeedId
         }, (res) => {
-            let head = new Head()
+            let head = new Head(res.data.visitInfo)
             this.head = head
             this.addChild(head)
-
-            head.food_list()
 
             this.vBaoInfo(res.data.visitedInfo)
 
@@ -93,8 +91,6 @@ class FriendHomeScene extends Scene {
         getGiftTips.visible = false
         this.addChild(getGiftTips)
 
-        let animate = new IndexScene().animate
-        
         let selfFoodTypeCount = foodList[data.visitInfo.food_type_id - 1].num
         let friendFoodTypeCount = foodList[data.visitedInfo.food_type_id - 1].num
         let total_score = data.visitInfo.total_score
@@ -110,7 +106,7 @@ class FriendHomeScene extends Scene {
                             selfFoodTypeCount++
                             this.setFoodCount(data.visitInfo.food_type_id, selfFoodTypeCount)
                         }
-                        animate(getGiftTips)
+                        Util.animate(getGiftTips)
                     }
                     Http.getInstance().post(Url.HTTP_FEED, {
                         feedId: this.userId,
@@ -127,14 +123,14 @@ class FriendHomeScene extends Scene {
                             let score = this.head.score
                             score.text = `积分：${total_score}`
     
-                            animate(feedTip)
+                            Util.animate(feedTip)
                         } else {
-                            animate(feedTipNone)
+                            Util.animate(feedTipNone)
                         }
                     })
                 })
             } else {
-                animate(feedTipNone)
+                Util.animate(feedTipNone)
             }
         }, this)
     }

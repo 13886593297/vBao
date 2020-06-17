@@ -95,6 +95,16 @@ var Util = (function () {
         label.stroke = stroke;
         return label;
     };
+    /**
+     * 提示信息的动画
+     * @param el 要做动画的元素
+     */
+    Util.animate = function (el) {
+        el.visible = true;
+        setTimeout(function () {
+            el.visible = false;
+        }, 2000);
+    };
     return Util;
 }());
 __reflect(Util.prototype, "Util");

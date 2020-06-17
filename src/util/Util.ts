@@ -91,6 +91,17 @@ class Util {
         label.stroke = stroke
         return label
     }
+
+    /**
+     * 提示信息的动画
+     * @param el 要做动画的元素
+     */
+    public static animate(el) {
+        el.visible = true
+        setTimeout(() => {
+            el.visible = false
+        }, 2000)
+    }
 }
 
 declare function onMenuShareAppMessage(id, callback)

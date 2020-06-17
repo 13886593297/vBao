@@ -9,17 +9,20 @@ class IndexScene extends Scene {
     public init() {
         Http.getInstance().get(Url.HTTP_USER_INFO, (res) => {
             this.userInfo = res.data
-            ViewManager.getInstance().setUserInfo(res.data)
             window.localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
             if (this.userInfo.isUpdate) {
                 let scene = new GetVbaoScene(this.userInfo.kind_id - 1, 2)
                 ViewManager.getInstance().changeScene(scene)
             } else {
-                let head = new Head()
+                let head = new Head(this.userInfo)
                 this.head = head
                 this.addChild(head)
 
                 this.daily_task()
+                if (this.userInfo.isfinishV) {
+                    this.legendary()
+                }
+
                 this.vBao()
 
                 if (this.userInfo.level_id == 2) {
@@ -132,12 +135,12 @@ class IndexScene extends Scene {
                     feedId: this.userInfo.id,
                     type: 5,
                 }, res => {
-                    if (res.data.code == 1) {
+                    if (res.data.code) {
                         foodList[this.userInfo.food_type_id - 1].num -= 1
                         window.localStorage.setItem('foodList', JSON.stringify(foodList))
                         userInfo.total_score += 1
                         window.localStorage.setItem('userInfo', JSON.stringify(userInfo))
-
+                        
                         let count = this.head.header_group.$children[this.userInfo.food_type_id].$children[2]
                         count.textFlow = [
                             {text: 'X', style: { size: 20 }},
@@ -146,22 +149,15 @@ class IndexScene extends Scene {
                         let score = this.head.score
                         score.text = `积分：${userInfo.total_score}`
 
-                        this.animate(feedTip)
+                        Util.animate(feedTip)
                     } else {
-                        this.animate(feedTipDone)
+                        Util.animate(feedTipDone)
                     }
                 })
             } else {
-                this.animate(feedTipNone)
+                Util.animate(feedTipNone)
             }
         }, this)
-    }
-
-    public animate(el) {
-        el.visible = true
-        setTimeout(() => {
-            el.visible = false
-        }, 2000)
     }
 
     // 装扮
@@ -178,7 +174,7 @@ class IndexScene extends Scene {
         this.addChild(tips)
 
         decorate.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            this.animate(tips)
+            Util.animate(tips)
         }, this)
     }
 

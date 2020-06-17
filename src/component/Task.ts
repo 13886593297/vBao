@@ -1,6 +1,4 @@
 class Task extends eui.Group {
-    private userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
-    private foodList = JSON.parse(window.localStorage.getItem('foodList'))
     constructor() {
         super()
         this.init()
@@ -26,9 +24,11 @@ class Task extends eui.Group {
         close.x = stage.stageWidth - close.width - 68
         close.y = 246
         this.addChild(close)
+
+        let userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
         close.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             this.parent.removeChild(this)
-            if (this.userInfo.level_id == 1) {
+            if (userInfo.level_id == 1) {
                 Http.getInstance().get(Url.HTTP_ISUPDATE, res => {
                     if (res.data.info.isUpdate) {
                         let scene = new GetVbaoScene(res.data.kind_id - 1, 2)
@@ -72,9 +72,11 @@ class Task extends eui.Group {
                     case 4:
                         // 签到
                         cb = () => {
+                            let userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
+                            let foodList = JSON.parse(window.localStorage.getItem('foodList'))
                             Http.getInstance().get(Url.HTTP_USER_SIGN, () => {
                                 // 食物数量都加1，积分加1，删除签到项
-                                this.foodList = this.foodList.map((item, i) => {
+                                foodList = foodList.map((item, i) => {
                                     item.num += 1
                                     let text: any = this.parent.getChildByName('head').$children[2].$children[i + 1].$children[2]
                                     text.textFlow = [
@@ -83,12 +85,13 @@ class Task extends eui.Group {
                                     ]
                                     return item
                                 })
-                                window.localStorage.setItem('foodList', JSON.stringify(this.foodList))
+                                window.localStorage.setItem('foodList', JSON.stringify(foodList))
                                 
-                                this.userInfo.total_score += 1
-                                window.localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+                                userInfo.total_score += 1
+                                window.localStorage.setItem('userInfo', JSON.stringify(userInfo))
+
                                 let score: any = this.parent.$children[0].$children[1]
-                                score.text = `积分：${this.userInfo.total_score}`
+                                score.text = `积分：${userInfo.total_score}`
                                 
                                 this.removeChild(this.$children[4])
                                 this.$children.forEach((item, i) => {

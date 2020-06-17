@@ -13,7 +13,6 @@ var Scene = (function (_super) {
     function Scene() {
         var _this = _super.call(this) || this;
         _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.initScene, _this);
-        _this.addEventListener(egret.Event.REMOVED_FROM_STAGE, _this.release, _this);
         return _this;
     }
     Scene.prototype.initScene = function () {
@@ -25,11 +24,6 @@ var Scene = (function (_super) {
      * 初始化界面
      */
     Scene.prototype.init = function () { };
-    /**
-     * 释放界面
-     */
-    Scene.prototype.release = function () {
-    };
     /**
      * 设置水平居中对齐
      * @param texture 要居中的元素

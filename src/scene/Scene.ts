@@ -2,7 +2,6 @@ class Scene extends eui.UILayer {
     public constructor() {
         super()
         this.addEventListener(egret.Event.ADDED_TO_STAGE, this.initScene, this)
-        this.addEventListener(egret.Event.REMOVED_FROM_STAGE, this.release, this)
     }
 
     private initScene() {
@@ -15,13 +14,6 @@ class Scene extends eui.UILayer {
      * 初始化界面
      */
     public init() {}
-
-    /**
-     * 释放界面
-     */
-    public release() {
-        
-    }
 
     /**
      * 设置水平居中对齐
