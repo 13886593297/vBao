@@ -15,6 +15,18 @@ var Head = (function (_super) {
      */
     function Head(data) {
         var _this = _super.call(this) || this;
+        _this.headInfo = {
+            food: [],
+            score: 0
+        };
+        _this.headInfo = new Proxy(_this.headInfo, {
+            set: function (target, prop, value) {
+                target[prop] = value;
+                return true;
+            }
+        });
+        _this.headInfo.food = [data.v_bfood, data.v_tfood, data.v_ffood];
+        _this.headInfo.score = data.total_score;
         _this.init(data);
         return _this;
     }

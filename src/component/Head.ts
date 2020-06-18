@@ -1,9 +1,23 @@
 class Head extends egret.DisplayObjectContainer {
+    public headInfo = {
+        food: [],
+        score: 0
+    }
     /**
      * 公用头部
      */
     constructor(data) {
         super()
+        this.headInfo = new Proxy(this.headInfo, {
+            set(target, prop, value) {
+                target[prop] = value
+                
+                return true
+            }
+        })
+
+        this.headInfo.food = [data.v_bfood, data.v_tfood, data.v_ffood]
+        this.headInfo.score = data.total_score
         this.init(data)
     }
 
