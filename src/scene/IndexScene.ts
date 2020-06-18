@@ -7,6 +7,9 @@ class IndexScene extends Scene {
     }
 
     public init() {
+        if (!ViewManager.getInstance().musicIsPlay) {
+            Util.playMusic()
+        }
         Http.getInstance().get(Url.HTTP_USER_INFO, (res) => {
             this.userInfo = res.data
             window.localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
@@ -32,11 +35,17 @@ class IndexScene extends Scene {
                 }
             }
 
-            onMenuShareAppMessage(this.userInfo.id, () => {
-                this.removeChild(this.shareScene)
-            })
-            onMenuShareTimeline(this.userInfo.id, () => {
-                this.removeChild(this.shareScene)
+            let url = window.location.href.split('#')[0]
+            Http.getInstance().post(Url.HTTP_JSSDK_CONFIG, { showurl: url }, (json) => {
+                configSdk(json.data)
+                setTimeout(() => {
+                    onMenuShareAppMessage(this.userInfo.id, () => {
+                        this.removeChild(this.shareScene)
+                    })
+                    onMenuShareTimeline(this.userInfo.id, () => {
+                        this.removeChild(this.shareScene)
+                    })
+                }, 1000)
             })
         })
     }

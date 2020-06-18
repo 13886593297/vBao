@@ -105,6 +105,13 @@ var Util = (function () {
             el.visible = false;
         }, 2000);
     };
+    Util.playMusic = function () {
+        var sound = new egret.Sound;
+        sound.addEventListener(egret.Event.COMPLETE, function (event) {
+            sound.play();
+        }, this);
+        sound.load('resource/music/bg.mp3');
+    };
     return Util;
 }());
 __reflect(Util.prototype, "Util");

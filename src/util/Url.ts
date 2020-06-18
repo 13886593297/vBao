@@ -1,4 +1,6 @@
 class Url {
+    public static readonly HTTP_JSSDK_CONFIG = "/game/index/jssdkconfig"
+
     // 用户基础信息接口
     public static readonly HTTP_USER_INFO = '/game/api/user/info'
 

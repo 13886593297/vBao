@@ -110,7 +110,7 @@
     <div class="egret-player"
          data-entry-class="Main"
          data-orientation="auto"
-         data-scale-mode="fixedNarrow"
+         data-scale-mode="fixedWidth"
          data-frame-rate="30"
          data-content-width="750"
          data-content-height="1334"
@@ -127,13 +127,14 @@
                 <button id="btn"></button>
             </div>
          </div>
+         <audio id="audio" src="./resource/music/bg.mp3"></audio>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js"></script>
     <script src="https://res.wx.qq.com/open/libs/weuijs/1.1.4/weui.min.js"></script>
     <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
     <script>
-        // new VConsole()
+        new VConsole()
 
         var loadScript = function (list, callback) {
             var loaded = 0;
@@ -212,6 +213,7 @@
             $('#btn').click(function() {
                 setTimeout(() => {
                     $('#htmlBox').hide()
+                    $('#audio')[0].play()
                 }, 500)
             })
         })

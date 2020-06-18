@@ -4,6 +4,8 @@ class KindScene extends Scene {
     }
 
     init() {
+        ViewManager.getInstance().musicIsPlay = true
+
         // 标题背景
         let title_bg: egret.Shape = new egret.Shape
         title_bg.graphics.beginFill(0x000000, 0.6)

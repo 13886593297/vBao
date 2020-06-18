@@ -40,7 +40,9 @@ class Head extends egret.DisplayObjectContainer {
             {name: 'V拳套', image: 'icon_glove', num: data.v_tfood},
             {name: 'V飞机', image: 'icon_air', num: data.v_ffood}
         ]
+
         window.localStorage.setItem('foodList', JSON.stringify(foodList))
+
         let header_group = new eui.Group
         header_group.x = 180
         header_group.y = 48

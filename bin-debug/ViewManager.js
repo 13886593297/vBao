@@ -4,6 +4,7 @@ var __reflect = (this && this.__reflect) || function (p, c, t) {
 var ViewManager = (function () {
     function ViewManager() {
         this.views = [];
+        this.musicIsPlay = false;
         // 骨骼动画唯一
         this.bones = {};
     }

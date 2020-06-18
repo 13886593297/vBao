@@ -4,6 +4,7 @@ var __reflect = (this && this.__reflect) || function (p, c, t) {
 var Url = (function () {
     function Url() {
     }
+    Url.HTTP_JSSDK_CONFIG = "/game/index/jssdkconfig";
     // 用户基础信息接口
     Url.HTTP_USER_INFO = '/game/api/user/info';
     // V宝形象种类接口

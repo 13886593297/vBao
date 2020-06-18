@@ -17,6 +17,9 @@ var IndexScene = (function (_super) {
     }
     IndexScene.prototype.init = function () {
         var _this = this;
+        if (!ViewManager.getInstance().musicIsPlay) {
+            Util.playMusic();
+        }
         Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
             _this.userInfo = res.data;
             window.localStorage.setItem('userInfo', JSON.stringify(_this.userInfo));
@@ -39,11 +42,17 @@ var IndexScene = (function (_super) {
                     _this.around();
                 }
             }
-            onMenuShareAppMessage(_this.userInfo.id, function () {
-                _this.removeChild(_this.shareScene);
-            });
-            onMenuShareTimeline(_this.userInfo.id, function () {
-                _this.removeChild(_this.shareScene);
+            var url = window.location.href.split('#')[0];
+            Http.getInstance().post(Url.HTTP_JSSDK_CONFIG, { showurl: url }, function (json) {
+                configSdk(json.data);
+                setTimeout(function () {
+                    onMenuShareAppMessage(_this.userInfo.id, function () {
+                        _this.removeChild(_this.shareScene);
+                    });
+                    onMenuShareTimeline(_this.userInfo.id, function () {
+                        _this.removeChild(_this.shareScene);
+                    });
+                }, 1000);
             });
         });
     };
