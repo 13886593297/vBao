@@ -10,9 +10,10 @@ class IndexScene extends Scene {
         if (!ViewManager.getInstance().musicIsPlay) {
             Util.playMusic()
         }
-        Http.getInstance().get(Url.HTTP_USER_INFO, (res) => {
-            this.userInfo = res.data
-            window.localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+        // Http.getInstance().get(Url.HTTP_USER_INFO, (res) => {
+            // this.userInfo = res.data
+            // window.localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+            this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
             if (this.userInfo.isUpdate) {
                 let scene = new GetVbaoScene(this.userInfo.kind_id - 1, 2)
                 ViewManager.getInstance().changeScene(scene)
@@ -47,7 +48,7 @@ class IndexScene extends Scene {
                     })
                 }, 1000)
             })
-        })
+        // })
     }
 
     private daily_task() {
@@ -136,36 +137,29 @@ class IndexScene extends Scene {
         
         
         feed.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            let userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
-            let foodList = JSON.parse(window.localStorage.getItem('foodList'))
+            let food = this.head.headInfo.food
+            let score = this.head.headInfo.score
 
-            if (foodList[this.userInfo.food_type_id - 1].num > 0) {
-                Http.getInstance().post(Url.HTTP_FEED, {
-                    feedId: this.userInfo.id,
-                    type: 5,
-                }, res => {
-                    if (res.data.code) {
-                        foodList[this.userInfo.food_type_id - 1].num -= 1
-                        window.localStorage.setItem('foodList', JSON.stringify(foodList))
-                        userInfo.total_score += 1
-                        window.localStorage.setItem('userInfo', JSON.stringify(userInfo))
-                        
-                        let count = this.head.header_group.$children[this.userInfo.food_type_id].$children[2]
-                        count.textFlow = [
-                            {text: 'X', style: { size: 20 }},
-                            {text: '  ' + foodList[this.userInfo.food_type_id - 1].num, style: { size: 24 }}
-                        ]
-                        let score = this.head.score
-                        score.text = `积分：${userInfo.total_score}`
+            this.head.headFood[this.userInfo.food_type_id - 1] -= 1
+            this.head.headInfo.score += 1
 
-                        Util.animate(feedTip)
-                    } else {
-                        Util.animate(feedTipDone)
-                    }
-                })
-            } else {
-                Util.animate(feedTipNone)
-            }
+            // if (food[this.userInfo.food_type_id - 1] > 0) {
+            //     Http.getInstance().post(Url.HTTP_FEED, {
+            //         feedId: this.userInfo.id,
+            //         type: 5,
+            //     }, res => {
+            //         if (res.data.code) {
+            //             food[this.userInfo.food_type_id - 1] -= 1
+            //             score += 1
+
+            //             Util.animate(feedTip)
+            //         } else {
+            //             Util.animate(feedTipDone)
+            //         }
+            //     })
+            // } else {
+            //     Util.animate(feedTipNone)
+            // }
         }, this)
     }
 

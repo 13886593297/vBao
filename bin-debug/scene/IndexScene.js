@@ -20,41 +20,42 @@ var IndexScene = (function (_super) {
         if (!ViewManager.getInstance().musicIsPlay) {
             Util.playMusic();
         }
-        Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
-            _this.userInfo = res.data;
-            window.localStorage.setItem('userInfo', JSON.stringify(_this.userInfo));
-            if (_this.userInfo.isUpdate) {
-                var scene = new GetVbaoScene(_this.userInfo.kind_id - 1, 2);
-                ViewManager.getInstance().changeScene(scene);
+        // Http.getInstance().get(Url.HTTP_USER_INFO, (res) => {
+        // this.userInfo = res.data
+        // window.localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+        this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
+        if (this.userInfo.isUpdate) {
+            var scene = new GetVbaoScene(this.userInfo.kind_id - 1, 2);
+            ViewManager.getInstance().changeScene(scene);
+        }
+        else {
+            var head = new Head(this.userInfo);
+            this.head = head;
+            this.addChild(head);
+            this.daily_task();
+            if (this.userInfo.isfinishV) {
+                this.legendary();
             }
-            else {
-                var head = new Head(_this.userInfo);
-                _this.head = head;
-                _this.addChild(head);
-                _this.daily_task();
-                if (_this.userInfo.isfinishV) {
-                    _this.legendary();
-                }
-                _this.vBao();
-                if (_this.userInfo.level_id == 2) {
-                    _this.feed();
-                    _this.decorate();
-                    _this.around();
-                }
+            this.vBao();
+            if (this.userInfo.level_id == 2) {
+                this.feed();
+                this.decorate();
+                this.around();
             }
-            var url = window.location.href.split('#')[0];
-            Http.getInstance().post(Url.HTTP_JSSDK_CONFIG, { showurl: url }, function (json) {
-                configSdk(json.data);
-                setTimeout(function () {
-                    onMenuShareAppMessage(_this.userInfo.id, function () {
-                        _this.removeChild(_this.shareScene);
-                    });
-                    onMenuShareTimeline(_this.userInfo.id, function () {
-                        _this.removeChild(_this.shareScene);
-                    });
-                }, 1000);
-            });
+        }
+        var url = window.location.href.split('#')[0];
+        Http.getInstance().post(Url.HTTP_JSSDK_CONFIG, { showurl: url }, function (json) {
+            configSdk(json.data);
+            setTimeout(function () {
+                onMenuShareAppMessage(_this.userInfo.id, function () {
+                    _this.removeChild(_this.shareScene);
+                });
+                onMenuShareTimeline(_this.userInfo.id, function () {
+                    _this.removeChild(_this.shareScene);
+                });
+            }, 1000);
         });
+        // })
     };
     IndexScene.prototype.daily_task = function () {
         var _this = this;
@@ -132,35 +133,26 @@ var IndexScene = (function (_super) {
         feedTipNone.visible = false;
         this.addChild(feedTipNone);
         feed.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            var userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
-            var foodList = JSON.parse(window.localStorage.getItem('foodList'));
-            if (foodList[_this.userInfo.food_type_id - 1].num > 0) {
-                Http.getInstance().post(Url.HTTP_FEED, {
-                    feedId: _this.userInfo.id,
-                    type: 5,
-                }, function (res) {
-                    if (res.data.code) {
-                        foodList[_this.userInfo.food_type_id - 1].num -= 1;
-                        window.localStorage.setItem('foodList', JSON.stringify(foodList));
-                        userInfo.total_score += 1;
-                        window.localStorage.setItem('userInfo', JSON.stringify(userInfo));
-                        var count = _this.head.header_group.$children[_this.userInfo.food_type_id].$children[2];
-                        count.textFlow = [
-                            { text: 'X', style: { size: 20 } },
-                            { text: '  ' + foodList[_this.userInfo.food_type_id - 1].num, style: { size: 24 } }
-                        ];
-                        var score = _this.head.score;
-                        score.text = "\u79EF\u5206\uFF1A" + userInfo.total_score;
-                        Util.animate(feedTip);
-                    }
-                    else {
-                        Util.animate(feedTipDone);
-                    }
-                });
-            }
-            else {
-                Util.animate(feedTipNone);
-            }
+            var food = _this.head.headInfo.food;
+            var score = _this.head.headInfo.score;
+            _this.head.headFood[_this.userInfo.food_type_id - 1] -= 1;
+            _this.head.headInfo.score += 1;
+            // if (food[this.userInfo.food_type_id - 1] > 0) {
+            //     Http.getInstance().post(Url.HTTP_FEED, {
+            //         feedId: this.userInfo.id,
+            //         type: 5,
+            //     }, res => {
+            //         if (res.data.code) {
+            //             food[this.userInfo.food_type_id - 1] -= 1
+            //             score += 1
+            //             Util.animate(feedTip)
+            //         } else {
+            //             Util.animate(feedTipDone)
+            //         }
+            //     })
+            // } else {
+            //     Util.animate(feedTipNone)
+            // }
         }, this);
     };
     // 装扮

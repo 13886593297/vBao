@@ -134,7 +134,7 @@
     <script src="https://res.wx.qq.com/open/libs/weuijs/1.1.4/weui.min.js"></script>
     <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
     <script>
-        new VConsole()
+        // new VConsole()
 
         var loadScript = function (list, callback) {
             var loaded = 0;
@@ -190,33 +190,34 @@
         var host = 'http://192.168.1.121:8080'
         // var host = 'https://gamiwechat-q.lillyadmin.cn'
         window.localStorage.setItem('host', host)
-        $(function() {
-            // 获取用户信息判断是否是新用户
-            $.ajax({
-                url: host + '/game/api/user/info',
-                success: function(data) {
-                    window.localStorage.setItem('userInfo', JSON.stringify(data.data))
-                    if (data.data.level_id == 0) {
-                        // 新用户
-                        $('#htmlBox').show()
-                    } else {
-                        // 老用户
-                        $('#htmlBox').hide()
-                    }
-                }
-            })
+        $('#htmlBox').hide()
+        // $(function() {
+        //     // 获取用户信息判断是否是新用户
+        //     $.ajax({
+        //         url: host + '/game/api/user/info',
+        //         success: function(data) {
+        //             window.localStorage.setItem('userInfo', JSON.stringify(data.data))
+        //             if (data.data.level_id == 0) {
+        //                 // 新用户
+        //                 $('#htmlBox').show()
+        //             } else {
+        //                 // 老用户
+        //                 $('#htmlBox').hide()
+        //             }
+        //         }
+        //     })
             
-            $('#video').on('ended', function() {
-                $('#btn').css('display', 'block')
-            })
+        //     $('#video').on('ended', function() {
+        //         $('#btn').css('display', 'block')
+        //     })
 
-            $('#btn').click(function() {
-                setTimeout(() => {
-                    $('#htmlBox').hide()
-                    $('#audio')[0].play()
-                }, 500)
-            })
-        })
+        //     $('#btn').click(function() {
+        //         setTimeout(() => {
+        //             $('#htmlBox').hide()
+        //             $('#audio')[0].play()
+        //         }, 500)
+        //     })
+        // })
 
         window.addEventListener("popstate", function (e) {
             console.log(111)

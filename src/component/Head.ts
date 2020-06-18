@@ -1,6 +1,6 @@
 class Head extends egret.DisplayObjectContainer {
+    public headFood = []
     public headInfo = {
-        food: [],
         score: 0
     }
     /**
@@ -8,17 +8,27 @@ class Head extends egret.DisplayObjectContainer {
      */
     constructor(data) {
         super()
-        this.headInfo = new Proxy(this.headInfo, {
-            set(target, prop, value) {
+        this.init(data)
+
+        let self = this
+        this.headFood = new Proxy(this.headFood, {
+            set(target, prop: number, value) {
                 target[prop] = value
-                
+                self.setFood(prop)
                 return true
             }
         })
 
-        this.headInfo.food = [data.v_bfood, data.v_tfood, data.v_ffood]
+        this.headInfo = new Proxy(this.headInfo, {
+            set(target, prop, value) {
+                self.setScore(value)
+                return Reflect.set(target, prop, value)
+            }
+        })
+        this.headFood[0] = data.v_bfood
+        this.headFood[1] = data.v_tfood
+        this.headFood[2] = data.v_ffood
         this.headInfo.score = data.total_score
-        this.init(data)
     }
 
     public score
@@ -32,7 +42,6 @@ class Head extends egret.DisplayObjectContainer {
 
         // 分数
         let score = new egret.TextField
-        score.text = `积分：${data.total_score}`
         score.x = 200
         score.y = data.level_id == 1 ? 100 : 150
         score.size = 24
@@ -43,20 +52,22 @@ class Head extends egret.DisplayObjectContainer {
         this.score = score
 
         if (data.level_id == 2) {
-            this.food_list(data)
+            this.food_list()
         }
     }
 
+    private setScore(value) {
+        this.score.text = `积分：${value}`
+    }
+
+    private foodList = [
+        {name: 'V宝典', image: 'icon_dir'},
+        {name: 'V拳套', image: 'icon_glove'},
+        {name: 'V飞机', image: 'icon_air'}
+    ]
+
     public header_group
-    public food_list(data) {
-        let foodList = [
-            {name: 'V宝典', image: 'icon_dir', num: data.v_bfood},
-            {name: 'V拳套', image: 'icon_glove', num: data.v_tfood},
-            {name: 'V飞机', image: 'icon_air', num: data.v_ffood}
-        ]
-
-        window.localStorage.setItem('foodList', JSON.stringify(foodList))
-
+    public food_list() {
         let header_group = new eui.Group
         header_group.x = 180
         header_group.y = 48
@@ -69,8 +80,8 @@ class Head extends egret.DisplayObjectContainer {
         header_group.addChild(header_bg)
 
         let x = 30
-        foodList.forEach(item => {
-            let header_item = this.food(item)
+        this.foodList.forEach((item, index) => {
+            let header_item = this.food(item, index)
             header_item.x = x
             header_item.y = 16
             header_group.addChild(header_item)
@@ -78,7 +89,10 @@ class Head extends egret.DisplayObjectContainer {
         })
     }
 
-    private food(item) {
+    private count0
+    private count1
+    private count2
+    private food(item, index) {
         let group = new eui.Group
         group.width = 170
 
@@ -89,17 +103,25 @@ class Head extends egret.DisplayObjectContainer {
         label.x = icon.width + 8
         label.y = 8
         group.addChild(label)
-
+        
         let count = new egret.TextField
         count.textFlow = [
             {text: 'X', style: { size: 20 }},
-            {text: '  ' + item.num, style: { size: 24 }}
+            {text: '  ' + this.headFood[index], style: { size: 24 }}
         ]
         count.strokeColor = Config.COLOR_DOC
         count.stroke = 2
         count.x = label.x
         count.y = label.y + label.height + 6
         group.addChild(count)
+        this[`count${index}`] = count
         return group
+    }
+
+    private setFood(prop) {
+        this[`count${prop}`].textFlow = [
+            {text: 'X', style: { size: 20 }},
+            {text: '  ' + this.headFood[prop], style: { size: 24 }}
+        ]
     }
 }
