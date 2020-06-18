@@ -10,6 +10,10 @@ class Head extends egret.DisplayObjectContainer {
         super()
         this.init(data)
 
+        this.setProxy(data)
+    }
+
+    private setProxy(data) {
         let self = this
         this.headFood = new Proxy(this.headFood, {
             set(target, prop: number, value) {
@@ -21,8 +25,9 @@ class Head extends egret.DisplayObjectContainer {
 
         this.headInfo = new Proxy(this.headInfo, {
             set(target, prop, value) {
+                target[prop] = value
                 self.setScore(value)
-                return Reflect.set(target, prop, value)
+                return true
             }
         })
         this.headFood[0] = data.v_bfood
@@ -89,9 +94,7 @@ class Head extends egret.DisplayObjectContainer {
         })
     }
 
-    private count0
-    private count1
-    private count2
+    private count = []
     private food(item, index) {
         let group = new eui.Group
         group.width = 170
@@ -114,14 +117,14 @@ class Head extends egret.DisplayObjectContainer {
         count.x = label.x
         count.y = label.y + label.height + 6
         group.addChild(count)
-        this[`count${index}`] = count
+        this.count[index] = count
         return group
     }
 
-    private setFood(prop) {
-        this[`count${prop}`].textFlow = [
+    private setFood(index) {
+        this.count[index].textFlow = [
             {text: 'X', style: { size: 20 }},
-            {text: '  ' + this.headFood[prop], style: { size: 24 }}
+            {text: '  ' + this.headFood[index], style: { size: 24 }}
         ]
     }
 }

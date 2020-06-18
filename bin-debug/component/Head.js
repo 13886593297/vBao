@@ -24,27 +24,32 @@ var Head = (function (_super) {
             { name: 'V拳套', image: 'icon_glove' },
             { name: 'V飞机', image: 'icon_air' }
         ];
+        _this.count = [];
         _this.init(data);
-        var self = _this;
-        _this.headFood = new Proxy(_this.headFood, {
+        _this.setProxy(data);
+        return _this;
+    }
+    Head.prototype.setProxy = function (data) {
+        var self = this;
+        this.headFood = new Proxy(this.headFood, {
             set: function (target, prop, value) {
                 target[prop] = value;
                 self.setFood(prop);
                 return true;
             }
         });
-        _this.headInfo = new Proxy(_this.headInfo, {
+        this.headInfo = new Proxy(this.headInfo, {
             set: function (target, prop, value) {
+                target[prop] = value;
                 self.setScore(value);
-                return Reflect.set(target, prop, value);
+                return true;
             }
         });
-        _this.headFood[0] = data.v_bfood;
-        _this.headFood[1] = data.v_tfood;
-        _this.headFood[2] = data.v_ffood;
-        _this.headInfo.score = data.total_score;
-        return _this;
-    }
+        this.headFood[0] = data.v_bfood;
+        this.headFood[1] = data.v_tfood;
+        this.headFood[2] = data.v_ffood;
+        this.headInfo.score = data.total_score;
+    };
     Head.prototype.init = function (data) {
         // 头像
         var avatar = Util.setAvatar(data.avatar);
@@ -108,13 +113,13 @@ var Head = (function (_super) {
         count.x = label.x;
         count.y = label.y + label.height + 6;
         group.addChild(count);
-        this["count" + index] = count;
+        this.count[index] = count;
         return group;
     };
-    Head.prototype.setFood = function (prop) {
-        this["count" + prop].textFlow = [
+    Head.prototype.setFood = function (index) {
+        this.count[index].textFlow = [
             { text: 'X', style: { size: 20 } },
-            { text: '  ' + this.headFood[prop], style: { size: 24 } }
+            { text: '  ' + this.headFood[index], style: { size: 24 } }
         ];
     };
     return Head;
