@@ -1,6 +1,6 @@
 class Head extends egret.DisplayObjectContainer {
-    public headFood = []
     public headInfo = {
+        food: [],
         score: 0
     }
     /**
@@ -9,34 +9,49 @@ class Head extends egret.DisplayObjectContainer {
     constructor(data) {
         super()
         this.init(data)
-
-        this.setProxy(data)
     }
 
     private setProxy(data) {
         let self = this
-        this.headFood = new Proxy(this.headFood, {
-            set(target, prop: number, value) {
-                target[prop] = value
-                self.setFood(prop)
-                return true
-            }
-        })
+        function _addProxy(obj) {
+            return new Proxy(obj, {
+                set: (target, key: string, value) => {
+                    target[key] = value
+                    if (typeof target == 'object' && key.length == 1) {
+                        self.setFood(key)
+                    } else {
+                        self.setScore(value)
+                    }
+                    return true
+                }
+            })
+        }
 
-        this.headInfo = new Proxy(this.headInfo, {
-            set(target, prop, value) {
-                target[prop] = value
-                self.setScore(value)
-                return true
-            }
-        })
-        this.headFood[0] = data.v_bfood
-        this.headFood[1] = data.v_tfood
-        this.headFood[2] = data.v_ffood
+        function _addProxies(proxy, obj) {
+            Object.keys(obj).forEach(key => {
+                const value = obj[key]
+                if (typeof value == 'object') {
+                    proxy[key] = _addProxy(value)
+                    _addProxies(proxy[key], value)
+                } 
+            })
+        }
+
+        function addProxy(obj) {
+            const proxy = _addProxy(obj)
+            _addProxies(proxy, obj)
+            return proxy
+        }
+
+        this.headInfo = addProxy(this.headInfo)
+        
+        this.headInfo.food[0] = data.v_bfood
+        this.headInfo.food[1] = data.v_tfood
+        this.headInfo.food[2] = data.v_ffood
         this.headInfo.score = data.total_score
     }
 
-    public score
+    private score
     private init(data) {
         // 头像
         let avatar = Util.setAvatar(data.avatar)
@@ -58,6 +73,7 @@ class Head extends egret.DisplayObjectContainer {
 
         if (data.level_id == 2) {
             this.food_list()
+            this.setProxy(data)
         }
     }
 
@@ -65,18 +81,16 @@ class Head extends egret.DisplayObjectContainer {
         this.score.text = `积分：${value}`
     }
 
-    private foodList = [
+    public foodList = [
         {name: 'V宝典', image: 'icon_dir'},
         {name: 'V拳套', image: 'icon_glove'},
         {name: 'V飞机', image: 'icon_air'}
     ]
 
-    public header_group
-    public food_list() {
+    private food_list() {
         let header_group = new eui.Group
         header_group.x = 180
         header_group.y = 48
-        this.header_group = header_group
         this.addChild(header_group)
 
         let header_bg = Util.createBitmapByName('header_bg')
@@ -110,7 +124,7 @@ class Head extends egret.DisplayObjectContainer {
         let count = new egret.TextField
         count.textFlow = [
             {text: 'X', style: { size: 20 }},
-            {text: '  ' + this.headFood[index], style: { size: 24 }}
+            {text: '  ' + this.headInfo.food[index], style: { size: 24 }}
         ]
         count.strokeColor = Config.COLOR_DOC
         count.stroke = 2
@@ -124,7 +138,7 @@ class Head extends egret.DisplayObjectContainer {
     private setFood(index) {
         this.count[index].textFlow = [
             {text: 'X', style: { size: 20 }},
-            {text: '  ' + this.headFood[index], style: { size: 24 }}
+            {text: '  ' + this.headInfo.food[index], style: { size: 24 }}
         ]
     }
 }

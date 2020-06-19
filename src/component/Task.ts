@@ -72,27 +72,14 @@ class Task extends eui.Group {
                     case 4:
                         // 签到
                         cb = () => {
-                            let userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
-                            let foodList = JSON.parse(window.localStorage.getItem('foodList'))
-                            Http.getInstance().get(Url.HTTP_USER_SIGN, () => {
-                                // 食物数量都加1，积分加1，删除签到项
-                                foodList = foodList.map((item, i) => {
-                                    item.num += 1
-                                    let text: any = this.parent.getChildByName('head').$children[2].$children[i + 1].$children[2]
-                                    text.textFlow = [
-                                        {text: 'X', style: { size: 20 }},
-                                        {text: '  ' + item.num, style: { size: 24 }}
-                                    ]
-                                    return item
-                                })
-                                window.localStorage.setItem('foodList', JSON.stringify(foodList))
-                                
-                                userInfo.total_score += 1
-                                window.localStorage.setItem('userInfo', JSON.stringify(userInfo))
+                            let head: any = this.parent.getChildByName('head')
 
-                                let score: any = this.parent.$children[0].$children[1]
-                                score.text = `积分：${userInfo.total_score}`
-                                
+                            Http.getInstance().get(Url.HTTP_USER_SIGN, () => {
+                                head.headInfo.food[0] += 1
+                                head.headInfo.food[1] += 1
+                                head.headInfo.food[2] += 1
+                                head.headInfo.score += 1
+
                                 this.removeChild(this.$children[4])
                                 this.$children.forEach((item, i) => {
                                     if (i > 3) item.y -= 150

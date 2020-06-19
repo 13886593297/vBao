@@ -10,10 +10,9 @@ class IndexScene extends Scene {
         if (!ViewManager.getInstance().musicIsPlay) {
             Util.playMusic()
         }
-        // Http.getInstance().get(Url.HTTP_USER_INFO, (res) => {
-            // this.userInfo = res.data
-            // window.localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
-            this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
+        Http.getInstance().get(Url.HTTP_USER_INFO, (res) => {
+            this.userInfo = res.data
+            window.localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
             if (this.userInfo.isUpdate) {
                 let scene = new GetVbaoScene(this.userInfo.kind_id - 1, 2)
                 ViewManager.getInstance().changeScene(scene)
@@ -48,7 +47,7 @@ class IndexScene extends Scene {
                     })
                 }, 1000)
             })
-        // })
+        })
     }
 
     private daily_task() {
@@ -137,29 +136,23 @@ class IndexScene extends Scene {
         
         
         feed.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            let food = this.head.headInfo.food
-            let score = this.head.headInfo.score
+            if (this.head.headInfo.food[this.userInfo.food_type_id - 1] > 0) {
+                Http.getInstance().post(Url.HTTP_FEED, {
+                    feedId: this.userInfo.id,
+                    type: 5,
+                }, res => {
+                    if (res.data.code) {
+                        this.head.headInfo.food[this.userInfo.food_type_id - 1] -= 1
+                        this.head.headInfo.score += 1
 
-            this.head.headFood[this.userInfo.food_type_id - 1] -= 1
-            this.head.headInfo.score += 1
-
-            // if (food[this.userInfo.food_type_id - 1] > 0) {
-            //     Http.getInstance().post(Url.HTTP_FEED, {
-            //         feedId: this.userInfo.id,
-            //         type: 5,
-            //     }, res => {
-            //         if (res.data.code) {
-            //             food[this.userInfo.food_type_id - 1] -= 1
-            //             score += 1
-
-            //             Util.animate(feedTip)
-            //         } else {
-            //             Util.animate(feedTipDone)
-            //         }
-            //     })
-            // } else {
-            //     Util.animate(feedTipNone)
-            // }
+                        Util.animate(feedTip)
+                    } else {
+                        Util.animate(feedTipDone)
+                    }
+                })
+            } else {
+                Util.animate(feedTipNone)
+            }
         }, this)
     }
 

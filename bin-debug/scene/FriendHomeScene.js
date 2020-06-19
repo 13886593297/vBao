@@ -81,17 +81,18 @@ var FriendHomeScene = (function (_super) {
         feedTipNone.y = 600;
         feedTipNone.visible = false;
         this.addChild(feedTipNone);
-        var foodList = JSON.parse(window.localStorage.getItem('foodList'));
+        var foodList = this.head.foodList;
         var getGiftTips = new GiftTip(foodList[data.visitInfo.kind_id - 1].image);
         getGiftTips.x = this.stage.stageWidth - getGiftTips.width - 50;
         getGiftTips.y = 600;
         getGiftTips.visible = false;
         this.addChild(getGiftTips);
-        var selfFoodTypeCount = foodList[data.visitInfo.food_type_id - 1].num;
-        var friendFoodTypeCount = foodList[data.visitedInfo.food_type_id - 1].num;
-        var total_score = data.visitInfo.total_score;
+        var lock = true;
         present.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            if (friendFoodTypeCount > 0) {
+            if (!lock)
+                return;
+            lock = false;
+            if (_this.head.headInfo.food[data.visitedInfo.food_type_id - 1] > 0) {
                 // 50%几率刷出礼物
                 var flag_1 = false;
                 Http.getInstance().get(Url.HTTP_GIFT, function (res) {
@@ -100,8 +101,7 @@ var FriendHomeScene = (function (_super) {
                             flag_1 = true;
                         }
                         else {
-                            selfFoodTypeCount++;
-                            _this.setFoodCount(data.visitInfo.food_type_id, selfFoodTypeCount);
+                            _this.head.headInfo.food[data.visitInfo.food_type_id - 1] += 1;
                         }
                         Util.animate(getGiftTips);
                     }
@@ -112,17 +112,17 @@ var FriendHomeScene = (function (_super) {
                     }, function (res) {
                         if (res.data.code == 1) {
                             if (!flag_1) {
-                                friendFoodTypeCount--;
+                                _this.head.headInfo.food[data.visitedInfo.food_type_id - 1] -= 1;
                             }
-                            total_score++;
-                            _this.setFoodCount(data.visitedInfo.food_type_id, friendFoodTypeCount);
-                            var score = _this.head.score;
-                            score.text = "\u79EF\u5206\uFF1A" + total_score;
+                            _this.head.headInfo.score += 1;
                             Util.animate(feedTip);
                         }
                         else {
                             Util.animate(feedTipNone);
                         }
+                        setTimeout(function () {
+                            lock = true;
+                        }, 300);
                     });
                 });
             }
@@ -130,13 +130,6 @@ var FriendHomeScene = (function (_super) {
                 Util.animate(feedTipNone);
             }
         }, this);
-    };
-    FriendHomeScene.prototype.setFoodCount = function (type_id, num) {
-        var count = this.head.header_group.$children[type_id].$children[2];
-        count.textFlow = [
-            { text: 'X', style: { size: 20 } },
-            { text: '  ' + num, style: { size: 24 } }
-        ];
     };
     // 回家
     FriendHomeScene.prototype.goHome = function () {

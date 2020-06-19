@@ -84,18 +84,18 @@ class FriendHomeScene extends Scene {
         feedTipNone.visible = false
         this.addChild(feedTipNone)
 
-        let foodList = JSON.parse(window.localStorage.getItem('foodList'))
+        let foodList = this.head.foodList
         let getGiftTips = new GiftTip(foodList[data.visitInfo.kind_id - 1].image)
         getGiftTips.x = this.stage.stageWidth - getGiftTips.width - 50
         getGiftTips.y = 600
         getGiftTips.visible = false
         this.addChild(getGiftTips)
 
-        let selfFoodTypeCount = foodList[data.visitInfo.food_type_id - 1].num
-        let friendFoodTypeCount = foodList[data.visitedInfo.food_type_id - 1].num
-        let total_score = data.visitInfo.total_score
+        let lock = true
         present.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            if (friendFoodTypeCount > 0) {
+            if (!lock) return
+            lock = false
+            if (this.head.headInfo.food[data.visitedInfo.food_type_id - 1] > 0) {
                 // 50%几率刷出礼物
                 let flag = false
                 Http.getInstance().get(Url.HTTP_GIFT, res => {
@@ -103,8 +103,7 @@ class FriendHomeScene extends Scene {
                         if (data.visitInfo.food_type_id == data.visitedInfo.food_type_id) {
                             flag = true
                         } else {
-                            selfFoodTypeCount++
-                            this.setFoodCount(data.visitInfo.food_type_id, selfFoodTypeCount)
+                            this.head.headInfo.food[data.visitInfo.food_type_id - 1] += 1
                         }
                         Util.animate(getGiftTips)
                     }
@@ -115,32 +114,22 @@ class FriendHomeScene extends Scene {
                     }, res => {
                         if (res.data.code == 1) {
                             if(!flag) {
-                                friendFoodTypeCount--
+                                this.head.headInfo.food[data.visitedInfo.food_type_id - 1] -= 1
                             }
-                            total_score++
-                            
-                            this.setFoodCount(data.visitedInfo.food_type_id, friendFoodTypeCount)
-                            let score = this.head.score
-                            score.text = `积分：${total_score}`
-    
+                            this.head.headInfo.score += 1
                             Util.animate(feedTip)
                         } else {
                             Util.animate(feedTipNone)
                         }
+                        setTimeout(() => {
+                            lock = true
+                        }, 300)
                     })
                 })
             } else {
                 Util.animate(feedTipNone)
             }
         }, this)
-    }
-
-    private setFoodCount(type_id, num) {
-        let count = this.head.header_group.$children[type_id].$children[2]
-        count.textFlow = [
-            {text: 'X', style: { size: 20 }},
-            {text: '  ' + num, style: { size: 24 }}
-        ]
     }
 
     // 回家

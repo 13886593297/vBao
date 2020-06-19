@@ -15,8 +15,8 @@ var Head = (function (_super) {
      */
     function Head(data) {
         var _this = _super.call(this) || this;
-        _this.headFood = [];
         _this.headInfo = {
+            food: [],
             score: 0
         };
         _this.foodList = [
@@ -26,28 +26,42 @@ var Head = (function (_super) {
         ];
         _this.count = [];
         _this.init(data);
-        _this.setProxy(data);
         return _this;
     }
     Head.prototype.setProxy = function (data) {
         var self = this;
-        this.headFood = new Proxy(this.headFood, {
-            set: function (target, prop, value) {
-                target[prop] = value;
-                self.setFood(prop);
-                return true;
-            }
-        });
-        this.headInfo = new Proxy(this.headInfo, {
-            set: function (target, prop, value) {
-                target[prop] = value;
-                self.setScore(value);
-                return true;
-            }
-        });
-        this.headFood[0] = data.v_bfood;
-        this.headFood[1] = data.v_tfood;
-        this.headFood[2] = data.v_ffood;
+        function _addProxy(obj) {
+            return new Proxy(obj, {
+                set: function (target, key, value) {
+                    target[key] = value;
+                    if (typeof target == 'object' && key.length == 1) {
+                        self.setFood(key);
+                    }
+                    else {
+                        self.setScore(value);
+                    }
+                    return true;
+                }
+            });
+        }
+        function _addProxies(proxy, obj) {
+            Object.keys(obj).forEach(function (key) {
+                var value = obj[key];
+                if (typeof value == 'object') {
+                    proxy[key] = _addProxy(value);
+                    _addProxies(proxy[key], value);
+                }
+            });
+        }
+        function addProxy(obj) {
+            var proxy = _addProxy(obj);
+            _addProxies(proxy, obj);
+            return proxy;
+        }
+        this.headInfo = addProxy(this.headInfo);
+        this.headInfo.food[0] = data.v_bfood;
+        this.headInfo.food[1] = data.v_tfood;
+        this.headInfo.food[2] = data.v_ffood;
         this.headInfo.score = data.total_score;
     };
     Head.prototype.init = function (data) {
@@ -69,6 +83,7 @@ var Head = (function (_super) {
         this.score = score;
         if (data.level_id == 2) {
             this.food_list();
+            this.setProxy(data);
         }
     };
     Head.prototype.setScore = function (value) {
@@ -79,7 +94,6 @@ var Head = (function (_super) {
         var header_group = new eui.Group;
         header_group.x = 180;
         header_group.y = 48;
-        this.header_group = header_group;
         this.addChild(header_group);
         var header_bg = Util.createBitmapByName('header_bg');
         header_group.width = header_bg.width;
@@ -106,7 +120,7 @@ var Head = (function (_super) {
         var count = new egret.TextField;
         count.textFlow = [
             { text: 'X', style: { size: 20 } },
-            { text: '  ' + this.headFood[index], style: { size: 24 } }
+            { text: '  ' + this.headInfo.food[index], style: { size: 24 } }
         ];
         count.strokeColor = Config.COLOR_DOC;
         count.stroke = 2;
@@ -119,7 +133,7 @@ var Head = (function (_super) {
     Head.prototype.setFood = function (index) {
         this.count[index].textFlow = [
             { text: 'X', style: { size: 20 } },
-            { text: '  ' + this.headFood[index], style: { size: 24 } }
+            { text: '  ' + this.headInfo.food[index], style: { size: 24 } }
         ];
     };
     return Head;
