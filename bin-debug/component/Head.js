@@ -73,6 +73,7 @@ var Head = (function (_super) {
         this.name = 'head';
         // 分数
         var score = new egret.TextField;
+        score.text = "\u79EF\u5206\uFF1A" + data.total_score;
         score.x = 200;
         score.y = data.level_id == 1 ? 100 : 150;
         score.size = 24;

@@ -33,7 +33,8 @@ var InfoScene = (function (_super) {
         close.y = 165;
         this.addChild(close);
         close.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            ViewManager.getInstance().back(2);
+            var scene = new KindScene();
+            ViewManager.getInstance().changeScene(scene);
         }, this);
         var title = Util.setTitle(VbaoType[this.id].label, 80, VbaoType[this.id].color);
         title.x = this.center(title);

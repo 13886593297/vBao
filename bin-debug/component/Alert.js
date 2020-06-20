@@ -19,12 +19,12 @@ var Alert = (function (_super) {
     Alert.prototype.init = function (text, toward) {
         var tips = new egret.TextField;
         tips.text = text;
-        tips.width = 180;
+        // tips.width = 190
         tips.size = 22;
         tips.lineSpacing = 16;
         var bg = Util.drawRoundRect(0, 0x000000, 0x000000, 240, tips.height + 40, 20, 0.6);
         this.addChild(bg);
-        tips.x = 28;
+        tips.x = 25;
         tips.y = 20;
         this.addChild(tips);
         var tail = Util.createBitmapByName("tail_" + toward);

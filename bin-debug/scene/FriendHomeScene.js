@@ -27,7 +27,19 @@ var FriendHomeScene = (function (_super) {
             _this.vBaoInfo(res.data.visitedInfo);
             _this.vBao(res.data.visitedInfo);
             _this.present(res.data);
+            _this.randomGift(res.data);
             _this.goHome();
+        });
+    };
+    FriendHomeScene.prototype.randomGift = function (data) {
+        var _this = this;
+        Http.getInstance().post(Url.HTTP_GIFT, {
+            userId: this.befeedId
+        }, function (res) {
+            if (res.data.code) {
+                _this.head.headInfo.food[data.visitedInfo.food_type_id - 1] += 1;
+                Util.animate(_this.getGiftTips);
+            }
         });
     };
     FriendHomeScene.prototype.vBaoInfo = function (data) {
@@ -64,66 +76,44 @@ var FriendHomeScene = (function (_super) {
         var bones = new Bones(id, data.level_id, 380, y);
         this.addChild(bones);
     };
-    // 送礼
     FriendHomeScene.prototype.present = function (data) {
         var _this = this;
         var present = new BtnBase('present');
         present.x = 180;
         present.y = this.stage.stageHeight - present.height - 40;
         this.addChild(present);
-        var feedTip = new Alert('谢谢你的礼物！好吃又营养！');
+        var feedTip = new Alert('谢谢你的礼物！好\n吃又营养！');
         feedTip.x = 32;
         feedTip.y = 520;
         feedTip.visible = false;
         this.addChild(feedTip);
-        var feedTipNone = new Alert('我喜欢的食材不够了呢，快通过每日任务和串门收集吧', 'left');
+        var feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧', 'left');
         feedTipNone.x = this.stage.stageWidth - feedTipNone.width - 32;
         feedTipNone.y = 600;
         feedTipNone.visible = false;
         this.addChild(feedTipNone);
         var foodList = this.head.foodList;
-        var getGiftTips = new GiftTip(foodList[data.visitInfo.kind_id - 1].image);
+        var getGiftTips = new GiftTip(foodList[data.visitedInfo.kind_id - 1].image);
         getGiftTips.x = this.stage.stageWidth - getGiftTips.width - 50;
         getGiftTips.y = 600;
         getGiftTips.visible = false;
         this.addChild(getGiftTips);
-        var lock = true;
+        this.getGiftTips = getGiftTips;
         present.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            if (!lock)
-                return;
-            lock = false;
             if (_this.head.headInfo.food[data.visitedInfo.food_type_id - 1] > 0) {
-                // 50%几率刷出礼物
-                var flag_1 = false;
-                Http.getInstance().get(Url.HTTP_GIFT, function (res) {
-                    if (res.data.code) {
-                        if (data.visitInfo.food_type_id == data.visitedInfo.food_type_id) {
-                            flag_1 = true;
-                        }
-                        else {
-                            _this.head.headInfo.food[data.visitInfo.food_type_id - 1] += 1;
-                        }
-                        Util.animate(getGiftTips);
+                Http.getInstance().post(Url.HTTP_FEED, {
+                    feedId: _this.userId,
+                    befeedId: _this.befeedId,
+                    type: 6,
+                }, function (res) {
+                    if (res.data.code == 1) {
+                        _this.head.headInfo.food[data.visitedInfo.food_type_id - 1] -= 1;
+                        _this.head.headInfo.score += 1;
+                        Util.animate(feedTip);
                     }
-                    Http.getInstance().post(Url.HTTP_FEED, {
-                        feedId: _this.userId,
-                        befeedId: _this.befeedId,
-                        type: 6,
-                    }, function (res) {
-                        if (res.data.code == 1) {
-                            if (!flag_1) {
-                                _this.head.headInfo.food[data.visitedInfo.food_type_id - 1] -= 1;
-                            }
-                            _this.head.headInfo.score += 1;
-                            Util.animate(feedTip);
-                        }
-                        else {
-                            Util.animate(feedTipNone);
-                        }
-                        setTimeout(function () {
-                            lock = true;
-                        }, 300);
-                    });
+                    else {
+                        Util.animate(feedTipNone);
+                    }
                 });
             }
             else {

@@ -16,7 +16,7 @@ class KindScene extends Scene {
         // 标题文字
         let title_text: egret.TextField = new egret.TextField
         title_text.text = 'V宝们完美地继承了Verzenios鲜明的品牌个性。你觉得下面哪一个个性最符合你心中的V宝呢？'
-        title_text.x = 50
+        title_text.x = 25
         title_text.y = 80
         title_text.width = this.stage.stageWidth - title_text.x * 2
         title_text.lineSpacing = 26

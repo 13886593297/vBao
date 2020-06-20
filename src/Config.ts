@@ -7,6 +7,6 @@ class Config {
 
 const VbaoType = [
     {name: 'doc', color: Config.COLOR_DOC, label: '准'},
-    {name: 'pilot', color: Config.COLOR_PILOT, label: '敢'},
     {name: 'box', color: Config.COLOR_BOX, label: '韧'},
+    {name: 'pilot', color: Config.COLOR_PILOT, label: '敢'}
 ]

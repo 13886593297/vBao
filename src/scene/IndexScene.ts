@@ -9,6 +9,7 @@ class IndexScene extends Scene {
     public init() {
         if (!ViewManager.getInstance().musicIsPlay) {
             Util.playMusic()
+            ViewManager.getInstance().musicIsPlay = true
         }
         Http.getInstance().get(Url.HTTP_USER_INFO, (res) => {
             this.userInfo = res.data
@@ -35,7 +36,7 @@ class IndexScene extends Scene {
                 }
             }
 
-            let url = window.location.href.split('#')[0]
+            let url = window.location.href + '?inviteId=' + this.userInfo.id
             Http.getInstance().post(Url.HTTP_JSSDK_CONFIG, { showurl: url }, (json) => {
                 configSdk(json.data)
                 setTimeout(() => {
@@ -87,14 +88,15 @@ class IndexScene extends Scene {
         this.addChild(legendary)
         legendary.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             Http.getInstance().get(Url.HTTP_LEGENDARY, res => {
-                location.href = res.data.content
+                // location.href = res.data.content
+                window.location.replace(res.data.content)
             })
         }, this)
     }
 
     private vBao() {
         let id = this.userInfo.kind_id - 1
-        let y = this.userInfo.level_id == 2 ? 780 : 880
+        let y = this.userInfo.level_id == 2 ? 700 : 800
         let bones = new Bones(id, this.userInfo.level_id, 380, y)
         this.addChild(bones)
 
@@ -102,7 +104,7 @@ class IndexScene extends Scene {
         let nickname = new egret.TextField
         nickname.text = this.userInfo.nick_name
         nickname.x = this.center(nickname)
-        nickname.y = y + bones.height / 2
+        nickname.y = 920
         nickname.size = 24
         nickname.textColor = 0x000000
         this.addChild(nickname)
@@ -116,19 +118,19 @@ class IndexScene extends Scene {
         feed.name = 'feed'
         this.addChild(feed)
 
-        let feedTip = new Alert('谢谢主人！好吃又营养！')
+        let feedTip = new Alert('谢谢主人！好吃又\n营养！')
         feedTip.x = 32
         feedTip.y = 520
         feedTip.visible = false
         this.addChild(feedTip)
 
-        let feedTipDone = new Alert('每日2次就够啦！明天请再来投喂V宝哦！')
+        let feedTipDone = new Alert('每日2次就够啦！明\n天请再来投喂V宝哦！')
         feedTipDone.x = 32
         feedTipDone.y = 720
         feedTipDone.visible = false
         this.addChild(feedTipDone)
 
-        let feedTipNone = new Alert('我喜欢的食材不够了呢，快通过每日任务和串门收集吧', 'left')
+        let feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧', 'left')
         feedTipNone.x = this.stage.stageWidth - feedTipNone.width - 32
         feedTipNone.y = 600
         feedTipNone.visible = false
@@ -144,7 +146,6 @@ class IndexScene extends Scene {
                     if (res.data.code) {
                         this.head.headInfo.food[this.userInfo.food_type_id - 1] -= 1
                         this.head.headInfo.score += 1
-
                         Util.animate(feedTip)
                     } else {
                         Util.animate(feedTipDone)

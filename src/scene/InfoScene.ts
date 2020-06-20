@@ -25,7 +25,8 @@ class InfoScene extends Scene {
         close.y = 165
         this.addChild(close)
         close.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            ViewManager.getInstance().back(2)
+            let scene = new KindScene()
+            ViewManager.getInstance().changeScene(scene)
         }, this)
 
         let title = Util.setTitle(VbaoType[this.id].label, 80, VbaoType[this.id].color)

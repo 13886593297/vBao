@@ -19,6 +19,7 @@ var IndexScene = (function (_super) {
         var _this = this;
         if (!ViewManager.getInstance().musicIsPlay) {
             Util.playMusic();
+            ViewManager.getInstance().musicIsPlay = true;
         }
         Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
             _this.userInfo = res.data;
@@ -42,7 +43,7 @@ var IndexScene = (function (_super) {
                     _this.around();
                 }
             }
-            var url = window.location.href.split('#')[0];
+            var url = window.location.href + '?inviteId=' + _this.userInfo.id;
             Http.getInstance().post(Url.HTTP_JSSDK_CONFIG, { showurl: url }, function (json) {
                 configSdk(json.data);
                 setTimeout(function () {
@@ -90,20 +91,21 @@ var IndexScene = (function (_super) {
         this.addChild(legendary);
         legendary.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             Http.getInstance().get(Url.HTTP_LEGENDARY, function (res) {
-                location.href = res.data.content;
+                // location.href = res.data.content
+                window.location.replace(res.data.content);
             });
         }, this);
     };
     IndexScene.prototype.vBao = function () {
         var id = this.userInfo.kind_id - 1;
-        var y = this.userInfo.level_id == 2 ? 780 : 880;
+        var y = this.userInfo.level_id == 2 ? 700 : 800;
         var bones = new Bones(id, this.userInfo.level_id, 380, y);
         this.addChild(bones);
         // 昵称
         var nickname = new egret.TextField;
         nickname.text = this.userInfo.nick_name;
         nickname.x = this.center(nickname);
-        nickname.y = y + bones.height / 2;
+        nickname.y = 920;
         nickname.size = 24;
         nickname.textColor = 0x000000;
         this.addChild(nickname);
@@ -116,17 +118,17 @@ var IndexScene = (function (_super) {
         feed.y = this.stage.stageHeight - feed.height - 40;
         feed.name = 'feed';
         this.addChild(feed);
-        var feedTip = new Alert('谢谢主人！好吃又营养！');
+        var feedTip = new Alert('谢谢主人！好吃又\n营养！');
         feedTip.x = 32;
         feedTip.y = 520;
         feedTip.visible = false;
         this.addChild(feedTip);
-        var feedTipDone = new Alert('每日2次就够啦！明天请再来投喂V宝哦！');
+        var feedTipDone = new Alert('每日2次就够啦！明\n天请再来投喂V宝哦！');
         feedTipDone.x = 32;
         feedTipDone.y = 720;
         feedTipDone.visible = false;
         this.addChild(feedTipDone);
-        var feedTipNone = new Alert('我喜欢的食材不够了呢，快通过每日任务和串门收集吧', 'left');
+        var feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧', 'left');
         feedTipNone.x = this.stage.stageWidth - feedTipNone.width - 32;
         feedTipNone.y = 600;
         feedTipNone.visible = false;

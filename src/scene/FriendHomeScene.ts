@@ -21,7 +21,19 @@ class FriendHomeScene extends Scene {
             this.vBao(res.data.visitedInfo)
 
             this.present(res.data)
+            this.randomGift(res.data)
             this.goHome()
+        })
+    }
+
+    private randomGift(data) {
+        Http.getInstance().post(Url.HTTP_GIFT, {
+            userId: this.befeedId
+        }, res => {
+            if (res.data.code) {
+                this.head.headInfo.food[data.visitedInfo.food_type_id - 1] += 1
+                Util.animate(this.getGiftTips)
+            }
         })
     }
 
@@ -66,65 +78,47 @@ class FriendHomeScene extends Scene {
     }
 
     // 送礼
+    private getGiftTips
     private present(data) {
         let present = new BtnBase('present')
         present.x = 180
         present.y = this.stage.stageHeight - present.height - 40
         this.addChild(present)
 
-        let feedTip = new Alert('谢谢你的礼物！好吃又营养！')
+        let feedTip = new Alert('谢谢你的礼物！好\n吃又营养！')
         feedTip.x = 32
         feedTip.y = 520
         feedTip.visible = false
         this.addChild(feedTip)
 
-        let feedTipNone = new Alert('我喜欢的食材不够了呢，快通过每日任务和串门收集吧', 'left')
+        let feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧', 'left')
         feedTipNone.x = this.stage.stageWidth - feedTipNone.width - 32
         feedTipNone.y = 600
         feedTipNone.visible = false
         this.addChild(feedTipNone)
 
         let foodList = this.head.foodList
-        let getGiftTips = new GiftTip(foodList[data.visitInfo.kind_id - 1].image)
+        let getGiftTips = new GiftTip(foodList[data.visitedInfo.kind_id - 1].image)
         getGiftTips.x = this.stage.stageWidth - getGiftTips.width - 50
         getGiftTips.y = 600
         getGiftTips.visible = false
         this.addChild(getGiftTips)
+        this.getGiftTips = getGiftTips
 
-        let lock = true
         present.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            if (!lock) return
-            lock = false
             if (this.head.headInfo.food[data.visitedInfo.food_type_id - 1] > 0) {
-                // 50%几率刷出礼物
-                let flag = false
-                Http.getInstance().get(Url.HTTP_GIFT, res => {
-                    if (res.data.code) {
-                        if (data.visitInfo.food_type_id == data.visitedInfo.food_type_id) {
-                            flag = true
-                        } else {
-                            this.head.headInfo.food[data.visitInfo.food_type_id - 1] += 1
-                        }
-                        Util.animate(getGiftTips)
+                Http.getInstance().post(Url.HTTP_FEED, {
+                    feedId: this.userId,
+                    befeedId: this.befeedId,
+                    type: 6,
+                }, res => {
+                    if (res.data.code == 1) {
+                        this.head.headInfo.food[data.visitedInfo.food_type_id - 1] -= 1
+                        this.head.headInfo.score += 1
+                        Util.animate(feedTip)
+                    } else {
+                        Util.animate(feedTipNone)
                     }
-                    Http.getInstance().post(Url.HTTP_FEED, {
-                        feedId: this.userId,
-                        befeedId: this.befeedId,
-                        type: 6,
-                    }, res => {
-                        if (res.data.code == 1) {
-                            if(!flag) {
-                                this.head.headInfo.food[data.visitedInfo.food_type_id - 1] -= 1
-                            }
-                            this.head.headInfo.score += 1
-                            Util.animate(feedTip)
-                        } else {
-                            Util.animate(feedTipNone)
-                        }
-                        setTimeout(() => {
-                            lock = true
-                        }, 300)
-                    })
                 })
             } else {
                 Util.animate(feedTipNone)

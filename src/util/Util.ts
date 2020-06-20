@@ -53,15 +53,15 @@ class Util {
         let bitmap = new egret.Bitmap
 
         // 背景
-        let x = 25
+        let x = 24
         let avatar_bg = this.createBitmapByName('avatar_bg')
         group.addChild(avatar_bg)
         group.width = avatar_bg.width
         group.height = avatar_bg.height
         bitmap.x = x
-        bitmap.y = x
-        bitmap.width = avatar_bg.width - x * 2
-        bitmap.height = avatar_bg.height - x * 2
+        bitmap.y = x - 5
+        bitmap.width = 101
+        bitmap.height = 101
 
         let imgLoader = new egret.ImageLoader()
         imgLoader.crossOrigin = 'anonymous' // 跨域请求

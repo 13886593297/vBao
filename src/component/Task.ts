@@ -11,7 +11,8 @@ class Task extends eui.Group {
 
         let bg = Util.createBitmapByName('info_doc')
         bg.x = (this.width - bg.width) / 2
-        bg.y = 220
+        bg.height = stage.height
+        bg.y = 212
         this.addChild(bg)
 
         let label = Util.setTitle('今日任务', 60, Config.COLOR_DOC)
@@ -53,10 +54,7 @@ class Task extends eui.Group {
                                 if (res.data.code) {
                                     Http.getInstance().get(Url.HTTP_LEGENDARY, res => {
                                         location.href = res.data.content
-                                        this.removeChild(this.$children[4])
-                                        this.$children.forEach((item, i) => {
-                                            if (i > 3) item.y -= 210
-                                        })
+                                        this.parent.removeChild(this)
                                     })
                                 }
                             })
@@ -79,11 +77,7 @@ class Task extends eui.Group {
                                 head.headInfo.food[1] += 1
                                 head.headInfo.food[2] += 1
                                 head.headInfo.score += 1
-
-                                this.removeChild(this.$children[4])
-                                this.$children.forEach((item, i) => {
-                                    if (i > 3) item.y -= 150
-                                })
+                                this.parent.removeChild(this)
                             })
                         }
                         break;
@@ -103,8 +97,7 @@ class Task extends eui.Group {
                         break;
                 }
                 
-                if (item.taskStatus) return
-                let task = this.taskList(item, cb)
+                let task = this.taskList(item, item.taskStatus ? () => {} : cb)
                 task.x = (stage.stageWidth - task.width) / 2
                 task.y = y
                 this.addChild(task)
@@ -116,7 +109,7 @@ class Task extends eui.Group {
         tips.text = '完成每个任务都能增加积分哦。那积分可以做什么呢？你猜呀~'
         tips.width = 510
         tips.x = (stage.stageWidth - tips.width) / 2
-        tips.y = 1060
+        tips.y = 1000
         tips.textAlign = 'center'
         tips.lineSpacing = 25
         tips.bold = true
@@ -162,7 +155,7 @@ class Task extends eui.Group {
         if (item.id == 5) {
             progress.text = `(${item.resultCount}/${item.taskCount})`
         } else if (item.id == 6) {
-            progress.text = `X${item.taskCount - item.resultCount}`
+            progress.text = `X${item.resultCount}`
         }
         group.addChild(progress)
 
@@ -176,8 +169,8 @@ class Task extends eui.Group {
         score.verticalAlign = 'middle'
         group.addChild(score)
 
-        let btn = new BtnBase(item.id == 4 ? 'btn_sign' : 'btn_go')
-        btn.x = item.id == 4 ? 422 : (group.width - btn.width) / 2
+        let btn = new BtnBase(item.taskStatus ? 'btn_done1' : item.id == 4 ? 'btn_sign' : 'btn_go')
+        btn.x = item.id == 4 ? (group.width - btn.width - 20) : (group.width - btn.width) / 2
         btn.y = item.id == 3 ? 175 : item.id == 4 ? 16 : 98
         group.addChild(btn)
         btn.addEventListener(egret.TouchEvent.TOUCH_TAP, cb, this)

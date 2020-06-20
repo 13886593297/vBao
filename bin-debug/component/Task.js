@@ -22,7 +22,8 @@ var Task = (function (_super) {
         this.height = stage.stageHeight;
         var bg = Util.createBitmapByName('info_doc');
         bg.x = (this.width - bg.width) / 2;
-        bg.y = 220;
+        bg.height = stage.height;
+        bg.y = 212;
         this.addChild(bg);
         var label = Util.setTitle('今日任务', 60, Config.COLOR_DOC);
         label.x = (this.width - label.width) / 2;
@@ -60,11 +61,7 @@ var Task = (function (_super) {
                                 if (res.data.code) {
                                     Http.getInstance().get(Url.HTTP_LEGENDARY, function (res) {
                                         location.href = res.data.content;
-                                        _this.removeChild(_this.$children[4]);
-                                        _this.$children.forEach(function (item, i) {
-                                            if (i > 3)
-                                                item.y -= 210;
-                                        });
+                                        _this.parent.removeChild(_this);
                                     });
                                 }
                             });
@@ -86,11 +83,7 @@ var Task = (function (_super) {
                                 head.headInfo.food[1] += 1;
                                 head.headInfo.food[2] += 1;
                                 head.headInfo.score += 1;
-                                _this.removeChild(_this.$children[4]);
-                                _this.$children.forEach(function (item, i) {
-                                    if (i > 3)
-                                        item.y -= 150;
-                                });
+                                _this.parent.removeChild(_this);
                             });
                         };
                         break;
@@ -109,9 +102,7 @@ var Task = (function (_super) {
                         };
                         break;
                 }
-                if (item.taskStatus)
-                    return;
-                var task = _this.taskList(item, cb);
+                var task = _this.taskList(item, item.taskStatus ? function () { } : cb);
                 task.x = (stage.stageWidth - task.width) / 2;
                 task.y = y;
                 _this.addChild(task);
@@ -122,7 +113,7 @@ var Task = (function (_super) {
         tips.text = '完成每个任务都能增加积分哦。那积分可以做什么呢？你猜呀~';
         tips.width = 510;
         tips.x = (stage.stageWidth - tips.width) / 2;
-        tips.y = 1060;
+        tips.y = 1000;
         tips.textAlign = 'center';
         tips.lineSpacing = 25;
         tips.bold = true;
@@ -164,7 +155,7 @@ var Task = (function (_super) {
             progress.text = "(" + item.resultCount + "/" + item.taskCount + ")";
         }
         else if (item.id == 6) {
-            progress.text = "X" + (item.taskCount - item.resultCount);
+            progress.text = "X" + item.resultCount;
         }
         group.addChild(progress);
         var score = new egret.TextField;
@@ -176,8 +167,8 @@ var Task = (function (_super) {
         score.height = title.height;
         score.verticalAlign = 'middle';
         group.addChild(score);
-        var btn = new BtnBase(item.id == 4 ? 'btn_sign' : 'btn_go');
-        btn.x = item.id == 4 ? 422 : (group.width - btn.width) / 2;
+        var btn = new BtnBase(item.taskStatus ? 'btn_done1' : item.id == 4 ? 'btn_sign' : 'btn_go');
+        btn.x = item.id == 4 ? (group.width - btn.width - 20) : (group.width - btn.width) / 2;
         btn.y = item.id == 3 ? 175 : item.id == 4 ? 16 : 98;
         group.addChild(btn);
         btn.addEventListener(egret.TouchEvent.TOUCH_TAP, cb, this);

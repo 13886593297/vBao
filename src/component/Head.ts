@@ -62,6 +62,7 @@ class Head extends egret.DisplayObjectContainer {
 
         // 分数
         let score = new egret.TextField
+        score.text = `积分：${data.total_score}`
         score.x = 200
         score.y = data.level_id == 1 ? 100 : 150
         score.size = 24
