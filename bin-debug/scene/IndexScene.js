@@ -17,10 +17,6 @@ var IndexScene = (function (_super) {
     }
     IndexScene.prototype.init = function () {
         var _this = this;
-        if (!ViewManager.getInstance().musicIsPlay) {
-            Util.playMusic();
-            ViewManager.getInstance().musicIsPlay = true;
-        }
         Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
             _this.userInfo = res.data;
             window.localStorage.setItem('userInfo', JSON.stringify(_this.userInfo));
@@ -32,9 +28,9 @@ var IndexScene = (function (_super) {
                 var head = new Head(_this.userInfo);
                 _this.head = head;
                 _this.addChild(head);
-                _this.daily_task();
+                _this.daily_task(_this.userInfo);
+                _this.legendary(_this.userInfo);
                 if (_this.userInfo.isfinishV) {
-                    _this.legendary();
                 }
                 _this.vBao();
                 if (_this.userInfo.level_id == 2) {
@@ -43,21 +39,12 @@ var IndexScene = (function (_super) {
                     _this.around();
                 }
             }
-            var url = window.location.href + '?inviteId=' + _this.userInfo.id;
-            Http.getInstance().post(Url.HTTP_JSSDK_CONFIG, { showurl: url }, function (json) {
-                configSdk(json.data);
-                setTimeout(function () {
-                    onMenuShareAppMessage(_this.userInfo.id, function () {
-                        _this.removeChild(_this.shareScene);
-                    });
-                    onMenuShareTimeline(_this.userInfo.id, function () {
-                        _this.removeChild(_this.shareScene);
-                    });
-                }, 1000);
+            shareFriend(_this.userInfo.id, function () {
+                _this.removeChild(_this.shareScene);
             });
         });
     };
-    IndexScene.prototype.daily_task = function () {
+    IndexScene.prototype.daily_task = function (data) {
         var _this = this;
         // 每日任务
         var group = new eui.Group;
@@ -76,38 +63,56 @@ var IndexScene = (function (_super) {
         daily_task_tips.x = 0;
         daily_task_tips.y = 0;
         daily_task_tips.visible = this.userInfo.isfinish == 0;
+        this.daily_task_tips = daily_task_tips;
         group.addChild(daily_task_tips);
         group.touchEnabled = true;
         group.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            var task = new Task();
+            var task = new Task(data);
             _this.addChild(task);
         }, this);
     };
-    IndexScene.prototype.legendary = function () {
+    IndexScene.prototype.legendary = function (data) {
         // 传奇诞生
         var legendary = new BtnBase('legendary');
         legendary.x = this.stage.stageWidth - legendary.width - 30;
         legendary.y = 380;
+        legendary.visible = data.isfinishV ? true : false;
+        legendary.name = 'legendary';
         this.addChild(legendary);
         legendary.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             Http.getInstance().get(Url.HTTP_LEGENDARY, function (res) {
-                // location.href = res.data.content
-                window.location.replace(res.data.content);
+                ViewManager.getInstance().isPlay = false;
+                location.href = res.data.content;
             });
         }, this);
     };
     IndexScene.prototype.vBao = function () {
         var id = this.userInfo.kind_id - 1;
-        var y = this.userInfo.level_id == 2 ? 700 : 800;
+        var y;
+        if (this.userInfo.level_id == 2) {
+            if (id == 0) {
+                y = this.stage.stageHeight - this.stage.stageHeight / 7 * 3;
+            }
+            else if (id == 1) {
+                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2;
+            }
+            else if (id == 2) {
+                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2;
+            }
+        }
+        else {
+            y = this.stage.stageHeight - this.stage.stageHeight / 3;
+        }
         var bones = new Bones(id, this.userInfo.level_id, 380, y);
         this.addChild(bones);
         // 昵称
         var nickname = new egret.TextField;
         nickname.text = this.userInfo.nick_name;
         nickname.x = this.center(nickname);
-        nickname.y = 920;
+        nickname.y = this.stage.stageHeight - 250;
         nickname.size = 24;
         nickname.textColor = 0x000000;
+        nickname.visible = false;
         this.addChild(nickname);
     };
     // 投喂
@@ -143,6 +148,11 @@ var IndexScene = (function (_super) {
                         _this.head.headInfo.food[_this.userInfo.food_type_id - 1] -= 1;
                         _this.head.headInfo.score += 1;
                         Util.animate(feedTip);
+                        Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
+                            if (res.data.isfinish) {
+                                _this.daily_task_tips.visible = false;
+                            }
+                        });
                     }
                     else {
                         Util.animate(feedTipDone);

@@ -14,7 +14,6 @@ var KindScene = (function (_super) {
         return _super.call(this) || this;
     }
     KindScene.prototype.init = function () {
-        ViewManager.getInstance().musicIsPlay = true;
         // 标题背景
         var title_bg = new egret.Shape;
         title_bg.graphics.beginFill(0x000000, 0.6);

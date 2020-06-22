@@ -13,6 +13,12 @@ var Scene = (function (_super) {
     function Scene() {
         var _this = _super.call(this) || this;
         _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.initScene, _this);
+        _this.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
+            if (!ViewManager.getInstance().isPlay) {
+                ViewManager.getInstance().isPlay = true;
+                Util.playMusic();
+            }
+        }, _this);
         return _this;
     }
     Scene.prototype.initScene = function () {

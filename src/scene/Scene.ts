@@ -2,6 +2,12 @@ class Scene extends eui.UILayer {
     public constructor() {
         super()
         this.addEventListener(egret.Event.ADDED_TO_STAGE, this.initScene, this)
+        this.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
+            if (!ViewManager.getInstance().isPlay) {
+                ViewManager.getInstance().isPlay = true
+                Util.playMusic()
+            }
+        }, this)
     }
 
     private initScene() {

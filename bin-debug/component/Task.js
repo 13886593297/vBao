@@ -10,19 +10,19 @@ r.prototype = e.prototype, t.prototype = new r();
 };
 var Task = (function (_super) {
     __extends(Task, _super);
-    function Task() {
+    function Task(data) {
         var _this = _super.call(this) || this;
-        _this.init();
+        _this.init(data);
         return _this;
     }
-    Task.prototype.init = function () {
+    Task.prototype.init = function (data) {
         var _this = this;
         var stage = ViewManager.getInstance().stage;
         this.width = stage.stageWidth;
         this.height = stage.stageHeight;
         var bg = Util.createBitmapByName('info_doc');
         bg.x = (this.width - bg.width) / 2;
-        bg.height = stage.height;
+        bg.height = 1400;
         bg.y = 212;
         this.addChild(bg);
         var label = Util.setTitle('今日任务', 60, Config.COLOR_DOC);
@@ -40,7 +40,7 @@ var Task = (function (_super) {
             if (userInfo.level_id == 1) {
                 Http.getInstance().get(Url.HTTP_ISUPDATE, function (res) {
                     if (res.data.info.isUpdate) {
-                        var scene = new GetVbaoScene(res.data.kind_id - 1, 2);
+                        var scene = new GetVbaoScene(data.kind_id - 1, 2);
                         ViewManager.getInstance().changeScene(scene);
                     }
                 });
@@ -54,14 +54,19 @@ var Task = (function (_super) {
                     case 1:
                         // 传奇的诞生
                         cb = function () {
+                            var legendary = _this.parent.getChildByName('legendary');
+                            var head = _this.parent.getChildByName('head');
                             Http.getInstance().post(Url.HTTP_TASK_FINISHTASK, {
                                 taskId: item.id,
                                 score: item.score
                             }, function (res) {
                                 if (res.data.code) {
+                                    head.headInfo.score += item.score;
                                     Http.getInstance().get(Url.HTTP_LEGENDARY, function (res) {
+                                        legendary.visible = true;
+                                        ViewManager.getInstance().isPlay = false;
+                                        // this.parent.removeChild(this)
                                         location.href = res.data.content;
-                                        _this.parent.removeChild(_this);
                                     });
                                 }
                             });
@@ -78,12 +83,18 @@ var Task = (function (_super) {
                         // 签到
                         cb = function () {
                             var head = _this.parent.getChildByName('head');
+                            var daily_task_tips = _this.parent['daily_task_tips'];
                             Http.getInstance().get(Url.HTTP_USER_SIGN, function () {
                                 head.headInfo.food[0] += 1;
                                 head.headInfo.food[1] += 1;
                                 head.headInfo.food[2] += 1;
                                 head.headInfo.score += 1;
                                 _this.parent.removeChild(_this);
+                                Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
+                                    if (res.data.isfinish) {
+                                        daily_task_tips.visible = false;
+                                    }
+                                });
                             });
                         };
                         break;

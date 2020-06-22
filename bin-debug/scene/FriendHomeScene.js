@@ -72,7 +72,21 @@ var FriendHomeScene = (function (_super) {
     };
     FriendHomeScene.prototype.vBao = function (data) {
         var id = data.kind_id - 1;
-        var y = data.level_id == 1 ? 880 : 780;
+        var y;
+        if (data.level_id == 2) {
+            if (id == 0) {
+                y = this.stage.stageHeight - this.stage.stageHeight / 7 * 3;
+            }
+            else if (id == 1) {
+                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2;
+            }
+            else if (id == 2) {
+                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2;
+            }
+        }
+        else {
+            y = this.stage.stageHeight - this.stage.stageHeight / 3;
+        }
         var bones = new Bones(id, data.level_id, 380, y);
         this.addChild(bones);
     };
@@ -99,7 +113,11 @@ var FriendHomeScene = (function (_super) {
         getGiftTips.visible = false;
         this.addChild(getGiftTips);
         this.getGiftTips = getGiftTips;
+        var flag = true;
         present.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
+            if (!flag)
+                return;
+            flag = false;
             if (_this.head.headInfo.food[data.visitedInfo.food_type_id - 1] > 0) {
                 Http.getInstance().post(Url.HTTP_FEED, {
                     feedId: _this.userId,
@@ -119,6 +137,9 @@ var FriendHomeScene = (function (_super) {
             else {
                 Util.animate(feedTipNone);
             }
+            setTimeout(function () {
+                flag = true;
+            }, 300);
         }, this);
     };
     // 回家

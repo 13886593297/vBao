@@ -106,7 +106,7 @@ class InfoScene extends Scene {
 
     private onChange(i: number) {
         return (e:egret.Event) => {
-            this.property[this.propertyList[i]] = e.target.text
+            this.property[this.propertyList[i]] = e.target.text.slice(0, 6)
         }
     }
 }

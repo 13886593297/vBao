@@ -82,19 +82,18 @@ var Head = (function (_super) {
         score.stroke = 1;
         this.addChild(score);
         this.score = score;
-        if (data.level_id == 2) {
-            this.food_list();
-            this.setProxy(data);
-        }
+        this.food_list(data);
+        this.setProxy(data);
     };
     Head.prototype.setScore = function (value) {
         this.score.text = "\u79EF\u5206\uFF1A" + value;
     };
-    Head.prototype.food_list = function () {
+    Head.prototype.food_list = function (data) {
         var _this = this;
         var header_group = new eui.Group;
         header_group.x = 180;
         header_group.y = 48;
+        header_group.visible = data.level_id == 2 ? true : false;
         this.addChild(header_group);
         var header_bg = Util.createBitmapByName('header_bg');
         header_group.width = header_bg.width;

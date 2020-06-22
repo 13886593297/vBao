@@ -51,7 +51,7 @@ class Head extends egret.DisplayObjectContainer {
         this.headInfo.score = data.total_score
     }
 
-    private score
+    public score
     private init(data) {
         // 头像
         let avatar = Util.setAvatar(data.avatar)
@@ -72,10 +72,8 @@ class Head extends egret.DisplayObjectContainer {
         this.addChild(score)
         this.score = score
 
-        if (data.level_id == 2) {
-            this.food_list()
-            this.setProxy(data)
-        }
+        this.food_list(data)
+        this.setProxy(data)
     }
 
     private setScore(value) {
@@ -88,10 +86,11 @@ class Head extends egret.DisplayObjectContainer {
         {name: 'V飞机', image: 'icon_air'}
     ]
 
-    private food_list() {
+    private food_list(data) {
         let header_group = new eui.Group
         header_group.x = 180
         header_group.y = 48
+        header_group.visible = data.level_id == 2 ? true : false
         this.addChild(header_group)
 
         let header_bg = Util.createBitmapByName('header_bg')

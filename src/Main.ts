@@ -69,6 +69,7 @@ class Main extends egret.DisplayObjectContainer {
             this.stage.addChild(loadingView)
             await RES.loadConfig('resource/default.res.json', 'resource/')
             await RES.loadGroup('preload', 0, loadingView)
+            await RES.loadGroup('music')
             this.stage.removeChild(loadingView)
             egret.registerFontMapping("MyFont", "resource/MyFont.ttf")
         } catch (e) {
@@ -88,7 +89,11 @@ class Main extends egret.DisplayObjectContainer {
         })
         
         let userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
-        if (obj.inviteId) {
+        if (!userInfo) {
+            location.href = location.href.split('?')[0]
+            return
+        }
+        if (obj.inviteId && userInfo.level_id == 2) {
             let url = location.href.split('?')[0]
             history.replaceState({}, '', url)
             let friendScene = new FriendHomeScene(userInfo.id, obj.inviteId)

@@ -106,11 +106,10 @@ var Util = (function () {
         }, 2000);
     };
     Util.playMusic = function () {
-        var sound = new egret.Sound;
-        sound.addEventListener(egret.Event.COMPLETE, function (event) {
+        var sound = RES.getRes('bg_mp3');
+        if (sound) {
             sound.play();
-        }, this);
-        sound.load('resource/music/bg.mp3');
+        }
     };
     return Util;
 }());

@@ -72,7 +72,18 @@ class FriendHomeScene extends Scene {
 
     private vBao(data) {
         let id = data.kind_id - 1
-        let y = data.level_id == 1 ? 880 : 780
+        let y
+        if (data.level_id == 2) {
+            if (id == 0) {
+                y = this.stage.stageHeight - this.stage.stageHeight / 7 * 3
+            } else if (id == 1) {
+                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2
+            } else if (id == 2) {
+                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2
+            }
+        } else {
+            y = this.stage.stageHeight - this.stage.stageHeight / 3
+        }
         let bones = new Bones(id, data.level_id, 380, y)
         this.addChild(bones)
     }
@@ -105,7 +116,10 @@ class FriendHomeScene extends Scene {
         this.addChild(getGiftTips)
         this.getGiftTips = getGiftTips
 
+        let flag = true
         present.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
+            if (!flag) return
+            flag = false
             if (this.head.headInfo.food[data.visitedInfo.food_type_id - 1] > 0) {
                 Http.getInstance().post(Url.HTTP_FEED, {
                     feedId: this.userId,
@@ -123,6 +137,9 @@ class FriendHomeScene extends Scene {
             } else {
                 Util.animate(feedTipNone)
             }
+            setTimeout(() => {
+                flag = true
+            }, 300)
         }, this)
     }
 

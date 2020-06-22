@@ -1,17 +1,17 @@
 class Task extends eui.Group {
-    constructor() {
+    constructor(data) {
         super()
-        this.init()
+        this.init(data)
     }
 
-    private init() {
+    private init(data) {
         let stage = ViewManager.getInstance().stage
         this.width = stage.stageWidth
         this.height = stage.stageHeight
 
         let bg = Util.createBitmapByName('info_doc')
         bg.x = (this.width - bg.width) / 2
-        bg.height = stage.height
+        bg.height = 1400
         bg.y = 212
         this.addChild(bg)
 
@@ -32,7 +32,7 @@ class Task extends eui.Group {
             if (userInfo.level_id == 1) {
                 Http.getInstance().get(Url.HTTP_ISUPDATE, res => {
                     if (res.data.info.isUpdate) {
-                        let scene = new GetVbaoScene(res.data.kind_id - 1, 2)
+                        let scene = new GetVbaoScene(data.kind_id - 1, 2)
                         ViewManager.getInstance().changeScene(scene)
                     }
                 })
@@ -47,14 +47,19 @@ class Task extends eui.Group {
                     case 1:
                         // 传奇的诞生
                         cb = () => {
+                            let legendary = this.parent.getChildByName('legendary')
+                            let head:any = this.parent.getChildByName('head')
                             Http.getInstance().post(Url.HTTP_TASK_FINISHTASK, {
                                 taskId: item.id,
                                 score: item.score
                             }, res => {
                                 if (res.data.code) {
+                                    head.headInfo.score += item.score
                                     Http.getInstance().get(Url.HTTP_LEGENDARY, res => {
+                                        legendary.visible = true
+                                        ViewManager.getInstance().isPlay = false
+                                        // this.parent.removeChild(this)
                                         location.href = res.data.content
-                                        this.parent.removeChild(this)
                                     })
                                 }
                             })
@@ -71,13 +76,19 @@ class Task extends eui.Group {
                         // 签到
                         cb = () => {
                             let head: any = this.parent.getChildByName('head')
-
+                            let daily_task_tips = this.parent['daily_task_tips']
                             Http.getInstance().get(Url.HTTP_USER_SIGN, () => {
                                 head.headInfo.food[0] += 1
                                 head.headInfo.food[1] += 1
                                 head.headInfo.food[2] += 1
                                 head.headInfo.score += 1
                                 this.parent.removeChild(this)
+
+                                Http.getInstance().get(Url.HTTP_USER_INFO, res => {
+                                    if (res.data.isfinish) {
+                                        daily_task_tips.visible = false
+                                    }
+                                })
                             })
                         }
                         break;

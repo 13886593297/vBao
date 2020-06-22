@@ -104,15 +104,12 @@ class Util {
     }
 
     public static playMusic() {
-        let sound = new egret.Sound
-        sound.addEventListener(egret.Event.COMPLETE, (event: egret.Event) => {
+        let sound = RES.getRes('bg_mp3')
+        if (sound) {
             sound.play()
-        }, this)
-
-        sound.load('resource/music/bg.mp3')
+        }
     }
 }
 
 declare function configSdk(config)
-declare function onMenuShareAppMessage(id, callback)
-declare function onMenuShareTimeline(id, callback)
+declare function shareFriend(id, callback)

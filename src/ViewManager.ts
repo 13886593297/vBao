@@ -5,7 +5,7 @@ class ViewManager {
 
     public stage: egret.Stage
 
-    public musicIsPlay = false
+    public isPlay = false
 
     private constructor() {}
 

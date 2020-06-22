@@ -42,6 +42,9 @@ var Bones = (function (_super) {
             armatureDisplay.x = x;
             armatureDisplay.y = y;
             var scale = level == 1 ? 0.4 : 0.25;
+            if (level == 2 && id == 2) {
+                scale = 0.2;
+            }
             armatureDisplay.scaleX = scale;
             armatureDisplay.scaleY = scale;
             armatureDisplay.animation.play('newAnimation');

@@ -11,6 +11,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="full-screen" content="true" />
     <meta name="screen-orientation" content="portrait" />
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.3/weui.min.css">
     <meta name="x5-fullscreen" content="true" />
     <meta name="360-fullscreen" content="true" />
     <style>
@@ -36,7 +37,7 @@
 
         body, #htmlBox {
             background: url(./resource/assets/bg.png) no-repeat;
-            background-size: cover;
+            background-size: 100% 100%;
         }
 
         .egret-player, #htmlBox {
@@ -130,7 +131,6 @@
                 <button id="btn"></button>
             </div>
          </div>
-         <div id="music"></div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js"></script>
@@ -199,6 +199,19 @@
                 url: host + '/game/api/user/info',
                 success: function(data) {
                     window.localStorage.setItem('userInfo', JSON.stringify(data.data))
+                    if (data.errno != 0) {
+                        weui.alert(data.errmsg, {
+                            title: '提示',
+                            buttons: [{
+                                label: button,
+                                type: 'primary',
+                                onClick: function() {
+                                    wx.closeWindow();
+                                }
+                            }]
+                        })
+                        return
+                    }
                     if (data.data.level_id == 0) {
                         // 新用户
                         $('#htmlBox').show()
@@ -216,61 +229,76 @@
             $('#btn').click(function() {
                 setTimeout(() => {
                     $('#htmlBox').hide()
-                    playMusic()
                 }, 500)
+            })
+
+            var url = location.href.split('#')[0]
+
+            $.ajax({
+                type: 'POST',
+                url: host + "/game/index/jssdkconfig",
+                data: {
+                    url: url
+                },
+                dataType: 'json',
+                // async: false,
+                success(res) {
+                    wx.config({
+                        debug: false,
+                        appId: res.data.appid,
+                        timestamp: res.data.timestamp,
+                        nonceStr: res.data.noncestr,
+                        signature: res.data.sign,
+                        jsApiList: [
+                            'checkJsApi',
+                            'onMenuShareTimeline',
+                            'onMenuShareAppMessage',
+                            'closeWindow'
+                        ]
+                    })
+                }
             })
         })
 
-        function playMusic() {
-            var myAudio = new Audio()
-            myAudio.preload = false
-            myAudio.controls = true
-            myAudio.hidden = true
-            myAudio.src = './resource/music/bg.mp3'
-            myAudio.play()
-            myAudio.loop = true
-            $('#music').append(myAudio)
-        }
+        pushHistory();
 
-         function configSdk(object) {
-            let config = {
-                appId: object.appid,
-                timestamp: object.timestamp,
-                nonceStr: object.noncestr,
-                signature: object.sign,
-                jsApiList: [
-                    'checkJsApi',
-                    'onMenuShareTimeline',
-                    'onMenuShareAppMessage',
-                    'closeWindow',
-                ]
+        window.addEventListener("popstate", function (e) {
+            console.log("返回")
+            weui.confirm('确认要退出游戏吗？', function () {
+                console.log("1")
+                history.go(-1)
+                wx.closeWindow();
+            }, function () {
+                console.log("2")
+                pushHistory();
+            });
+        }, false);
+
+        function pushHistory() {
+            var state = {
+                title: "title",
+                url: "#"
             };
-            wx.config(config);
+            window.history.pushState(state, "title", "#");
         }
 
-        // 分享到好友
-        function onMenuShareAppMessage(id, callback) {
-            wx.onMenuShareAppMessage({
+        // 分享
+        function shareFriend(id, callback) {
+            var shareData = {
                 title: 'V宝养成记',
                 desc: '快来投喂我的V宝吧！',
-                link: location.href + '?inviteId=' + id ,
-                imgUrl: './resource/assets/header/icon_glove.png',
-                trigger: function (res) {
+                link: location.href.split('#')[0] + '?inviteId=' + id,
+                imgUrl: './resource/assets/header/icon_dir.png',
+                trigger: function (res) {},
+                success: function(res) {
                     if (callback) callback()
+                },
+                fail: function(res) {
+                    console.log(res)
                 }
-            });
-        }
-
-        // 分享到朋友圈
-        function onMenuShareTimeline(id, callback) {
-            wx.onMenuShareTimeline({
-                title: 'V宝养成记',
-                link: location.href + '?inviteId=' + id,
-                imgUrl: './resource/assets/header/icon_glove.png',
-                trigger: function (res) {
-                    if (callback) callback()
-                }
-            });
+            }
+            wx.onMenuShareAppMessage(shareData)
+            wx.onMenuShareTimeline(shareData)
         }
     </script>
 </body>

@@ -7,10 +7,6 @@ class IndexScene extends Scene {
     }
 
     public init() {
-        if (!ViewManager.getInstance().musicIsPlay) {
-            Util.playMusic()
-            ViewManager.getInstance().musicIsPlay = true
-        }
         Http.getInstance().get(Url.HTTP_USER_INFO, (res) => {
             this.userInfo = res.data
             window.localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
@@ -22,9 +18,9 @@ class IndexScene extends Scene {
                 this.head = head
                 this.addChild(head)
 
-                this.daily_task()
+                this.daily_task(this.userInfo)
+                this.legendary(this.userInfo)
                 if (this.userInfo.isfinishV) {
-                    this.legendary()
                 }
 
                 this.vBao()
@@ -36,22 +32,14 @@ class IndexScene extends Scene {
                 }
             }
 
-            let url = window.location.href + '?inviteId=' + this.userInfo.id
-            Http.getInstance().post(Url.HTTP_JSSDK_CONFIG, { showurl: url }, (json) => {
-                configSdk(json.data)
-                setTimeout(() => {
-                    onMenuShareAppMessage(this.userInfo.id, () => {
-                        this.removeChild(this.shareScene)
-                    })
-                    onMenuShareTimeline(this.userInfo.id, () => {
-                        this.removeChild(this.shareScene)
-                    })
-                }, 1000)
+            shareFriend(this.userInfo.id, () => {
+                this.removeChild(this.shareScene)
             })
         })
     }
 
-    private daily_task() {
+    public daily_task_tips
+    private daily_task(data) {
         // 每日任务
         let group = new eui.Group
         group.width = 110
@@ -71,32 +59,46 @@ class IndexScene extends Scene {
         daily_task_tips.x = 0
         daily_task_tips.y = 0
         daily_task_tips.visible = this.userInfo.isfinish == 0
+        this.daily_task_tips = daily_task_tips
         group.addChild(daily_task_tips)
 
         group.touchEnabled = true
         group.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            let task = new Task()
+            let task = new Task(data)
             this.addChild(task)
         }, this)
     }
 
-    private legendary() {
+    private legendary(data) {
         // 传奇诞生
         let legendary = new BtnBase('legendary')
         legendary.x = this.stage.stageWidth - legendary.width - 30
         legendary.y = 380
+        legendary.visible = data.isfinishV ? true : false
+        legendary.name = 'legendary'
         this.addChild(legendary)
         legendary.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             Http.getInstance().get(Url.HTTP_LEGENDARY, res => {
-                // location.href = res.data.content
-                window.location.replace(res.data.content)
+                ViewManager.getInstance().isPlay = false
+                location.href = res.data.content
             })
         }, this)
     }
 
     private vBao() {
         let id = this.userInfo.kind_id - 1
-        let y = this.userInfo.level_id == 2 ? 700 : 800
+        let y
+        if (this.userInfo.level_id == 2) {
+            if (id == 0) {
+                y = this.stage.stageHeight - this.stage.stageHeight / 7 * 3
+            } else if (id == 1) {
+                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2
+            } else if (id == 2) {
+                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2
+            }
+        } else {
+            y = this.stage.stageHeight - this.stage.stageHeight / 3
+        }
         let bones = new Bones(id, this.userInfo.level_id, 380, y)
         this.addChild(bones)
 
@@ -104,9 +106,10 @@ class IndexScene extends Scene {
         let nickname = new egret.TextField
         nickname.text = this.userInfo.nick_name
         nickname.x = this.center(nickname)
-        nickname.y = 920
+        nickname.y = this.stage.stageHeight - 250
         nickname.size = 24
         nickname.textColor = 0x000000
+        nickname.visible = false
         this.addChild(nickname)
     }
 
@@ -136,7 +139,6 @@ class IndexScene extends Scene {
         feedTipNone.visible = false
         this.addChild(feedTipNone)
         
-        
         feed.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             if (this.head.headInfo.food[this.userInfo.food_type_id - 1] > 0) {
                 Http.getInstance().post(Url.HTTP_FEED, {
@@ -147,6 +149,12 @@ class IndexScene extends Scene {
                         this.head.headInfo.food[this.userInfo.food_type_id - 1] -= 1
                         this.head.headInfo.score += 1
                         Util.animate(feedTip)
+
+                        Http.getInstance().get(Url.HTTP_USER_INFO, res => {
+                            if (res.data.isfinish) {
+                                this.daily_task_tips.visible = false
+                            }
+                        })
                     } else {
                         Util.animate(feedTipDone)
                     }

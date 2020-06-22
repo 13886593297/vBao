@@ -115,7 +115,7 @@ var Main = (function (_super) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 3, , 4]);
+                        _a.trys.push([0, 4, , 5]);
                         ViewManager.getInstance().stage = this.stage;
                         loadingView = new LoadingUI();
                         this.stage.addChild(loadingView);
@@ -125,14 +125,17 @@ var Main = (function (_super) {
                         return [4 /*yield*/, RES.loadGroup('preload', 0, loadingView)];
                     case 2:
                         _a.sent();
+                        return [4 /*yield*/, RES.loadGroup('music')];
+                    case 3:
+                        _a.sent();
                         this.stage.removeChild(loadingView);
                         egret.registerFontMapping("MyFont", "resource/MyFont.ttf");
-                        return [3 /*break*/, 4];
-                    case 3:
+                        return [3 /*break*/, 5];
+                    case 4:
                         e_1 = _a.sent();
                         console.error(e_1);
-                        return [3 /*break*/, 4];
-                    case 4: return [2 /*return*/];
+                        return [3 /*break*/, 5];
+                    case 5: return [2 /*return*/];
                 }
             });
         });
@@ -148,7 +151,11 @@ var Main = (function (_super) {
             obj[item.split('=')[0]] = item.split('=')[1];
         });
         var userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
-        if (obj.inviteId) {
+        if (!userInfo) {
+            location.href = location.href.split('?')[0];
+            return;
+        }
+        if (obj.inviteId && userInfo.level_id == 2) {
             var url = location.href.split('?')[0];
             history.replaceState({}, '', url);
             var friendScene = new FriendHomeScene(userInfo.id, obj.inviteId);
