@@ -188,7 +188,7 @@
         });
         xhr.send(null);
 
-        var host = 'https://gamiwechat-q.lillyadmin.cn'
+        var host = location.origin
         window.localStorage.setItem('host', host)
         $(function() {
             // 获取用户信息判断是否是新用户
@@ -257,14 +257,14 @@
             })
         })
 
-        pushHistory();
+        pushHistory()
 
         window.addEventListener("popstate", function (e) {
-            var confirmDom = weui.confirm('确认要退出游戏吗？', function () {
+            weui.confirm('确认要退出游戏吗？', function () {
                 history.go(-1)
-                wx.closeWindow();
+                wx.closeWindow()
             }, function () {
-                pushHistory();
+                pushHistory()
             });
         }, false);
 
@@ -273,7 +273,7 @@
                 title: "title",
                 url: "#"
             };
-            window.history.pushState(state, "title", "#");
+            window.history.pushState(state, "title", "#")
         }
 
         // 分享
@@ -282,7 +282,7 @@
                 title: 'V宝养成记',
                 desc: '快来投喂我的V宝吧！',
                 link: location.href.split('#')[0] + '?inviteId=' + id,
-                imgUrl: 'https://gamiwechat-q.lillyadmin.cn/games/resource/assets/header/icon_dir.png',
+                imgUrl: host + '/games/resource/assets/header/icon_dir.png',
                 trigger: function (res) {},
                 success: function(res) {
                     if (callback) callback()

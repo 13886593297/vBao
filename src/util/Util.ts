@@ -65,7 +65,7 @@ class Util {
 
         let imgLoader = new egret.ImageLoader()
         imgLoader.crossOrigin = 'anonymous' // 跨域请求
-        imgLoader.load(avatar) // 去除链接中的转义字符‘\’
+        imgLoader.load(avatar)
         imgLoader.once(egret.Event.COMPLETE, (evt: egret.Event) => {
             if (evt.currentTarget.data) {
                 let texture = new egret.Texture()

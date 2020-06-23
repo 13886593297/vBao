@@ -55,9 +55,11 @@ class Head extends egret.DisplayObjectContainer {
     private init(data) {
         // 头像
         let avatar = Util.setAvatar(data.avatar)
-        avatar.x = 30
-        avatar.y = 45
-        this.addChild(avatar)
+        if (avatar) {
+            avatar.x = 30
+            avatar.y = 45
+            this.addChild(avatar)
+        }
         this.name = 'head'
 
         // 分数

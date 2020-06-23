@@ -69,7 +69,7 @@ var Util = (function () {
         bitmap.height = 101;
         var imgLoader = new egret.ImageLoader();
         imgLoader.crossOrigin = 'anonymous'; // 跨域请求
-        imgLoader.load(avatar); // 去除链接中的转义字符‘\’
+        imgLoader.load(avatar);
         imgLoader.once(egret.Event.COMPLETE, function (evt) {
             if (evt.currentTarget.data) {
                 var texture = new egret.Texture();
