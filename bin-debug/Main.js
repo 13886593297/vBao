@@ -151,20 +151,21 @@ var Main = (function (_super) {
             obj[item.split('=')[0]] = item.split('=')[1];
         });
         var userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
+        // 未创建账号
         if (!userInfo) {
             location.href = location.href.split('?')[0];
             return;
         }
-        if (obj.inviteId && userInfo.level_id == 2) {
-            var url = location.href.split('?')[0];
-            history.replaceState({}, '', url);
-            var friendScene = new FriendHomeScene(userInfo.id, obj.inviteId);
-            ViewManager.getInstance().changeScene(friendScene);
+        var scene;
+        if (obj.inviteId && userInfo.level_id == 2 && obj.inviteId != userInfo.id) {
+            scene = new FriendHomeScene(userInfo.id, obj.inviteId);
         }
         else {
-            var home = userInfo.level_id == 0 ? new KindScene() : new IndexScene();
-            ViewManager.getInstance().changeScene(home);
+            scene = userInfo.level_id == 0 ? new KindScene() : new IndexScene();
         }
+        var url = location.href.split('?')[0];
+        history.replaceState({}, '', url);
+        ViewManager.getInstance().changeScene(scene);
     };
     return Main;
 }(egret.DisplayObjectContainer));

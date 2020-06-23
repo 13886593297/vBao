@@ -37,14 +37,6 @@ var Task = (function (_super) {
         var userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
         close.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             _this.parent.removeChild(_this);
-            if (userInfo.level_id == 1) {
-                Http.getInstance().get(Url.HTTP_ISUPDATE, function (res) {
-                    if (res.data.info.isUpdate) {
-                        var scene = new GetVbaoScene(data.kind_id - 1, 2);
-                        ViewManager.getInstance().changeScene(scene);
-                    }
-                });
-            }
         }, this);
         Http.getInstance().get(Url.HTTP_TASK_TASKLIST, function (res) {
             var y = 400;
@@ -65,8 +57,16 @@ var Task = (function (_super) {
                                     Http.getInstance().get(Url.HTTP_LEGENDARY, function (res) {
                                         legendary.visible = true;
                                         ViewManager.getInstance().isPlay = false;
-                                        // this.parent.removeChild(this)
+                                        _this.parent.removeChild(_this);
                                         location.href = res.data.content;
+                                        if (userInfo.level_id == 1) {
+                                            Http.getInstance().get(Url.HTTP_ISUPDATE, function (res) {
+                                                if (res.data.info.isUpdate) {
+                                                    var scene = new GetVbaoScene(data.kind_id - 1, 2);
+                                                    ViewManager.getInstance().changeScene(scene);
+                                                }
+                                            });
+                                        }
                                     });
                                 }
                             });

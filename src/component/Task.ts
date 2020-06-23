@@ -29,14 +29,6 @@ class Task extends eui.Group {
         let userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
         close.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             this.parent.removeChild(this)
-            if (userInfo.level_id == 1) {
-                Http.getInstance().get(Url.HTTP_ISUPDATE, res => {
-                    if (res.data.info.isUpdate) {
-                        let scene = new GetVbaoScene(data.kind_id - 1, 2)
-                        ViewManager.getInstance().changeScene(scene)
-                    }
-                })
-            }
         }, this)
 
         Http.getInstance().get(Url.HTTP_TASK_TASKLIST, res => {
@@ -58,8 +50,16 @@ class Task extends eui.Group {
                                     Http.getInstance().get(Url.HTTP_LEGENDARY, res => {
                                         legendary.visible = true
                                         ViewManager.getInstance().isPlay = false
-                                        // this.parent.removeChild(this)
+                                        this.parent.removeChild(this)
                                         location.href = res.data.content
+                                        if (userInfo.level_id == 1) {
+                                            Http.getInstance().get(Url.HTTP_ISUPDATE, res => {
+                                                if (res.data.info.isUpdate) {
+                                                    let scene = new GetVbaoScene(data.kind_id - 1, 2)
+                                                    ViewManager.getInstance().changeScene(scene)
+                                                }
+                                            })
+                                        }
                                     })
                                 }
                             })

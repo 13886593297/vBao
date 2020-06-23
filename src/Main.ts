@@ -89,18 +89,19 @@ class Main extends egret.DisplayObjectContainer {
         })
         
         let userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
+        // 未创建账号
         if (!userInfo) {
             location.href = location.href.split('?')[0]
             return
         }
-        if (obj.inviteId && userInfo.level_id == 2) {
-            let url = location.href.split('?')[0]
-            history.replaceState({}, '', url)
-            let friendScene = new FriendHomeScene(userInfo.id, obj.inviteId)
-            ViewManager.getInstance().changeScene(friendScene)
+        let scene
+        if (obj.inviteId && userInfo.level_id == 2 && obj.inviteId != userInfo.id) {
+            scene = new FriendHomeScene(userInfo.id, obj.inviteId)
         } else {
-            let home = userInfo.level_id == 0 ? new KindScene() : new IndexScene()
-            ViewManager.getInstance().changeScene(home)
+            scene = userInfo.level_id == 0 ? new KindScene() : new IndexScene()
         }
+        let url = location.href.split('?')[0]
+        history.replaceState({}, '', url)
+        ViewManager.getInstance().changeScene(scene)
     }
 }
