@@ -56,18 +56,43 @@ class FriendHomeScene extends Scene {
         name.x = name.y = 25
         group.addChild(name)
 
-        let attr = new egret.TextField
-        attr.textFlow = [
-            {text: `名字：${data.nick_name}`},
-            {text: `\n星座：${data.constellation}`},
-            {text: `\n血型：${data.blood}`},
-            {text: `\n爱好：${data.hobby}`}
-        ]
-        attr.x = name.x
-        attr.y = 80
-        attr.lineSpacing = 15
-        attr.size = 22
-        group.addChild(attr)
+        let _width = 220
+        let _height = 30
+        let nick_name = new egret.TextField
+        nick_name.text = `名字：${data.nick_name}`
+        nick_name.width = _width
+        nick_name.height = _height
+        nick_name.x = name.x
+        nick_name.y = 80
+        nick_name.size = 22
+        group.addChild(nick_name)
+
+        let constellation = new egret.TextField
+        constellation.text = `星座：${data.constellation}`
+        constellation.width = _width
+        constellation.height = _height
+        constellation.x = name.x
+        constellation.y = nick_name.y + 35
+        constellation.size = 22
+        group.addChild(constellation)
+
+        let blood = new egret.TextField
+        blood.text = `血型：${data.blood}`
+        blood.width = _width
+        blood.height = _height
+        blood.x = name.x
+        blood.y = constellation.y + 35
+        blood.size = 22
+        group.addChild(blood)
+
+        let hobby = new egret.TextField
+        hobby.text = `爱好：${data.hobby}`
+        hobby.width = _width
+        hobby.height = _height
+        hobby.x = name.x
+        hobby.y = blood.y + 35
+        hobby.size = 22
+        group.addChild(hobby)
     }
 
     private vBao(data) {

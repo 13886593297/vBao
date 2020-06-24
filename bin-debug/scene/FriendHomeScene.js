@@ -57,18 +57,40 @@ var FriendHomeScene = (function (_super) {
         name.bold = true;
         name.x = name.y = 25;
         group.addChild(name);
-        var attr = new egret.TextField;
-        attr.textFlow = [
-            { text: "\u540D\u5B57\uFF1A" + data.nick_name },
-            { text: "\n\u661F\u5EA7\uFF1A" + data.constellation },
-            { text: "\n\u8840\u578B\uFF1A" + data.blood },
-            { text: "\n\u7231\u597D\uFF1A" + data.hobby }
-        ];
-        attr.x = name.x;
-        attr.y = 80;
-        attr.lineSpacing = 15;
-        attr.size = 22;
-        group.addChild(attr);
+        var _width = 220;
+        var _height = 30;
+        var nick_name = new egret.TextField;
+        nick_name.text = "\u540D\u5B57\uFF1A" + data.nick_name;
+        nick_name.width = _width;
+        nick_name.height = _height;
+        nick_name.x = name.x;
+        nick_name.y = 80;
+        nick_name.size = 22;
+        group.addChild(nick_name);
+        var constellation = new egret.TextField;
+        constellation.text = "\u661F\u5EA7\uFF1A" + data.constellation;
+        constellation.width = _width;
+        constellation.height = _height;
+        constellation.x = name.x;
+        constellation.y = nick_name.y + 35;
+        constellation.size = 22;
+        group.addChild(constellation);
+        var blood = new egret.TextField;
+        blood.text = "\u8840\u578B\uFF1A" + data.blood;
+        blood.width = _width;
+        blood.height = _height;
+        blood.x = name.x;
+        blood.y = constellation.y + 35;
+        blood.size = 22;
+        group.addChild(blood);
+        var hobby = new egret.TextField;
+        hobby.text = "\u7231\u597D\uFF1A" + data.hobby;
+        hobby.width = _width;
+        hobby.height = _height;
+        hobby.x = name.x;
+        hobby.y = blood.y + 35;
+        hobby.size = 22;
+        group.addChild(hobby);
     };
     FriendHomeScene.prototype.vBao = function (data) {
         var id = data.kind_id - 1;

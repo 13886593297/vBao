@@ -106,7 +106,7 @@ var InfoScene = (function (_super) {
     InfoScene.prototype.onChange = function (i) {
         var _this = this;
         return function (e) {
-            _this.property[_this.propertyList[i]] = e.target.text.slice(0, 6);
+            _this.property[_this.propertyList[i]] = e.target.text;
         };
     };
     return InfoScene;
