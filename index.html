@@ -135,7 +135,7 @@
     <script src="https://res.wx.qq.com/open/libs/weuijs/1.1.4/weui.min.js"></script>
     <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
     <script>
-        new VConsole()
+        // new VConsole()
 
         var loadScript = function (list, callback) {
             var loaded = 0;
@@ -188,7 +188,7 @@
         });
         xhr.send(null);
 
-        var host = location.origin
+        var host = 'http://192.168.1.121:8080'
         window.localStorage.setItem('host', host)
         $(function() {
             // 获取用户信息判断是否是新用户

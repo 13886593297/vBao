@@ -1,7 +1,8 @@
 class Head extends egret.DisplayObjectContainer {
+    private userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
     public headInfo = {
-        food: [],
-        score: 0
+        food: [this.userInfo.v_bfood, this.userInfo.v_tfood, this.userInfo.v_ffood],
+        score: this.userInfo.total_score
     }
     /**
      * 公用头部
@@ -15,12 +16,12 @@ class Head extends egret.DisplayObjectContainer {
         let self = this
         function _addProxy(obj) {
             return new Proxy(obj, {
-                set: (target, key: string, value) => {
-                    target[key] = value
+                set: (target, key: string, newval) => {
+                    target[key] = newval
                     if (typeof target == 'object' && key.length == 1) {
                         self.setFood(key)
-                    } else {
-                        self.setScore(value)
+                    } else if (key == 'score') {
+                        self.setScore()
                     }
                     return true
                 }
@@ -44,11 +45,6 @@ class Head extends egret.DisplayObjectContainer {
         }
 
         this.headInfo = addProxy(this.headInfo)
-        
-        this.headInfo.food[0] = data.v_bfood
-        this.headInfo.food[1] = data.v_tfood
-        this.headInfo.food[2] = data.v_ffood
-        this.headInfo.score = data.total_score
     }
 
     public score
@@ -77,9 +73,20 @@ class Head extends egret.DisplayObjectContainer {
         this.food_list(data)
         this.setProxy(data)
     }
-
-    private setScore(value) {
-        this.score.text = `积分：${value}`
+    private flag = true
+    private setScore() {
+        this.score.text = `积分：${this.headInfo.score}`
+        if (!this.flag) return
+        this.flag = false
+        egret.Tween.get(this.score)
+            .to({ scaleX: 1, scaleY: 1 }, 10)
+            .wait(10)
+            .to({ scaleX: 1.2, scaleY: 1.2 }, 100)
+            .wait(1000)
+            .to({ scaleX: 1, scaleY: 1 }, 100)
+            .call(() => {
+                this.flag = true
+            })
     }
 
     public foodList = [
@@ -137,10 +144,23 @@ class Head extends egret.DisplayObjectContainer {
         return group
     }
 
+    private flagArr = [1, 1, 1]
     private setFood(index) {
         this.count[index].textFlow = [
             {text: 'X', style: { size: 20 }},
             {text: '  ' + this.headInfo.food[index], style: { size: 24 }}
         ]
+        
+        if (!this.flagArr[index]) return
+        this.flagArr[index] = 0
+        egret.Tween.get(this.count[index])
+            .to({ scaleX: 1, scaleY: 1 }, 10)
+            .wait(10)
+            .to({ scaleX: 1.2, scaleY: 1.2 }, 100)
+            .wait(1000)
+            .to({ scaleX: 1, scaleY: 1 }, 100)
+            .call(() => {
+                this.flagArr[index] = 1
+            })
     }
 }

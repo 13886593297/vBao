@@ -97,7 +97,7 @@ var IndexScene = (function (_super) {
                 y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2;
             }
             else if (id == 2) {
-                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2;
+                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2 + 60;
             }
         }
         else {
@@ -124,19 +124,10 @@ var IndexScene = (function (_super) {
         feed.name = 'feed';
         this.addChild(feed);
         var feedTip = new Alert('谢谢主人！好吃又\n营养！');
-        feedTip.x = 32;
-        feedTip.y = 520;
-        feedTip.visible = false;
-        this.addChild(feedTip);
         var feedTipDone = new Alert('每日2次就够啦！明\n天请再来投喂V宝哦！');
-        feedTipDone.x = 32;
-        feedTipDone.y = 720;
-        feedTipDone.visible = false;
+        var feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧');
+        this.addChild(feedTip);
         this.addChild(feedTipDone);
-        var feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧', 'left');
-        feedTipNone.x = this.stage.stageWidth - feedTipNone.width - 32;
-        feedTipNone.y = 600;
-        feedTipNone.visible = false;
         this.addChild(feedTipNone);
         feed.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             if (_this.head.headInfo.food[_this.userInfo.food_type_id - 1] > 0) {
@@ -170,10 +161,9 @@ var IndexScene = (function (_super) {
         decorate.x = 510;
         decorate.y = this.stage.stageHeight - decorate.height - 40;
         this.addChild(decorate);
-        var tips = new Alert('7月上新，敬请期待');
+        var tips = new Alert('7月上新，敬请期待', 'right');
         tips.x = 325;
         tips.y = this.stage.stageHeight - decorate.height - 40 - tips.height;
-        tips.visible = false;
         this.addChild(tips);
         decorate.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             Util.animate(tips);

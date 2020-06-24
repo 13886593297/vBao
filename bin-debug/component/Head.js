@@ -15,16 +15,19 @@ var Head = (function (_super) {
      */
     function Head(data) {
         var _this = _super.call(this) || this;
+        _this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
         _this.headInfo = {
-            food: [],
-            score: 0
+            food: [_this.userInfo.v_bfood, _this.userInfo.v_tfood, _this.userInfo.v_ffood],
+            score: _this.userInfo.total_score
         };
+        _this.flag = true;
         _this.foodList = [
             { name: 'V宝典', image: 'icon_dir' },
             { name: 'V拳套', image: 'icon_glove' },
             { name: 'V飞机', image: 'icon_air' }
         ];
         _this.count = [];
+        _this.flagArr = [1, 1, 1];
         _this.init(data);
         return _this;
     }
@@ -32,13 +35,13 @@ var Head = (function (_super) {
         var self = this;
         function _addProxy(obj) {
             return new Proxy(obj, {
-                set: function (target, key, value) {
-                    target[key] = value;
+                set: function (target, key, newval) {
+                    target[key] = newval;
                     if (typeof target == 'object' && key.length == 1) {
                         self.setFood(key);
                     }
-                    else {
-                        self.setScore(value);
+                    else if (key == 'score') {
+                        self.setScore();
                     }
                     return true;
                 }
@@ -59,17 +62,15 @@ var Head = (function (_super) {
             return proxy;
         }
         this.headInfo = addProxy(this.headInfo);
-        this.headInfo.food[0] = data.v_bfood;
-        this.headInfo.food[1] = data.v_tfood;
-        this.headInfo.food[2] = data.v_ffood;
-        this.headInfo.score = data.total_score;
     };
     Head.prototype.init = function (data) {
         // 头像
         var avatar = Util.setAvatar(data.avatar);
-        avatar.x = 30;
-        avatar.y = 45;
-        this.addChild(avatar);
+        if (avatar) {
+            avatar.x = 30;
+            avatar.y = 45;
+            this.addChild(avatar);
+        }
         this.name = 'head';
         // 分数
         var score = new egret.TextField;
@@ -85,8 +86,21 @@ var Head = (function (_super) {
         this.food_list(data);
         this.setProxy(data);
     };
-    Head.prototype.setScore = function (value) {
-        this.score.text = "\u79EF\u5206\uFF1A" + value;
+    Head.prototype.setScore = function () {
+        var _this = this;
+        this.score.text = "\u79EF\u5206\uFF1A" + this.headInfo.score;
+        if (!this.flag)
+            return;
+        this.flag = false;
+        egret.Tween.get(this.score)
+            .to({ scaleX: 1, scaleY: 1 }, 10)
+            .wait(10)
+            .to({ scaleX: 1.2, scaleY: 1.2 }, 100)
+            .wait(1000)
+            .to({ scaleX: 1, scaleY: 1 }, 100)
+            .call(function () {
+            _this.flag = true;
+        });
     };
     Head.prototype.food_list = function (data) {
         var _this = this;
@@ -131,10 +145,23 @@ var Head = (function (_super) {
         return group;
     };
     Head.prototype.setFood = function (index) {
+        var _this = this;
         this.count[index].textFlow = [
             { text: 'X', style: { size: 20 } },
             { text: '  ' + this.headInfo.food[index], style: { size: 24 } }
         ];
+        if (!this.flagArr[index])
+            return;
+        this.flagArr[index] = 0;
+        egret.Tween.get(this.count[index])
+            .to({ scaleX: 1, scaleY: 1 }, 10)
+            .wait(10)
+            .to({ scaleX: 1.2, scaleY: 1.2 }, 100)
+            .wait(1000)
+            .to({ scaleX: 1, scaleY: 1 }, 100)
+            .call(function () {
+            _this.flagArr[index] = 1;
+        });
     };
     return Head;
 }(egret.DisplayObjectContainer));

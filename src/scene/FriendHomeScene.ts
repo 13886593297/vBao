@@ -79,7 +79,7 @@ class FriendHomeScene extends Scene {
             } else if (id == 1) {
                 y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2
             } else if (id == 2) {
-                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2
+                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2 + 60
             }
         } else {
             y = this.stage.stageHeight - this.stage.stageHeight / 3
@@ -96,23 +96,12 @@ class FriendHomeScene extends Scene {
         present.y = this.stage.stageHeight - present.height - 40
         this.addChild(present)
 
-        let feedTip = new Alert('谢谢你的礼物！好\n吃又营养！')
-        feedTip.x = 32
-        feedTip.y = 520
-        feedTip.visible = false
-        this.addChild(feedTip)
-
-        let feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧', 'left')
-        feedTipNone.x = this.stage.stageWidth - feedTipNone.width - 32
-        feedTipNone.y = 600
-        feedTipNone.visible = false
-        this.addChild(feedTipNone)
-
         let foodList = this.head.foodList
+        let feedTip = new Alert('谢谢你的礼物！好\n吃又营养！')
+        let feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧')
         let getGiftTips = new GiftTip(foodList[data.visitedInfo.kind_id - 1].image)
-        getGiftTips.x = this.stage.stageWidth - getGiftTips.width - 50
-        getGiftTips.y = 600
-        getGiftTips.visible = false
+        this.addChild(feedTip)
+        this.addChild(feedTipNone)
         this.addChild(getGiftTips)
         this.getGiftTips = getGiftTips
 
