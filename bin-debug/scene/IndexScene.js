@@ -26,7 +26,6 @@ var IndexScene = (function (_super) {
             }
             else {
                 var head = new Head(_this.userInfo);
-                _this.head = head;
                 _this.addChild(head);
                 _this.daily_task(_this.userInfo);
                 _this.legendary(_this.userInfo);
@@ -125,19 +124,19 @@ var IndexScene = (function (_super) {
         this.addChild(feed);
         var feedTip = new Alert('谢谢主人！好吃又\n营养！');
         var feedTipDone = new Alert('每日2次就够啦！明\n天请再来投喂V宝哦！');
-        var feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧');
+        var feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧', 'left', true);
         this.addChild(feedTip);
         this.addChild(feedTipDone);
         this.addChild(feedTipNone);
         feed.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            if (_this.head.headInfo.food[_this.userInfo.food_type_id - 1] > 0) {
+            if (ViewManager.getInstance().headInfo.food[_this.userInfo.food_type_id - 1] > 0) {
                 Http.getInstance().post(Url.HTTP_FEED, {
                     feedId: _this.userInfo.id,
                     type: 5,
                 }, function (res) {
                     if (res.data.code) {
-                        _this.head.headInfo.food[_this.userInfo.food_type_id - 1] -= 1;
-                        _this.head.headInfo.score += 1;
+                        ViewManager.getInstance().headInfo.food[_this.userInfo.food_type_id - 1] -= 1;
+                        ViewManager.getInstance().headInfo.score += 1;
                         Util.animate(feedTip);
                         Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
                             if (res.data.isfinish) {
@@ -281,7 +280,7 @@ var IndexScene = (function (_super) {
         bitmap.y = bitmap.x;
         var imgLoader = new egret.ImageLoader();
         imgLoader.crossOrigin = 'anonymous'; // 跨域请求
-        imgLoader.load(item.avatar); // 去除链接中的转义字符‘\’
+        imgLoader.load(item.avatar);
         imgLoader.once(egret.Event.COMPLETE, function (evt) {
             if (evt.currentTarget.data) {
                 var texture = new egret.Texture();

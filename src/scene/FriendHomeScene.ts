@@ -31,7 +31,7 @@ class FriendHomeScene extends Scene {
             userId: this.befeedId
         }, res => {
             if (res.data.code) {
-                this.head.headInfo.food[data.visitedInfo.food_type_id - 1] += 1
+                ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] += 1
                 Util.animate(this.getGiftTips)
             }
         })
@@ -123,7 +123,7 @@ class FriendHomeScene extends Scene {
 
         let foodList = this.head.foodList
         let feedTip = new Alert('谢谢你的礼物！好\n吃又营养！')
-        let feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧')
+        let feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧', 'left', true)
         let getGiftTips = new GiftTip(foodList[data.visitedInfo.kind_id - 1].image)
         this.addChild(feedTip)
         this.addChild(feedTipNone)
@@ -134,15 +134,15 @@ class FriendHomeScene extends Scene {
         present.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             if (!flag) return
             flag = false
-            if (this.head.headInfo.food[data.visitedInfo.food_type_id - 1] > 0) {
+            if (ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] > 0) {
                 Http.getInstance().post(Url.HTTP_FEED, {
                     feedId: this.userId,
                     befeedId: this.befeedId,
                     type: 6,
                 }, res => {
                     if (res.data.code == 1) {
-                        this.head.headInfo.food[data.visitedInfo.food_type_id - 1] -= 1
-                        this.head.headInfo.score += 1
+                        ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] -= 1
+                        ViewManager.getInstance().headInfo.score += 1
                         Util.animate(feedTip)
                     } else {
                         Util.animate(feedTipNone)

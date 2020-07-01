@@ -1,10 +1,10 @@
 class Alert extends egret.DisplayObjectContainer {
-    constructor(text, toward = 'left') {
+    constructor(text, toward = 'left', flag = false) {
         super()
-        this.init(text, toward)
+        this.init(text, toward, flag)
     }
 
-    private init(text, toward) {
+    private init(text, toward, flag) {
         let stage = ViewManager.getInstance().stage
         let tips = new egret.TextField
         tips.text = text
@@ -24,7 +24,7 @@ class Alert extends egret.DisplayObjectContainer {
         this.addChild(tail)
         this.visible = false
         this.x = stage.stageWidth - bg.width - 32
-        this.y = stage.$stageHeight / 2 - 60
+        this.y = flag ? stage.stageHeight / 2 - 100 : stage.stageHeight / 2 - 60
     }
 }
 
@@ -58,13 +58,13 @@ class GiftTip extends egret.DisplayObjectContainer {
         tips2.y = tips.y
         this.addChild(tips2)
 
-        let tail = Util.createBitmapByName(`tail_left`)
-        tail.x = 5
-        tail.y = bg.height
-        this.addChild(tail)
+        // let tail = Util.createBitmapByName(`tail_left`)
+        // tail.x = 5
+        // tail.y = bg.height
+        // this.addChild(tail)
 
         this.visible = false
-        this.x = stage.stageWidth - bg.width - 32
-        this.y = stage.$stageHeight / 2 - 60
+        this.x = (stage.stageWidth - bg.width) / 2 + 60
+        this.y = stage.$stageHeight / 2 - 280
     }
 }

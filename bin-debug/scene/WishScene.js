@@ -68,6 +68,7 @@ var WishScene = (function (_super) {
             }, function (res) {
                 if (res.data.code) {
                     var scene = new IndexScene();
+                    ViewManager.getInstance().headInfo.score += _this.item.score;
                     ViewManager.getInstance().changeScene(scene);
                 }
             });

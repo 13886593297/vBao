@@ -15,11 +15,6 @@ var Head = (function (_super) {
      */
     function Head(data) {
         var _this = _super.call(this) || this;
-        _this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
-        _this.headInfo = {
-            food: [_this.userInfo.v_bfood, _this.userInfo.v_tfood, _this.userInfo.v_ffood],
-            score: _this.userInfo.total_score
-        };
         _this.flag = true;
         _this.foodList = [
             { name: 'V宝典', image: 'icon_dir' },
@@ -31,7 +26,7 @@ var Head = (function (_super) {
         _this.init(data);
         return _this;
     }
-    Head.prototype.setProxy = function (data) {
+    Head.prototype.setProxy = function () {
         var self = this;
         function _addProxy(obj) {
             return new Proxy(obj, {
@@ -61,7 +56,7 @@ var Head = (function (_super) {
             _addProxies(proxy, obj);
             return proxy;
         }
-        this.headInfo = addProxy(this.headInfo);
+        ViewManager.getInstance().headInfo = addProxy(ViewManager.getInstance().headInfo);
     };
     Head.prototype.init = function (data) {
         // 头像
@@ -84,11 +79,11 @@ var Head = (function (_super) {
         this.addChild(score);
         this.score = score;
         this.food_list(data);
-        this.setProxy(data);
+        this.setProxy();
     };
     Head.prototype.setScore = function () {
         var _this = this;
-        this.score.text = "\u79EF\u5206\uFF1A" + this.headInfo.score;
+        this.score.text = "\u79EF\u5206\uFF1A" + ViewManager.getInstance().headInfo.score;
         if (!this.flag)
             return;
         this.flag = false;
@@ -134,7 +129,7 @@ var Head = (function (_super) {
         var count = new egret.TextField;
         count.textFlow = [
             { text: 'X', style: { size: 20 } },
-            { text: '  ' + this.headInfo.food[index], style: { size: 24 } }
+            { text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 24 } }
         ];
         count.strokeColor = Config.COLOR_DOC;
         count.stroke = 2;
@@ -148,7 +143,7 @@ var Head = (function (_super) {
         var _this = this;
         this.count[index].textFlow = [
             { text: 'X', style: { size: 20 } },
-            { text: '  ' + this.headInfo.food[index], style: { size: 24 } }
+            { text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 24 } }
         ];
         if (!this.flagArr[index])
             return;

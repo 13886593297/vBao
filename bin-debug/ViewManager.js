@@ -7,6 +7,12 @@ var ViewManager = (function () {
         this.isPlay = false;
         // 骨骼动画唯一
         this.bones = {};
+        this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
+        // 食物个数和积分
+        this.headInfo = {
+            food: [this.userInfo.v_bfood, this.userInfo.v_tfood, this.userInfo.v_ffood],
+            score: this.userInfo.total_score
+        };
     }
     ViewManager.getInstance = function () {
         if (this.instance == null) {

@@ -37,7 +37,7 @@ var FriendHomeScene = (function (_super) {
             userId: this.befeedId
         }, function (res) {
             if (res.data.code) {
-                _this.head.headInfo.food[data.visitedInfo.food_type_id - 1] += 1;
+                ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] += 1;
                 Util.animate(_this.getGiftTips);
             }
         });
@@ -120,7 +120,7 @@ var FriendHomeScene = (function (_super) {
         this.addChild(present);
         var foodList = this.head.foodList;
         var feedTip = new Alert('谢谢你的礼物！好\n吃又营养！');
-        var feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧');
+        var feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧', 'left', true);
         var getGiftTips = new GiftTip(foodList[data.visitedInfo.kind_id - 1].image);
         this.addChild(feedTip);
         this.addChild(feedTipNone);
@@ -131,15 +131,15 @@ var FriendHomeScene = (function (_super) {
             if (!flag)
                 return;
             flag = false;
-            if (_this.head.headInfo.food[data.visitedInfo.food_type_id - 1] > 0) {
+            if (ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] > 0) {
                 Http.getInstance().post(Url.HTTP_FEED, {
                     feedId: _this.userId,
                     befeedId: _this.befeedId,
                     type: 6,
                 }, function (res) {
                     if (res.data.code == 1) {
-                        _this.head.headInfo.food[data.visitedInfo.food_type_id - 1] -= 1;
-                        _this.head.headInfo.score += 1;
+                        ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] -= 1;
+                        ViewManager.getInstance().headInfo.score += 1;
                         Util.animate(feedTip);
                     }
                     else {

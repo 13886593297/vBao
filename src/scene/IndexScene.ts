@@ -1,6 +1,5 @@
 class IndexScene extends Scene {
     private userInfo // 用户信息
-    private head // 公用头部
     private shareScene // 分享
     public constructor() {
         super()
@@ -15,7 +14,6 @@ class IndexScene extends Scene {
                 ViewManager.getInstance().changeScene(scene)
             } else {
                 let head = new Head(this.userInfo)
-                this.head = head
                 this.addChild(head)
 
                 this.daily_task(this.userInfo)
@@ -123,20 +121,20 @@ class IndexScene extends Scene {
 
         let feedTip = new Alert('谢谢主人！好吃又\n营养！')
         let feedTipDone = new Alert('每日2次就够啦！明\n天请再来投喂V宝哦！')
-        let feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧')
+        let feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧', 'left', true)
         this.addChild(feedTip)
         this.addChild(feedTipDone)
         this.addChild(feedTipNone)
         
         feed.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            if (this.head.headInfo.food[this.userInfo.food_type_id - 1] > 0) {
+            if (ViewManager.getInstance().headInfo.food[this.userInfo.food_type_id - 1] > 0) {
                 Http.getInstance().post(Url.HTTP_FEED, {
                     feedId: this.userInfo.id,
                     type: 5,
                 }, res => {
                     if (res.data.code) {
-                        this.head.headInfo.food[this.userInfo.food_type_id - 1] -= 1
-                        this.head.headInfo.score += 1
+                        ViewManager.getInstance().headInfo.food[this.userInfo.food_type_id - 1] -= 1
+                        ViewManager.getInstance().headInfo.score += 1
                         Util.animate(feedTip)
 
                         Http.getInstance().get(Url.HTTP_USER_INFO, res => {
@@ -297,7 +295,7 @@ class IndexScene extends Scene {
 
         let imgLoader = new egret.ImageLoader()
         imgLoader.crossOrigin = 'anonymous' // 跨域请求
-        imgLoader.load(item.avatar) // 去除链接中的转义字符‘\’
+        imgLoader.load(item.avatar)
         imgLoader.once(egret.Event.COMPLETE, (evt: egret.Event) => {
             if (evt.currentTarget.data) {
                 let texture = new egret.Texture()

@@ -1,9 +1,4 @@
 class Head extends egret.DisplayObjectContainer {
-    private userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
-    public headInfo = {
-        food: [this.userInfo.v_bfood, this.userInfo.v_tfood, this.userInfo.v_ffood],
-        score: this.userInfo.total_score
-    }
     /**
      * 公用头部
      */
@@ -12,7 +7,7 @@ class Head extends egret.DisplayObjectContainer {
         this.init(data)
     }
 
-    private setProxy(data) {
+    private setProxy() {
         let self = this
         function _addProxy(obj) {
             return new Proxy(obj, {
@@ -44,7 +39,7 @@ class Head extends egret.DisplayObjectContainer {
             return proxy
         }
 
-        this.headInfo = addProxy(this.headInfo)
+        ViewManager.getInstance().headInfo = addProxy(ViewManager.getInstance().headInfo)
     }
 
     public score
@@ -71,11 +66,11 @@ class Head extends egret.DisplayObjectContainer {
         this.score = score
 
         this.food_list(data)
-        this.setProxy(data)
+        this.setProxy()
     }
     private flag = true
     private setScore() {
-        this.score.text = `积分：${this.headInfo.score}`
+        this.score.text = `积分：${ViewManager.getInstance().headInfo.score}`
         if (!this.flag) return
         this.flag = false
         egret.Tween.get(this.score)
@@ -133,7 +128,7 @@ class Head extends egret.DisplayObjectContainer {
         let count = new egret.TextField
         count.textFlow = [
             {text: 'X', style: { size: 20 }},
-            {text: '  ' + this.headInfo.food[index], style: { size: 24 }}
+            {text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 24 }}
         ]
         count.strokeColor = Config.COLOR_DOC
         count.stroke = 2
@@ -148,7 +143,7 @@ class Head extends egret.DisplayObjectContainer {
     private setFood(index) {
         this.count[index].textFlow = [
             {text: 'X', style: { size: 20 }},
-            {text: '  ' + this.headInfo.food[index], style: { size: 24 }}
+            {text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 24 }}
         ]
         
         if (!this.flagArr[index]) return

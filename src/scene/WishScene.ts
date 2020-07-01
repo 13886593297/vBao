@@ -63,6 +63,7 @@ class WishScene extends Scene {
             }, res => {
                 if (res.data.code) {
                     let scene = new IndexScene()
+                    ViewManager.getInstance().headInfo.score += this.item.score
                     ViewManager.getInstance().changeScene(scene)
                 }
             })

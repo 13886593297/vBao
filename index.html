@@ -124,7 +124,7 @@
                 <img src="./resource/assets/home/title.png" alt="">
                 <div>
                     <p>继5月在母亲节活动上诞生以来，V宝在保育箱中静静地等待了一个多月。今天，你的V宝终于可以带回家啦！</p>
-                    <video id="video" src="http://df-emall.com/media/product1.mp4" controls></video>
+                    <video id="video" src="http://df-emall.com/media/vbaoTitle.mp4" controls poster="https://v-bao-q.lillyadmin.cn/uploads/kind.png"></video>
                 </div>
                 <button id="btn"></button>
             </div>
@@ -135,7 +135,7 @@
     <script src="https://res.wx.qq.com/open/libs/weuijs/1.1.4/weui.min.js"></script>
     <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
     <script>
-        // new VConsole()
+        new VConsole()
 
         var loadScript = function (list, callback) {
             var loaded = 0;
@@ -189,6 +189,7 @@
         xhr.send(null);
 
         var host = 'http://192.168.1.121:8080'
+        // var host = location.origin
         window.localStorage.setItem('host', host)
         $(function() {
             // 获取用户信息判断是否是新用户
@@ -197,6 +198,10 @@
                 success: function(data) {
                     window.localStorage.setItem('userInfo', JSON.stringify(data.data))
                     if (data.errno != 0) {
+                        if (data.errno == 1001) {
+                            location.href = location.origin
+                            return
+                        }
                         weui.alert(data.errmsg, {
                             title: '提示',
                             buttons: [{

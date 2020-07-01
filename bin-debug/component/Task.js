@@ -47,13 +47,12 @@ var Task = (function (_super) {
                         // 传奇的诞生
                         cb = function () {
                             var legendary = _this.parent.getChildByName('legendary');
-                            var head = _this.parent.getChildByName('head');
                             Http.getInstance().post(Url.HTTP_TASK_FINISHTASK, {
                                 taskId: item.id,
                                 score: item.score
                             }, function (res) {
                                 if (res.data.code) {
-                                    head.headInfo.score += item.score;
+                                    ViewManager.getInstance().headInfo.score += item.score;
                                     Http.getInstance().get(Url.HTTP_LEGENDARY, function (res) {
                                         legendary.visible = true;
                                         ViewManager.getInstance().isPlay = false;
@@ -82,13 +81,12 @@ var Task = (function (_super) {
                     case 4:
                         // 签到
                         cb = function () {
-                            var head = _this.parent.getChildByName('head');
                             var daily_task_tips = _this.parent['daily_task_tips'];
                             Http.getInstance().get(Url.HTTP_USER_SIGN, function () {
-                                head.headInfo.food[0] += 1;
-                                head.headInfo.food[1] += 1;
-                                head.headInfo.food[2] += 1;
-                                head.headInfo.score += 1;
+                                ViewManager.getInstance().headInfo.food[0] += 1;
+                                ViewManager.getInstance().headInfo.food[1] += 1;
+                                ViewManager.getInstance().headInfo.food[2] += 1;
+                                ViewManager.getInstance().headInfo.score += 1;
                                 _this.parent.removeChild(_this);
                                 Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
                                     if (res.data.isfinish) {

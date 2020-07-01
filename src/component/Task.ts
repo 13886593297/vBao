@@ -40,13 +40,12 @@ class Task extends eui.Group {
                         // 传奇的诞生
                         cb = () => {
                             let legendary = this.parent.getChildByName('legendary')
-                            let head:any = this.parent.getChildByName('head')
                             Http.getInstance().post(Url.HTTP_TASK_FINISHTASK, {
                                 taskId: item.id,
                                 score: item.score
                             }, res => {
                                 if (res.data.code) {
-                                    head.headInfo.score += item.score
+                                    ViewManager.getInstance().headInfo.score += item.score
                                     Http.getInstance().get(Url.HTTP_LEGENDARY, res => {
                                         legendary.visible = true
                                         ViewManager.getInstance().isPlay = false
@@ -75,13 +74,12 @@ class Task extends eui.Group {
                     case 4:
                         // 签到
                         cb = () => {
-                            let head: any = this.parent.getChildByName('head')
                             let daily_task_tips = this.parent['daily_task_tips']
                             Http.getInstance().get(Url.HTTP_USER_SIGN, () => {
-                                head.headInfo.food[0] += 1
-                                head.headInfo.food[1] += 1
-                                head.headInfo.food[2] += 1
-                                head.headInfo.score += 1
+                                ViewManager.getInstance().headInfo.food[0] += 1
+                                ViewManager.getInstance().headInfo.food[1] += 1
+                                ViewManager.getInstance().headInfo.food[2] += 1
+                                ViewManager.getInstance().headInfo.score += 1
                                 this.parent.removeChild(this)
 
                                 Http.getInstance().get(Url.HTTP_USER_INFO, res => {

@@ -10,13 +10,14 @@ r.prototype = e.prototype, t.prototype = new r();
 };
 var Alert = (function (_super) {
     __extends(Alert, _super);
-    function Alert(text, toward) {
+    function Alert(text, toward, flag) {
         if (toward === void 0) { toward = 'left'; }
+        if (flag === void 0) { flag = false; }
         var _this = _super.call(this) || this;
-        _this.init(text, toward);
+        _this.init(text, toward, flag);
         return _this;
     }
-    Alert.prototype.init = function (text, toward) {
+    Alert.prototype.init = function (text, toward, flag) {
         var stage = ViewManager.getInstance().stage;
         var tips = new egret.TextField;
         tips.text = text;
@@ -33,7 +34,7 @@ var Alert = (function (_super) {
         this.addChild(tail);
         this.visible = false;
         this.x = stage.stageWidth - bg.width - 32;
-        this.y = stage.$stageHeight / 2 - 60;
+        this.y = flag ? stage.stageHeight / 2 - 100 : stage.stageHeight / 2 - 60;
     };
     return Alert;
 }(egret.DisplayObjectContainer));
@@ -65,13 +66,13 @@ var GiftTip = (function (_super) {
         tips2.x = img.x + img.width + 2;
         tips2.y = tips.y;
         this.addChild(tips2);
-        var tail = Util.createBitmapByName("tail_left");
-        tail.x = 5;
-        tail.y = bg.height;
-        this.addChild(tail);
+        // let tail = Util.createBitmapByName(`tail_left`)
+        // tail.x = 5
+        // tail.y = bg.height
+        // this.addChild(tail)
         this.visible = false;
-        this.x = stage.stageWidth - bg.width - 32;
-        this.y = stage.$stageHeight / 2 - 60;
+        this.x = (stage.stageWidth - bg.width) / 2 + 60;
+        this.y = stage.$stageHeight / 2 - 280;
     };
     return GiftTip;
 }(egret.DisplayObjectContainer));
