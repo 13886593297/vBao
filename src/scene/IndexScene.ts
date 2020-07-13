@@ -18,9 +18,6 @@ class IndexScene extends Scene {
 
                 this.daily_task(this.userInfo)
                 this.legendary(this.userInfo)
-                if (this.userInfo.isfinishV) {
-                }
-
                 this.vBao()
 
                 if (this.userInfo.level_id == 2) {
@@ -159,7 +156,7 @@ class IndexScene extends Scene {
         decorate.y = this.stage.stageHeight - decorate.height - 40
         this.addChild(decorate)
 
-        let tips = new Alert('7月上新，敬请期待', 'right')
+        let tips = new Alert('新功能孵化中，敬请期待', 'right')
         tips.x = 325
         tips.y = this.stage.stageHeight - decorate.height - 40 - tips.height
         this.addChild(tips)

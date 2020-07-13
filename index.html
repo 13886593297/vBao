@@ -187,8 +187,7 @@
             });
         });
         xhr.send(null);
-
-        var host = 'http://192.168.1.121:8080'
+        var host = 'http://192.168.1.102:8080'
         // var host = location.origin
         window.localStorage.setItem('host', host)
         $(function() {
@@ -231,6 +230,7 @@
             $('#btn').click(function() {
                 setTimeout(() => {
                     $('#htmlBox').hide()
+                    $('#video')[0].pause()
                 }, 500)
             })
 

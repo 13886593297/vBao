@@ -23,9 +23,9 @@ var Alert = (function (_super) {
         tips.text = text;
         tips.size = 22;
         tips.lineSpacing = 16;
-        var bg = Util.drawRoundRect(0, 0x000000, 0x000000, 240, tips.height + 40, 20, 0.6);
+        var bg = Util.drawRoundRect(0, 0x000000, 0x000000, tips.width + 40, tips.height + 40, 20, 0.6);
         this.addChild(bg);
-        tips.x = 25;
+        tips.x = 20;
         tips.y = 20;
         this.addChild(tips);
         var tail = Util.createBitmapByName("tail_" + toward);

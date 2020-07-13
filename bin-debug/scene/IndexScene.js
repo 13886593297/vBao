@@ -29,8 +29,6 @@ var IndexScene = (function (_super) {
                 _this.addChild(head);
                 _this.daily_task(_this.userInfo);
                 _this.legendary(_this.userInfo);
-                if (_this.userInfo.isfinishV) {
-                }
                 _this.vBao();
                 if (_this.userInfo.level_id == 2) {
                     _this.feed();
@@ -160,7 +158,7 @@ var IndexScene = (function (_super) {
         decorate.x = 510;
         decorate.y = this.stage.stageHeight - decorate.height - 40;
         this.addChild(decorate);
-        var tips = new Alert('7月上新，敬请期待', 'right');
+        var tips = new Alert('新功能孵化中，敬请期待', 'right');
         tips.x = 325;
         tips.y = this.stage.stageHeight - decorate.height - 40 - tips.height;
         this.addChild(tips);
