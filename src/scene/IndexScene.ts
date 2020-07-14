@@ -6,18 +6,21 @@ class IndexScene extends Scene {
     }
 
     public init() {
+        // 获取用户信息
         Http.getInstance().get(Url.HTTP_USER_INFO, (res) => {
             this.userInfo = res.data
             window.localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+            ViewManager.getInstance().updateUserInfo()
+            // 播放升级动画
             if (this.userInfo.isUpdate) {
                 let scene = new GetVbaoScene(this.userInfo.kind_id - 1, 2)
                 ViewManager.getInstance().changeScene(scene)
             } else {
-                let head = new Head(this.userInfo)
+                let head = new Head()
                 this.addChild(head)
 
-                this.daily_task(this.userInfo)
-                this.legendary(this.userInfo)
+                this.daily_task()
+                this.legendary()
                 this.vBao()
 
                 if (this.userInfo.level_id == 2) {
@@ -27,15 +30,17 @@ class IndexScene extends Scene {
                 }
             }
 
+            // 注册分享
             shareFriend(this.userInfo.id, () => {
                 this.removeChild(this.shareScene)
             })
         })
     }
 
-    public daily_task_tips
-    private daily_task(data) {
-        // 每日任务
+    /**每日任务红点提示 */
+    private daily_task_tips
+    /**每日任务 */
+    private daily_task() {
         let group = new eui.Group
         group.width = 110
         group.height = 170
@@ -48,28 +53,26 @@ class IndexScene extends Scene {
         daily_task_btn.x = group.width - daily_task_btn.width
         daily_task_btn.y = group.height - daily_task_btn.height
         group.addChild(daily_task_btn)
-
-        // 每日任务提示
-        let daily_task_tips = Util.createBitmapByName('daily_task_tips')
-        daily_task_tips.x = 0
-        daily_task_tips.y = 0
-        daily_task_tips.visible = this.userInfo.isfinish == 0
-        this.daily_task_tips = daily_task_tips
-        group.addChild(daily_task_tips)
+        
+        this.daily_task_tips = Util.createBitmapByName('daily_task_tips')
+        this.daily_task_tips.x = 0
+        this.daily_task_tips.y = 0
+        this.daily_task_tips.visible = this.userInfo.isfinish == 0
+        group.addChild(this.daily_task_tips)
 
         group.touchEnabled = true
         group.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            let task = new Task(data)
+            let task = new Task()
             this.addChild(task)
         }, this)
     }
 
-    private legendary(data) {
-        // 传奇诞生
+    /** 传奇的诞生 */
+    private legendary() {
         let legendary = new BtnBase('legendary')
         legendary.x = this.stage.stageWidth - legendary.width - 30
         legendary.y = 380
-        legendary.visible = data.isfinishV ? true : false
+        legendary.visible = this.userInfo.isfinishV ? true : false
         legendary.name = 'legendary'
         this.addChild(legendary)
         legendary.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
@@ -96,16 +99,6 @@ class IndexScene extends Scene {
         }
         let bones = new Bones(id, this.userInfo.level_id, 380, y)
         this.addChild(bones)
-
-        // 昵称
-        let nickname = new egret.TextField
-        nickname.text = this.userInfo.nick_name
-        nickname.x = this.center(nickname)
-        nickname.y = this.stage.stageHeight - 250
-        nickname.size = 24
-        nickname.textColor = 0x000000
-        nickname.visible = false
-        this.addChild(nickname)
     }
 
     // 投喂
@@ -162,7 +155,8 @@ class IndexScene extends Scene {
         this.addChild(tips)
 
         decorate.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            Util.animate(tips)
+            // Util.animate(tips)
+            _decorate()
         }, this)
     }
 

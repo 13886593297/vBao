@@ -10,22 +10,36 @@ r.prototype = e.prototype, t.prototype = new r();
 };
 var Head = (function (_super) {
     __extends(Head, _super);
-    /**
-     * 公用头部
-     */
-    function Head(data) {
+    /** 公用头部 */
+    function Head() {
         var _this = _super.call(this) || this;
+        _this.userInfo = ViewManager.getInstance().userInfo;
+        _this.score = new egret.TextField;
+        /** 预防用户连续点击时动画出现异常 */
         _this.flag = true;
-        _this.foodList = [
-            { name: 'V宝典', image: 'icon_dir' },
-            { name: 'V拳套', image: 'icon_glove' },
-            { name: 'V飞机', image: 'icon_air' }
-        ];
-        _this.count = [];
+        /** 食物数量数组 */
+        _this.food_count_arr = [];
+        /** 预防用户连续点击时动画出现异常 */
         _this.flagArr = [1, 1, 1];
-        _this.init(data);
+        _this.init();
         return _this;
     }
+    Head.prototype.init = function () {
+        this.initialAvatar();
+        this.initialScore();
+        this.initialFoodList();
+        this.setProxy();
+    };
+    /** 初始化头像 */
+    Head.prototype.initialAvatar = function () {
+        var avatar = Util.setAvatar(this.userInfo.avatar);
+        if (!avatar)
+            return;
+        avatar.x = 30;
+        avatar.y = 45;
+        this.addChild(avatar);
+    };
+    /** 设置积分和食物数量代理，当数量改变自动改变DOM */
     Head.prototype.setProxy = function () {
         var self = this;
         function _addProxy(obj) {
@@ -58,28 +72,16 @@ var Head = (function (_super) {
         }
         ViewManager.getInstance().headInfo = addProxy(ViewManager.getInstance().headInfo);
     };
-    Head.prototype.init = function (data) {
-        // 头像
-        var avatar = Util.setAvatar(data.avatar);
-        if (avatar) {
-            avatar.x = 30;
-            avatar.y = 45;
-            this.addChild(avatar);
-        }
-        this.name = 'head';
-        // 分数
-        var score = new egret.TextField;
-        score.text = "\u79EF\u5206\uFF1A" + data.total_score;
-        score.x = 200;
-        score.y = data.level_id == 1 ? 100 : 150;
-        score.size = 24;
-        score.bold = true;
-        score.strokeColor = Config.COLOR_DOC;
-        score.stroke = 1;
-        this.addChild(score);
-        this.score = score;
-        this.food_list(data);
-        this.setProxy();
+    /** 初始化积分 */
+    Head.prototype.initialScore = function () {
+        this.score.text = "\u79EF\u5206\uFF1A" + this.userInfo.total_score;
+        this.score.x = 200;
+        this.score.y = this.userInfo.level_id == 1 ? 100 : 150;
+        this.score.size = 24;
+        this.score.bold = true;
+        this.score.strokeColor = Config.COLOR_DOC;
+        this.score.stroke = 1;
+        this.addChild(this.score);
     };
     Head.prototype.setScore = function () {
         var _this = this;
@@ -87,29 +89,24 @@ var Head = (function (_super) {
         if (!this.flag)
             return;
         this.flag = false;
-        egret.Tween.get(this.score)
-            .to({ scaleX: 1, scaleY: 1 }, 10)
-            .wait(10)
-            .to({ scaleX: 1.2, scaleY: 1.2 }, 100)
-            .wait(1000)
-            .to({ scaleX: 1, scaleY: 1 }, 100)
-            .call(function () {
+        this.tweenAni(this.score, function () {
             _this.flag = true;
         });
     };
-    Head.prototype.food_list = function (data) {
+    /** 初始化食物列表 */
+    Head.prototype.initialFoodList = function () {
         var _this = this;
         var header_group = new eui.Group;
         header_group.x = 180;
         header_group.y = 48;
-        header_group.visible = data.level_id == 2 ? true : false;
+        header_group.visible = this.userInfo.level_id == 2 ? true : false;
         this.addChild(header_group);
         var header_bg = Util.createBitmapByName('header_bg');
         header_group.width = header_bg.width;
         header_group.height = header_bg.height;
         header_group.addChild(header_bg);
         var x = 30;
-        this.foodList.forEach(function (item, index) {
+        FoodList.forEach(function (item, index) {
             var header_item = _this.food(item, index);
             header_item.x = x;
             header_item.y = 16;
@@ -126,37 +123,40 @@ var Head = (function (_super) {
         label.x = icon.width + 8;
         label.y = 8;
         group.addChild(label);
-        var count = new egret.TextField;
-        count.textFlow = [
+        var food_count = new egret.TextField;
+        food_count.textFlow = [
             { text: 'X', style: { size: 20 } },
             { text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 24 } }
         ];
-        count.strokeColor = Config.COLOR_DOC;
-        count.stroke = 2;
-        count.x = label.x;
-        count.y = label.y + label.height + 6;
-        group.addChild(count);
-        this.count[index] = count;
+        food_count.strokeColor = Config.COLOR_DOC;
+        food_count.stroke = 2;
+        food_count.x = label.x;
+        food_count.y = label.y + label.height + 6;
+        group.addChild(food_count);
+        this.food_count_arr[index] = food_count;
         return group;
     };
     Head.prototype.setFood = function (index) {
         var _this = this;
-        this.count[index].textFlow = [
+        this.food_count_arr[index].textFlow = [
             { text: 'X', style: { size: 20 } },
             { text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 24 } }
         ];
         if (!this.flagArr[index])
             return;
         this.flagArr[index] = 0;
-        egret.Tween.get(this.count[index])
+        this.tweenAni(this.food_count_arr[index], function () {
+            _this.flagArr[index] = 1;
+        });
+    };
+    Head.prototype.tweenAni = function (ele, cb) {
+        egret.Tween.get(ele)
             .to({ scaleX: 1, scaleY: 1 }, 10)
             .wait(10)
             .to({ scaleX: 1.2, scaleY: 1.2 }, 100)
             .wait(1000)
             .to({ scaleX: 1, scaleY: 1 }, 100)
-            .call(function () {
-            _this.flagArr[index] = 1;
-        });
+            .call(cb);
     };
     return Head;
 }(egret.DisplayObjectContainer));

@@ -23,7 +23,7 @@ var InfoScene = (function (_super) {
         var _this = this;
         var list = ['名字', '星座', '血型', '爱好'];
         // 中心背景
-        var bg = Util.createBitmapByName("info_" + VbaoType[this.id].name);
+        var bg = Util.createBitmapByName('info_doc');
         bg.x = this.center(bg);
         bg.y = 142;
         this.addChild(bg);

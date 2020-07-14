@@ -1,17 +1,20 @@
 class Task extends eui.Group {
-    constructor(data) {
+    /**
+     * 每日任务
+     */
+    constructor() {
         super()
-        this.init(data)
+        this.init()
     }
 
-    private init(data) {
+    private init() {
         let stage = ViewManager.getInstance().stage
         this.width = stage.stageWidth
         this.height = stage.stageHeight
 
         let bg = Util.createBitmapByName('info_doc')
         bg.x = (this.width - bg.width) / 2
-        bg.height = 1400
+        bg.height = this.height
         bg.y = 212
         this.addChild(bg)
 
@@ -26,7 +29,7 @@ class Task extends eui.Group {
         close.y = 246
         this.addChild(close)
 
-        let userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
+        let userInfo = ViewManager.getInstance().userInfo
         close.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             this.parent.removeChild(this)
         }, this)
@@ -54,7 +57,7 @@ class Task extends eui.Group {
                                         if (userInfo.level_id == 1) {
                                             Http.getInstance().get(Url.HTTP_ISUPDATE, res => {
                                                 if (res.data.info.isUpdate) {
-                                                    let scene = new GetVbaoScene(data.kind_id - 1, 2)
+                                                    let scene = new GetVbaoScene(userInfo.kind_id - 1, 2)
                                                     ViewManager.getInstance().changeScene(scene)
                                                 }
                                             })
@@ -106,7 +109,7 @@ class Task extends eui.Group {
                         break;
                 }
                 
-                let task = this.taskList(item, item.taskStatus ? () => {} : cb)
+                let task = this.taskItem(item, item.taskStatus ? () => {} : cb)
                 task.x = (stage.stageWidth - task.width) / 2
                 task.y = y
                 this.addChild(task)
@@ -125,7 +128,7 @@ class Task extends eui.Group {
         this.addChild(tips)
     }
 
-    private taskList(item, cb) {
+    private taskItem(item, cb) {
         let group = new eui.Group
         let bg = Util.drawRoundRect(0, 0xffffff, 0xffffff, 580, item.id == 3 ? 280 : item.id == 4 ? 120 : 190, 40)
         group.width = bg.width
@@ -137,14 +140,10 @@ class Task extends eui.Group {
         flag.y = 30
         group.addChild(flag)
 
-        let title = new egret.TextField
-        title.text = item.name
-        title.size = 38
-        title.textColor = 0x214b5e
-        title.x = 105
-        title.y = 30
-        group.addChild(title)
+        let task_name = this.taskName(item)
+        group.addChild(task_name)
 
+        // 发送祝福
         if (item.id == 3) {
             let des = new egret.TextField
             des.text = '小宝宝总在眨眼间就长大了。不信？试\n着给V宝发送一个祝福吧！'
@@ -156,25 +155,25 @@ class Task extends eui.Group {
             group.addChild(des)
         }
 
-        let progress = new egret.TextField
-        progress.textColor = title.textColor
-        progress.size = title.size
-        progress.x = 205
-        progress.y = title.y
+        let task_progress = new egret.TextField
+        task_progress.textColor = task_name.textColor
+        task_progress.size = task_name.size
+        task_progress.x = 205
+        task_progress.y = task_name.y
         if (item.id == 5) {
-            progress.text = `(${item.resultCount}/${item.taskCount})`
+            task_progress.text = `(${item.resultCount}/${item.taskCount})`
         } else if (item.id == 6) {
-            progress.text = `X${item.resultCount}`
+            task_progress.text = `X${item.resultCount}`
         }
-        group.addChild(progress)
+        group.addChild(task_progress)
 
         let score = new egret.TextField
         score.text = `+${item.score}积分`
         score.textColor = 0x1877ce
         score.size = 24
         score.x = item.id == 4 ? 200 : 450
-        score.y = title.y
-        score.height = title.height
+        score.y = task_name.y
+        score.height = task_name.height
         score.verticalAlign = 'middle'
         group.addChild(score)
 
@@ -185,5 +184,16 @@ class Task extends eui.Group {
         btn.addEventListener(egret.TouchEvent.TOUCH_TAP, cb, this)
 
         return group
+    }
+
+    /** 任务名称 */
+    private taskName(item) {
+        let task_name = new egret.TextField
+        task_name.text = item.name
+        task_name.size = 38
+        task_name.textColor = 0x214b5e
+        task_name.x = 105
+        task_name.y = 30
+        return task_name
     }
 }

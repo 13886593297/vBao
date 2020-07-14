@@ -111,5 +111,5 @@ class Util {
     }
 }
 
-declare function configSdk(config)
 declare function shareFriend(id, callback)
+declare function _decorate()

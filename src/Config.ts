@@ -10,3 +10,9 @@ const VbaoType = [
     {name: 'box', color: Config.COLOR_BOX, label: '韧'},
     {name: 'pilot', color: Config.COLOR_PILOT, label: '敢'}
 ]
+
+const FoodList = [
+    {name: 'V宝典', image: 'icon_dir'},
+    {name: 'V拳套', image: 'icon_glove'},
+    {name: 'V飞机', image: 'icon_air'}
+]

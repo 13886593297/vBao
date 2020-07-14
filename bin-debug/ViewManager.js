@@ -4,6 +4,7 @@ var __reflect = (this && this.__reflect) || function (p, c, t) {
 var ViewManager = (function () {
     function ViewManager() {
         this.views = [];
+        /** 音乐是否在播放 */
         this.isPlay = false;
         // 骨骼动画唯一
         this.bones = {};
@@ -76,6 +77,9 @@ var ViewManager = (function () {
     };
     ViewManager.prototype.setBones = function (id, bone) {
         this.bones[id] = bone;
+    };
+    ViewManager.prototype.updateUserInfo = function () {
+        this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
     };
     return ViewManager;
 }());

@@ -17,18 +17,21 @@ var IndexScene = (function (_super) {
     }
     IndexScene.prototype.init = function () {
         var _this = this;
+        // 获取用户信息
         Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
             _this.userInfo = res.data;
             window.localStorage.setItem('userInfo', JSON.stringify(_this.userInfo));
+            ViewManager.getInstance().updateUserInfo();
+            // 播放升级动画
             if (_this.userInfo.isUpdate) {
                 var scene = new GetVbaoScene(_this.userInfo.kind_id - 1, 2);
                 ViewManager.getInstance().changeScene(scene);
             }
             else {
-                var head = new Head(_this.userInfo);
+                var head = new Head();
                 _this.addChild(head);
-                _this.daily_task(_this.userInfo);
-                _this.legendary(_this.userInfo);
+                _this.daily_task();
+                _this.legendary();
                 _this.vBao();
                 if (_this.userInfo.level_id == 2) {
                     _this.feed();
@@ -36,14 +39,15 @@ var IndexScene = (function (_super) {
                     _this.around();
                 }
             }
+            // 注册分享
             shareFriend(_this.userInfo.id, function () {
                 _this.removeChild(_this.shareScene);
             });
         });
     };
-    IndexScene.prototype.daily_task = function (data) {
+    /**每日任务 */
+    IndexScene.prototype.daily_task = function () {
         var _this = this;
-        // 每日任务
         var group = new eui.Group;
         group.width = 110;
         group.height = 170;
@@ -55,25 +59,23 @@ var IndexScene = (function (_super) {
         daily_task_btn.x = group.width - daily_task_btn.width;
         daily_task_btn.y = group.height - daily_task_btn.height;
         group.addChild(daily_task_btn);
-        // 每日任务提示
-        var daily_task_tips = Util.createBitmapByName('daily_task_tips');
-        daily_task_tips.x = 0;
-        daily_task_tips.y = 0;
-        daily_task_tips.visible = this.userInfo.isfinish == 0;
-        this.daily_task_tips = daily_task_tips;
-        group.addChild(daily_task_tips);
+        this.daily_task_tips = Util.createBitmapByName('daily_task_tips');
+        this.daily_task_tips.x = 0;
+        this.daily_task_tips.y = 0;
+        this.daily_task_tips.visible = this.userInfo.isfinish == 0;
+        group.addChild(this.daily_task_tips);
         group.touchEnabled = true;
         group.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            var task = new Task(data);
+            var task = new Task();
             _this.addChild(task);
         }, this);
     };
-    IndexScene.prototype.legendary = function (data) {
-        // 传奇诞生
+    /** 传奇的诞生 */
+    IndexScene.prototype.legendary = function () {
         var legendary = new BtnBase('legendary');
         legendary.x = this.stage.stageWidth - legendary.width - 30;
         legendary.y = 380;
-        legendary.visible = data.isfinishV ? true : false;
+        legendary.visible = this.userInfo.isfinishV ? true : false;
         legendary.name = 'legendary';
         this.addChild(legendary);
         legendary.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
@@ -102,15 +104,6 @@ var IndexScene = (function (_super) {
         }
         var bones = new Bones(id, this.userInfo.level_id, 380, y);
         this.addChild(bones);
-        // 昵称
-        var nickname = new egret.TextField;
-        nickname.text = this.userInfo.nick_name;
-        nickname.x = this.center(nickname);
-        nickname.y = this.stage.stageHeight - 250;
-        nickname.size = 24;
-        nickname.textColor = 0x000000;
-        nickname.visible = false;
-        this.addChild(nickname);
     };
     // 投喂
     IndexScene.prototype.feed = function () {
@@ -163,7 +156,8 @@ var IndexScene = (function (_super) {
         tips.y = this.stage.stageHeight - decorate.height - 40 - tips.height;
         this.addChild(tips);
         decorate.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            Util.animate(tips);
+            // Util.animate(tips)
+            _decorate();
         }, this);
     };
     IndexScene.prototype.around = function () {

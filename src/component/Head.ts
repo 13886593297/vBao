@@ -1,12 +1,29 @@
 class Head extends egret.DisplayObjectContainer {
-    /**
-     * 公用头部
-     */
-    constructor(data) {
+    private userInfo = ViewManager.getInstance().userInfo
+    
+    /** 公用头部 */
+    constructor() {
         super()
-        this.init(data)
+        this.init()
     }
 
+    private init() {
+        this.initialAvatar()
+        this.initialScore()
+        this.initialFoodList()
+        this.setProxy()
+    }
+
+    /** 初始化头像 */
+    private initialAvatar() {
+        let avatar = Util.setAvatar(this.userInfo.avatar)
+        if (!avatar) return
+        avatar.x = 30
+        avatar.y = 45
+        this.addChild(avatar)
+    }
+
+    /** 设置积分和食物数量代理，当数量改变自动改变DOM */
     private setProxy() {
         let self = this
         function _addProxy(obj) {
@@ -42,59 +59,36 @@ class Head extends egret.DisplayObjectContainer {
         ViewManager.getInstance().headInfo = addProxy(ViewManager.getInstance().headInfo)
     }
 
-    public score
-    private init(data) {
-        // 头像
-        let avatar = Util.setAvatar(data.avatar)
-        if (avatar) {
-            avatar.x = 30
-            avatar.y = 45
-            this.addChild(avatar)
-        }
-        this.name = 'head'
-
-        // 分数
-        let score = new egret.TextField
-        score.text = `积分：${data.total_score}`
-        score.x = 200
-        score.y = data.level_id == 1 ? 100 : 150
-        score.size = 24
-        score.bold = true
-        score.strokeColor = Config.COLOR_DOC
-        score.stroke = 1
-        this.addChild(score)
-        this.score = score
-
-        this.food_list(data)
-        this.setProxy()
+    private score: egret.TextField = new egret.TextField
+    /** 初始化积分 */
+    private initialScore() {
+        this.score.text = `积分：${this.userInfo.total_score}`
+        this.score.x = 200
+        this.score.y = this.userInfo.level_id == 1 ? 100 : 150
+        this.score.size = 24
+        this.score.bold = true
+        this.score.strokeColor = Config.COLOR_DOC
+        this.score.stroke = 1
+        this.addChild(this.score)
     }
+
+    /** 预防用户连续点击时动画出现异常 */
     private flag = true
     private setScore() {
         this.score.text = `积分：${ViewManager.getInstance().headInfo.score}`
         if (!this.flag) return
         this.flag = false
-        egret.Tween.get(this.score)
-            .to({ scaleX: 1, scaleY: 1 }, 10)
-            .wait(10)
-            .to({ scaleX: 1.2, scaleY: 1.2 }, 100)
-            .wait(1000)
-            .to({ scaleX: 1, scaleY: 1 }, 100)
-            .call(() => {
-                this.flag = true
-            })
+        this.tweenAni(this.score, () => {
+            this.flag = true
+        })
     }
 
-    public foodList = [
-        {name: 'V宝典', image: 'icon_dir'},
-        {name: 'V拳套', image: 'icon_glove'},
-        {name: 'V飞机', image: 'icon_air'}
-    ]
-
-    private food_list(data) {
+    /** 初始化食物列表 */
+    private initialFoodList() {
         let header_group = new eui.Group
         header_group.x = 180
         header_group.y = 48
-        header_group.visible = data.level_id == 2 ? true : false
+        header_group.visible = this.userInfo.level_id == 2 ? true : false
         this.addChild(header_group)
 
         let header_bg = Util.createBitmapByName('header_bg')
@@ -103,7 +97,7 @@ class Head extends egret.DisplayObjectContainer {
         header_group.addChild(header_bg)
 
         let x = 30
-        this.foodList.forEach((item, index) => {
+        FoodList.forEach((item, index) => {
             let header_item = this.food(item, index)
             header_item.x = x
             header_item.y = 16
@@ -111,8 +105,9 @@ class Head extends egret.DisplayObjectContainer {
             x += header_item.width
         })
     }
-
-    private count = []
+    
+    /** 食物数量数组 */
+    private food_count_arr = []
     private food(item, index) {
         let group = new eui.Group
         group.width = 170
@@ -125,37 +120,42 @@ class Head extends egret.DisplayObjectContainer {
         label.y = 8
         group.addChild(label)
         
-        let count = new egret.TextField
-        count.textFlow = [
+        let food_count = new egret.TextField
+        food_count.textFlow = [
             {text: 'X', style: { size: 20 }},
             {text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 24 }}
         ]
-        count.strokeColor = Config.COLOR_DOC
-        count.stroke = 2
-        count.x = label.x
-        count.y = label.y + label.height + 6
-        group.addChild(count)
-        this.count[index] = count
+        food_count.strokeColor = Config.COLOR_DOC
+        food_count.stroke = 2
+        food_count.x = label.x
+        food_count.y = label.y + label.height + 6
+        group.addChild(food_count)
+        this.food_count_arr[index] = food_count
         return group
     }
 
+    /** 预防用户连续点击时动画出现异常 */
     private flagArr = [1, 1, 1]
     private setFood(index) {
-        this.count[index].textFlow = [
+        this.food_count_arr[index].textFlow = [
             {text: 'X', style: { size: 20 }},
             {text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 24 }}
         ]
         
         if (!this.flagArr[index]) return
         this.flagArr[index] = 0
-        egret.Tween.get(this.count[index])
+        this.tweenAni(this.food_count_arr[index], () => {
+            this.flagArr[index] = 1
+        })
+    }
+
+    private tweenAni(ele, cb) {
+        egret.Tween.get(ele)
             .to({ scaleX: 1, scaleY: 1 }, 10)
             .wait(10)
             .to({ scaleX: 1.2, scaleY: 1.2 }, 100)
             .wait(1000)
             .to({ scaleX: 1, scaleY: 1 }, 100)
-            .call(() => {
-                this.flagArr[index] = 1
-            })
+            .call(cb)
     }
 }

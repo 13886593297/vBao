@@ -10,6 +10,11 @@ r.prototype = e.prototype, t.prototype = new r();
 };
 var GetVbaoScene = (function (_super) {
     __extends(GetVbaoScene, _super);
+    /**
+     * 获得vbao动画和vbao升级动画
+     * @param id vbao类型
+     * @param level vbao等级
+     */
     function GetVbaoScene(id, level) {
         var _this = _super.call(this) || this;
         _this.id = id;
@@ -35,7 +40,7 @@ var GetVbaoScene = (function (_super) {
         group.anchorOffsetX = group.width / 2;
         group.anchorOffsetY = group.height / 2;
         this.addChild(group);
-        var bg = Util.createBitmapByName("getVbao_" + VbaoType[this.id].name);
+        var bg = Util.createBitmapByName('getVbao_doc');
         bg.x = this.center(bg);
         bg.y = 330;
         group.addChild(bg);

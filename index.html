@@ -11,7 +11,7 @@
     <meta name="screen-orientation" content="portrait" />
     <meta name="x5-fullscreen" content="true" />
     <meta name="360-fullscreen" content="true" />
-    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.3/weui.min.css">
+    <link rel="stylesheet" href="./static/weui.min.css">
     <style>
         @font-face {
             font-family: 'MyFont';
@@ -96,7 +96,6 @@
             height: 42px;
             background: url('./resource/assets/home/index_btn.png') no-repeat;
             background-size: cover;
-            display: none;
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
@@ -130,12 +129,12 @@
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js"></script>
-    <script src="https://res.wx.qq.com/open/libs/weuijs/1.1.4/weui.min.js"></script>
-    <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <script src="./static/jquery-3.5.1.min.js"></script>
+    <script src="./static/weui.min.js"></script>
+    <script src="./static/jweixin-1.2.0.js"></script>
+    <script src="./static/vconsole.min.js"></script>
     <script>
-        new VConsole()
+        // new VConsole()
 
         var loadScript = function (list, callback) {
             var loaded = 0;
@@ -187,7 +186,8 @@
             });
         });
         xhr.send(null);
-        var host = 'http://192.168.1.102:8080'
+        
+        var host = 'http://192.168.1.100:8080'
         // var host = location.origin
         window.localStorage.setItem('host', host)
         $(function() {
@@ -221,10 +221,6 @@
                         $('#htmlBox').hide()
                     }
                 }
-            })
-            
-            $('#video').on('ended', function() {
-                $('#btn').css('display', 'block')
             })
 
             $('#btn').click(function() {
@@ -298,6 +294,11 @@
             }
             wx.onMenuShareAppMessage(shareData)
             wx.onMenuShareTimeline(shareData)
+        }
+
+        // 装扮
+        function _decorate() {
+            $(document.body).css('backgroundImage', 'url(./resource/assets/getVbao/bg.jpg)')
         }
     </script>
 </body>

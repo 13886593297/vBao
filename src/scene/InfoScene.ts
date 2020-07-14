@@ -14,7 +14,7 @@ class InfoScene extends Scene {
         let list = ['名字', '星座', '血型', '爱好']
 
         // 中心背景
-        let bg: egret.Bitmap = Util.createBitmapByName(`info_${VbaoType[this.id].name}`)
+        let bg: egret.Bitmap = Util.createBitmapByName('info_doc')
         bg.x = this.center(bg)
         bg.y = 142
         this.addChild(bg)

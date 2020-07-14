@@ -1,7 +1,6 @@
 class FriendHomeScene extends Scene {
     private userId
     private befeedId
-    private head
     public constructor(userId, befeedId) {
         super()
         this.userId = userId
@@ -12,8 +11,7 @@ class FriendHomeScene extends Scene {
         Http.getInstance().post(Url.HTTP_AROUND, {
             visitedId: this.befeedId
         }, (res) => {
-            let head = new Head(res.data.visitInfo)
-            this.head = head
+            let head = new Head()
             this.addChild(head)
 
             this.vBaoInfo(res.data.visitedInfo)
@@ -121,10 +119,9 @@ class FriendHomeScene extends Scene {
         present.y = this.stage.stageHeight - present.height - 40
         this.addChild(present)
 
-        let foodList = this.head.foodList
         let feedTip = new Alert('谢谢你的礼物！好\n吃又营养！')
         let feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧', 'left', true)
-        let getGiftTips = new GiftTip(foodList[data.visitedInfo.kind_id - 1].image)
+        let getGiftTips = new GiftTip(FoodList[data.visitedInfo.kind_id - 1].image)
         this.addChild(feedTip)
         this.addChild(feedTipNone)
         this.addChild(getGiftTips)

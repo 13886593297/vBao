@@ -88,7 +88,8 @@ class Main extends egret.DisplayObjectContainer {
             obj[item.split('=')[0]] = item.split('=')[1]
         })
         
-        let userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
+        let userInfo = ViewManager.getInstance().userInfo
+        
         // 未创建账号
         if (!userInfo) {
             location.href = location.href.split('?')[0]

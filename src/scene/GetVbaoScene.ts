@@ -1,6 +1,11 @@
 class GetVbaoScene extends Scene {
     private id: number
     private level: number
+    /**
+     * 获得vbao动画和vbao升级动画
+     * @param id vbao类型
+     * @param level vbao等级
+     */
     constructor(id, level) {
         super()
         this.id = id
@@ -26,7 +31,7 @@ class GetVbaoScene extends Scene {
         group.anchorOffsetY = group.height / 2
         this.addChild(group)
 
-        let bg = Util.createBitmapByName(`getVbao_${VbaoType[this.id].name}`)
+        let bg = Util.createBitmapByName('getVbao_doc')
         bg.x = this.center(bg)
         bg.y = 330
         group.addChild(bg)
