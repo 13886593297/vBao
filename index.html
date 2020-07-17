@@ -31,14 +31,17 @@
             border: 0;
             margin: 0;
             height: 100%;
+            overflow: hidden;
         }
 
-        body, #htmlBox {
+        /* body, #htmlBox {
             background: url(./resource/assets/bg.png) no-repeat;
             background-size: 100% 100%;
-        }
+        } */
 
         .egret-player, #htmlBox {
+            background: url(./resource/assets/bg.png) no-repeat;
+            background-size: 100% 100%;
             width: 100%;
             height: 100%;
         }
@@ -104,6 +107,74 @@
         #htmlBox > div #btn:active {
             background-image: url('./resource/assets/home/index_btn_down.png');
         }
+
+        .decorate {
+            display: none;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 340px;
+            margin-bottom: -340px;
+            background-color: #fff;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .decorate .close {
+            position: absolute;
+            width: 47px;
+            height: 47px;
+            right: 10px;
+            top: 10px;
+            background: url('./resource/assets/btn/close.png') no-repeat;
+            background-size: cover;
+        }
+
+        .decorate .close:active {
+            background-image: url('./resource/assets/btn/close_down.png');
+        }
+
+        .decorate h2 {
+            font-size: 24px;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .decorate .list {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+
+        .decorate .list .item {
+            position: relative;
+            width: 30%;
+        }
+
+        .decorate .list .item img {
+            width: 100%;
+        }
+
+        .decorate .list .item p {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .decorate .list .item div {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 96%;
+            background-color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+        }
+
+        .decorate .list .item div span {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%);
+        }
     </style>
 </head>
 
@@ -126,6 +197,30 @@
                     <video id="video" src="http://df-emall.com/media/vbaoTitle.mp4" controls poster="https://v-bao-q.lillyadmin.cn/uploads/kind.png"></video>
                 </div>
                 <button id="btn"></button>
+            </div>
+        </div>
+    </div>
+    <div class="decorate">
+        <div class="close"></div>
+        <h2>解锁背景</h2>
+        <div class="list">
+            <div class="item">
+                <img class="bg1" src="./resource/assets/bg.png" alt="">
+                <p>默认背景</p>
+            </div>
+            <div class="item">
+                <img class="bg2" src="./resource/assets/bg1.jpg" alt="">
+                <div>
+                    <span>未解锁</span>
+                </div>
+                <p>达到50积分解锁</p>
+            </div>
+            <div class="item">
+                <img class="bg3" src="./resource/assets/bg2.jpg" alt="">
+                <div>
+                    <span>未解锁</span>
+                </div>
+                <p>达到100积分解锁</p>
             </div>
         </div>
     </div>
@@ -216,10 +311,14 @@
                     if (data.data.level_id == 0) {
                         // 新用户
                         $('#htmlBox').show()
+                        window.localStorage.setItem('bgSrc', null)
                     } else {
                         // 老用户
                         $('#htmlBox').hide()
                     }
+                    // 设置默认背景
+                    var bgSrc = JSON.parse(window.localStorage.getItem('bgSrc'))
+                    bgSrc && $('.egret-player').css('backgroundImage', `url(${bgSrc})`)
                 }
             })
 
@@ -297,9 +396,35 @@
         }
 
         // 装扮
+        var userScore
         function _decorate() {
-            $(document.body).css('backgroundImage', 'url(./resource/assets/getVbao/bg.jpg)')
+            userScore = JSON.parse(window.localStorage.getItem('userInfo')).total_score
+            $('.egret-player').animate({'top': '-240px'}, 500)
+            $('.decorate').show().animate({'margin-bottom': '0'}, 500)
+            if (userScore >= 50) {
+                $('.decorate .item:eq(1) div').hide()
+            }
+            if (userScore >= 100) {
+                $('.decorate .item div').hide()
+            }
         }
+
+        $('.decorate .close').click(function() {
+            $('.egret-player').animate({'top': '0'}, 500)
+            $('.decorate').animate({'margin-bottom': '-340px'}, 500)
+            setTimeout(() => $('.decorate').hide(), 500)
+        })
+
+        $('.decorate .list').click(function(e) {
+            if (userScore < 50) return
+            if (e.target.tagName == 'IMG') {
+                var bgClass = e.target.getAttribute('class')
+                if (userScore < 100 && bgClass == 'bg3') return
+                var src = e.target.getAttribute('src')
+                $('.egret-player').css('backgroundImage', `url(${src})`)
+                window.localStorage.setItem('bgSrc', JSON.stringify(src))
+            }
+        })
     </script>
 </body>
 

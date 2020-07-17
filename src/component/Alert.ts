@@ -49,7 +49,7 @@ class GiftTip extends egret.DisplayObjectContainer {
         let img = Util.createBitmapByName(icon)
         img.x = tips.x + tips.width + 2
         img.y = tips.y - 20
-        this.addChild(img)        
+        this.addChild(img)
 
         let tips2 = new egret.TextField
         tips2.text = 'X 1'
@@ -57,11 +57,6 @@ class GiftTip extends egret.DisplayObjectContainer {
         tips2.x = img.x + img.width + 2
         tips2.y = tips.y
         this.addChild(tips2)
-
-        // let tail = Util.createBitmapByName(`tail_left`)
-        // tail.x = 5
-        // tail.y = bg.height
-        // this.addChild(tail)
 
         this.visible = false
         this.x = (stage.stageWidth - bg.width) / 2 + 60

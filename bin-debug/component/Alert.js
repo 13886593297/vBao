@@ -66,10 +66,6 @@ var GiftTip = (function (_super) {
         tips2.x = img.x + img.width + 2;
         tips2.y = tips.y;
         this.addChild(tips2);
-        // let tail = Util.createBitmapByName(`tail_left`)
-        // tail.x = 5
-        // tail.y = bg.height
-        // this.addChild(tail)
         this.visible = false;
         this.x = (stage.stageWidth - bg.width) / 2 + 60;
         this.y = stage.$stageHeight / 2 - 280;

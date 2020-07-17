@@ -10,6 +10,10 @@ r.prototype = e.prototype, t.prototype = new r();
 };
 var BtnBase = (function (_super) {
     __extends(BtnBase, _super);
+    /**
+     * 按下弹起背景可变化的按钮
+     * @param name 按钮名称
+     */
     function BtnBase(name) {
         var _this = _super.call(this) || this;
         _this.init(name);

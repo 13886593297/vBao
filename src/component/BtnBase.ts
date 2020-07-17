@@ -1,4 +1,8 @@
 class BtnBase extends egret.DisplayObjectContainer {
+    /**
+     * 按下弹起背景可变化的按钮
+     * @param name 按钮名称
+     */
     constructor(name) {
         super()
         this.init(name)

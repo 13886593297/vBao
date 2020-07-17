@@ -7,10 +7,11 @@ class Task extends eui.Group {
         this.init()
     }
 
+    private userInfo = ViewManager.getInstance().userInfo
+    private _stage = ViewManager.getInstance().stage
     private init() {
-        let stage = ViewManager.getInstance().stage
-        this.width = stage.stageWidth
-        this.height = stage.stageHeight
+        this.width = this._stage.stageWidth
+        this.height = this._stage.stageHeight
 
         let bg = Util.createBitmapByName('info_doc')
         bg.x = (this.width - bg.width) / 2
@@ -25,18 +26,30 @@ class Task extends eui.Group {
 
         // 关闭按钮
         let close = new BtnBase('close')
-        close.x = stage.stageWidth - close.width - 68
+        close.x = this._stage.stageWidth - close.width - 68
         close.y = 246
-        this.addChild(close)
-
-        let userInfo = ViewManager.getInstance().userInfo
         close.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             this.parent.removeChild(this)
         }, this)
+        this.addChild(close)
 
+        this.taskList()
+
+        let tips = new egret.TextField
+        tips.text = '完成每个任务都能增加积分哦。那积分可以做什么呢？你猜呀~'
+        tips.width = 510
+        tips.x = (this._stage.stageWidth - tips.width) / 2
+        tips.y = 1000
+        tips.textAlign = 'center'
+        tips.lineSpacing = 25
+        tips.bold = true
+        this.addChild(tips)
+    }
+
+    private taskList() {
         Http.getInstance().get(Url.HTTP_TASK_TASKLIST, res => {
             let y = 400
-            let cb: Function 
+            let cb: Function
             res.data.forEach(item => {
                 switch (item.id) {
                     case 1:
@@ -53,11 +66,11 @@ class Task extends eui.Group {
                                         legendary.visible = true
                                         ViewManager.getInstance().isPlay = false
                                         this.parent.removeChild(this)
-                                        location.href = res.data.content
-                                        if (userInfo.level_id == 1) {
+                                        location.href = res.data[0].content
+                                        if (this.userInfo.level_id == 1) {
                                             Http.getInstance().get(Url.HTTP_ISUPDATE, res => {
                                                 if (res.data.info.isUpdate) {
-                                                    let scene = new GetVbaoScene(userInfo.kind_id - 1, 2)
+                                                    let scene = new GetVbaoScene(this.userInfo.kind_id - 1, 2)
                                                     ViewManager.getInstance().changeScene(scene)
                                                 }
                                             })
@@ -110,22 +123,12 @@ class Task extends eui.Group {
                 }
                 
                 let task = this.taskItem(item, item.taskStatus ? () => {} : cb)
-                task.x = (stage.stageWidth - task.width) / 2
+                task.x = (this._stage.stageWidth - task.width) / 2
                 task.y = y
                 this.addChild(task)
                 y += task.height + 30
             })
         })
-
-        let tips = new egret.TextField
-        tips.text = '完成每个任务都能增加积分哦。那积分可以做什么呢？你猜呀~'
-        tips.width = 510
-        tips.x = (stage.stageWidth - tips.width) / 2
-        tips.y = 1000
-        tips.textAlign = 'center'
-        tips.lineSpacing = 25
-        tips.bold = true
-        this.addChild(tips)
     }
 
     private taskItem(item, cb) {
@@ -135,19 +138,26 @@ class Task extends eui.Group {
         group.height = bg.height
         group.addChild(bg)
 
-        let flag = Util.createBitmapByName('flag')
-        flag.x = 30
-        flag.y = 30
-        group.addChild(flag)
+        // 任务图标
+        let icon = Util.createBitmapByName('flag')
+        icon.x = 30
+        icon.y = 30
+        group.addChild(icon)
 
-        let task_name = this.taskName(item)
+        // 任务名称
+        let task_name = new egret.TextField
+        task_name.text = item.name
+        task_name.size = 38
+        task_name.textColor = 0x214b5e
+        task_name.x = 105
+        task_name.y = 30
         group.addChild(task_name)
 
         // 发送祝福
         if (item.id == 3) {
             let des = new egret.TextField
             des.text = '小宝宝总在眨眼间就长大了。不信？试\n着给V宝发送一个祝福吧！'
-            des.x = flag.x
+            des.x = icon.x
             des.y = 88
             des.textAlign = 'center'
             des.textColor = Config.COLOR_DOC
@@ -155,6 +165,7 @@ class Task extends eui.Group {
             group.addChild(des)
         }
 
+        // 任务进度
         let task_progress = new egret.TextField
         task_progress.textColor = task_name.textColor
         task_progress.size = task_name.size
@@ -167,6 +178,7 @@ class Task extends eui.Group {
         }
         group.addChild(task_progress)
 
+        // 得分
         let score = new egret.TextField
         score.text = `+${item.score}积分`
         score.textColor = 0x1877ce
@@ -184,16 +196,5 @@ class Task extends eui.Group {
         btn.addEventListener(egret.TouchEvent.TOUCH_TAP, cb, this)
 
         return group
-    }
-
-    /** 任务名称 */
-    private taskName(item) {
-        let task_name = new egret.TextField
-        task_name.text = item.name
-        task_name.size = 38
-        task_name.textColor = 0x214b5e
-        task_name.x = 105
-        task_name.y = 30
-        return task_name
     }
 }

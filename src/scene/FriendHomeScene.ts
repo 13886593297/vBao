@@ -1,6 +1,8 @@
 class FriendHomeScene extends Scene {
     private userId
     private befeedId
+    private getGiftTips
+    private interval = 1000
     public constructor(userId, befeedId) {
         super()
         this.userId = userId
@@ -16,7 +18,8 @@ class FriendHomeScene extends Scene {
 
             this.vBaoInfo(res.data.visitedInfo)
 
-            this.vBao(res.data.visitedInfo)
+            let vbao = new IndexScene().vBao(res.data.visitedInfo, this.stage.stageHeight)
+            this.addChild(vbao)
 
             this.present(res.data)
             this.randomGift(res.data)
@@ -29,8 +32,11 @@ class FriendHomeScene extends Scene {
             userId: this.befeedId
         }, res => {
             if (res.data.code) {
-                ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] += 1
+                setTimeout(() => {
+                    ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] += 1
+                }, this.interval)
                 Util.animate(this.getGiftTips)
+                this.foodIncreaseAni(data)
             }
         })
     }
@@ -93,26 +99,7 @@ class FriendHomeScene extends Scene {
         group.addChild(hobby)
     }
 
-    private vBao(data) {
-        let id = data.kind_id - 1
-        let y
-        if (data.level_id == 2) {
-            if (id == 0) {
-                y = this.stage.stageHeight - this.stage.stageHeight / 7 * 3
-            } else if (id == 1) {
-                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2
-            } else if (id == 2) {
-                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2 + 60
-            }
-        } else {
-            y = this.stage.stageHeight - this.stage.stageHeight / 3
-        }
-        let bones = new Bones(id, data.level_id, 380, y)
-        this.addChild(bones)
-    }
-
     // 送礼
-    private getGiftTips
     private present(data) {
         let present = new BtnBase('present')
         present.x = 180
@@ -139,7 +126,12 @@ class FriendHomeScene extends Scene {
                 }, res => {
                     if (res.data.code == 1) {
                         ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] -= 1
-                        ViewManager.getInstance().headInfo.score += 1
+                        setTimeout(() => {
+                            ViewManager.getInstance().headInfo.score += 1
+                        }, this.interval)
+
+                        this.scoreIncreaseAni(1)
+
                         Util.animate(feedTip)
                     } else {
                         Util.animate(feedTipNone)
@@ -152,6 +144,57 @@ class FriendHomeScene extends Scene {
                 flag = true
             }, 300)
         }, this)
+    }
+
+    private goal = new egret.TextField
+    /**
+     * 积分增加动画
+     * @param score 增加的分数
+     */
+    private scoreIncreaseAni(score) {
+        this.goal.text = `+${score}`
+        this.goal.x = 500
+        this.goal.y = this.stage.stageHeight / 2 + 50
+        this.goal.anchorOffsetX = this.goal.width / 2
+        this.goal.anchorOffsetY = this.goal.height / 2
+        this.goal.textColor = Config.COLOR_DOC
+        this.goal.size = 40
+        this.goal.visible = true
+        this.addChild(this.goal)
+        egret.Tween.get(this).to({factor: 1}, this.interval)
+        egret.Tween.get(this.goal).to({visible: false}, this.interval)
+    }
+
+    private get factor():number {
+        return 0
+    }
+
+    private set factor(value: number) {
+        this.goal.x = (1 - value) * (1 - value) * 500 + 2 * value * (1 - value) * 800 + value * value * 330
+        this.goal.y = (1 - value) * (1 - value) * (this.stage.stageHeight / 2 + 50) + 2 * value * (1 - value) * 300 + value * value * 160
+        this.goal.size = 30
+    }
+
+    private food: egret.Bitmap
+    private foodX: number
+    private foodIncreaseAni(data) {
+        this.foodX = data.visitedInfo.kind_id == 1 ? 210 : data.visitedInfo.kind_id == 2 ? 380 : 550
+
+        this.food = Util.createBitmapByName(FoodList[data.visitedInfo.kind_id - 1].image)
+        this.food.x = 500
+        this.food.y = this.stage.stageHeight / 2 + 50
+        this.addChild(this.food)
+        egret.Tween.get(this).to({factor1: 1}, this.interval)
+        egret.Tween.get(this.goal).to({visible: false}, this.interval)
+    }
+
+    private get factor1():number {
+        return 0
+    }
+
+    private set factor1(value: number) {
+        this.food.x = (1 - value) * (1 - value) * 500 + 2 * value * (1 - value) * 800 + value * value * this.foodX
+        this.food.y = (1 - value) * (1 - value) * (this.stage.stageHeight / 2 + 50) + 2 * value * (1 - value) * 300 + value * value * 65
     }
 
     // 回家

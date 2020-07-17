@@ -15,14 +15,15 @@ var Task = (function (_super) {
      */
     function Task() {
         var _this = _super.call(this) || this;
+        _this.userInfo = ViewManager.getInstance().userInfo;
+        _this._stage = ViewManager.getInstance().stage;
         _this.init();
         return _this;
     }
     Task.prototype.init = function () {
         var _this = this;
-        var stage = ViewManager.getInstance().stage;
-        this.width = stage.stageWidth;
-        this.height = stage.stageHeight;
+        this.width = this._stage.stageWidth;
+        this.height = this._stage.stageHeight;
         var bg = Util.createBitmapByName('info_doc');
         bg.x = (this.width - bg.width) / 2;
         bg.height = this.height;
@@ -34,13 +35,25 @@ var Task = (function (_super) {
         this.addChild(label);
         // 关闭按钮
         var close = new BtnBase('close');
-        close.x = stage.stageWidth - close.width - 68;
+        close.x = this._stage.stageWidth - close.width - 68;
         close.y = 246;
-        this.addChild(close);
-        var userInfo = ViewManager.getInstance().userInfo;
         close.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             _this.parent.removeChild(_this);
         }, this);
+        this.addChild(close);
+        this.taskList();
+        var tips = new egret.TextField;
+        tips.text = '完成每个任务都能增加积分哦。那积分可以做什么呢？你猜呀~';
+        tips.width = 510;
+        tips.x = (this._stage.stageWidth - tips.width) / 2;
+        tips.y = 1000;
+        tips.textAlign = 'center';
+        tips.lineSpacing = 25;
+        tips.bold = true;
+        this.addChild(tips);
+    };
+    Task.prototype.taskList = function () {
+        var _this = this;
         Http.getInstance().get(Url.HTTP_TASK_TASKLIST, function (res) {
             var y = 400;
             var cb;
@@ -60,11 +73,11 @@ var Task = (function (_super) {
                                         legendary.visible = true;
                                         ViewManager.getInstance().isPlay = false;
                                         _this.parent.removeChild(_this);
-                                        location.href = res.data.content;
-                                        if (userInfo.level_id == 1) {
+                                        location.href = res.data[0].content;
+                                        if (_this.userInfo.level_id == 1) {
                                             Http.getInstance().get(Url.HTTP_ISUPDATE, function (res) {
                                                 if (res.data.info.isUpdate) {
-                                                    var scene = new GetVbaoScene(userInfo.kind_id - 1, 2);
+                                                    var scene = new GetVbaoScene(_this.userInfo.kind_id - 1, 2);
                                                     ViewManager.getInstance().changeScene(scene);
                                                 }
                                             });
@@ -115,21 +128,12 @@ var Task = (function (_super) {
                         break;
                 }
                 var task = _this.taskItem(item, item.taskStatus ? function () { } : cb);
-                task.x = (stage.stageWidth - task.width) / 2;
+                task.x = (_this._stage.stageWidth - task.width) / 2;
                 task.y = y;
                 _this.addChild(task);
                 y += task.height + 30;
             });
         });
-        var tips = new egret.TextField;
-        tips.text = '完成每个任务都能增加积分哦。那积分可以做什么呢？你猜呀~';
-        tips.width = 510;
-        tips.x = (stage.stageWidth - tips.width) / 2;
-        tips.y = 1000;
-        tips.textAlign = 'center';
-        tips.lineSpacing = 25;
-        tips.bold = true;
-        this.addChild(tips);
     };
     Task.prototype.taskItem = function (item, cb) {
         var group = new eui.Group;
@@ -137,23 +141,31 @@ var Task = (function (_super) {
         group.width = bg.width;
         group.height = bg.height;
         group.addChild(bg);
-        var flag = Util.createBitmapByName('flag');
-        flag.x = 30;
-        flag.y = 30;
-        group.addChild(flag);
-        var task_name = this.taskName(item);
+        // 任务图标
+        var icon = Util.createBitmapByName('flag');
+        icon.x = 30;
+        icon.y = 30;
+        group.addChild(icon);
+        // 任务名称
+        var task_name = new egret.TextField;
+        task_name.text = item.name;
+        task_name.size = 38;
+        task_name.textColor = 0x214b5e;
+        task_name.x = 105;
+        task_name.y = 30;
         group.addChild(task_name);
         // 发送祝福
         if (item.id == 3) {
             var des = new egret.TextField;
             des.text = '小宝宝总在眨眼间就长大了。不信？试\n着给V宝发送一个祝福吧！';
-            des.x = flag.x;
+            des.x = icon.x;
             des.y = 88;
             des.textAlign = 'center';
             des.textColor = Config.COLOR_DOC;
             des.lineSpacing = 6;
             group.addChild(des);
         }
+        // 任务进度
         var task_progress = new egret.TextField;
         task_progress.textColor = task_name.textColor;
         task_progress.size = task_name.size;
@@ -166,6 +178,7 @@ var Task = (function (_super) {
             task_progress.text = "X" + item.resultCount;
         }
         group.addChild(task_progress);
+        // 得分
         var score = new egret.TextField;
         score.text = "+" + item.score + "\u79EF\u5206";
         score.textColor = 0x1877ce;
@@ -181,16 +194,6 @@ var Task = (function (_super) {
         group.addChild(btn);
         btn.addEventListener(egret.TouchEvent.TOUCH_TAP, cb, this);
         return group;
-    };
-    /** 任务名称 */
-    Task.prototype.taskName = function (item) {
-        var task_name = new egret.TextField;
-        task_name.text = item.name;
-        task_name.size = 38;
-        task_name.textColor = 0x214b5e;
-        task_name.x = 105;
-        task_name.y = 30;
-        return task_name;
     };
     return Task;
 }(eui.Group));

@@ -32,7 +32,8 @@ var IndexScene = (function (_super) {
                 _this.addChild(head);
                 _this.daily_task();
                 _this.legendary();
-                _this.vBao();
+                var vbao = _this.vBao(_this.userInfo, _this.stage.stageHeight);
+                _this.addChild(vbao);
                 if (_this.userInfo.level_id == 2) {
                     _this.feed();
                     _this.decorate();
@@ -81,29 +82,29 @@ var IndexScene = (function (_super) {
         legendary.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             Http.getInstance().get(Url.HTTP_LEGENDARY, function (res) {
                 ViewManager.getInstance().isPlay = false;
-                location.href = res.data.content;
+                location.href = res.data[0].content;
             });
         }, this);
     };
-    IndexScene.prototype.vBao = function () {
-        var id = this.userInfo.kind_id - 1;
+    IndexScene.prototype.vBao = function (data, stageHeight) {
+        var id = data.kind_id - 1;
         var y;
-        if (this.userInfo.level_id == 2) {
+        if (data.level_id == 2) {
             if (id == 0) {
-                y = this.stage.stageHeight - this.stage.stageHeight / 7 * 3;
+                y = stageHeight / 7 * 4;
             }
             else if (id == 1) {
-                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2;
+                y = stageHeight / 5 * 3;
             }
             else if (id == 2) {
-                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2 + 60;
+                y = stageHeight / 5 * 3 + 60;
             }
         }
         else {
-            y = this.stage.stageHeight - this.stage.stageHeight / 3;
+            y = stageHeight / 3 * 2;
         }
-        var bones = new Bones(id, this.userInfo.level_id, 380, y);
-        this.addChild(bones);
+        var bones = new Bones(id, data.level_id, 380, y);
+        return bones;
     };
     // 投喂
     IndexScene.prototype.feed = function () {
@@ -151,12 +152,7 @@ var IndexScene = (function (_super) {
         decorate.x = 510;
         decorate.y = this.stage.stageHeight - decorate.height - 40;
         this.addChild(decorate);
-        var tips = new Alert('新功能孵化中，敬请期待', 'right');
-        tips.x = 325;
-        tips.y = this.stage.stageHeight - decorate.height - 40 - tips.height;
-        this.addChild(tips);
         decorate.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            // Util.animate(tips)
             _decorate();
         }, this);
     };
@@ -310,6 +306,13 @@ var IndexScene = (function (_super) {
                 alias.verticalAlign = 'middle';
                 alias.size = 18;
                 group.addChild(alias);
+                // 食物类型图标
+                var icon = Util.createBitmapByName(FoodList[item.food_type_id - 1].image);
+                icon.scaleX = 0.8;
+                icon.scaleY = 0.8;
+                icon.x = group.width - (icon.width * 0.8);
+                icon.y = bitmap.height - (icon.height * 0.8) + 5;
+                group.addChild(icon);
             }
         }, this);
         var aroundCount = new egret.TextField;

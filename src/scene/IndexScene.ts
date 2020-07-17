@@ -21,7 +21,9 @@ class IndexScene extends Scene {
 
                 this.daily_task()
                 this.legendary()
-                this.vBao()
+
+                let vbao = this.vBao(this.userInfo, this.stage.stageHeight)
+                this.addChild(vbao)
 
                 if (this.userInfo.level_id == 2) {
                     this.feed()
@@ -78,27 +80,27 @@ class IndexScene extends Scene {
         legendary.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             Http.getInstance().get(Url.HTTP_LEGENDARY, res => {
                 ViewManager.getInstance().isPlay = false
-                location.href = res.data.content
+                location.href = res.data[0].content
             })
         }, this)
     }
 
-    private vBao() {
-        let id = this.userInfo.kind_id - 1
+    public vBao(data, stageHeight) {
+        let id = data.kind_id - 1
         let y
-        if (this.userInfo.level_id == 2) {
+        if (data.level_id == 2) {
             if (id == 0) {
-                y = this.stage.stageHeight - this.stage.stageHeight / 7 * 3
+                y = stageHeight / 7 * 4
             } else if (id == 1) {
-                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2
+                y = stageHeight / 5 * 3
             } else if (id == 2) {
-                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2 + 60
+                y = stageHeight / 5 * 3 + 60
             }
         } else {
-            y = this.stage.stageHeight - this.stage.stageHeight / 3
+            y = stageHeight / 3 * 2
         }
-        let bones = new Bones(id, this.userInfo.level_id, 380, y)
-        this.addChild(bones)
+        let bones = new Bones(id, data.level_id, 380, y)
+        return bones
     }
 
     // 投喂
@@ -149,13 +151,7 @@ class IndexScene extends Scene {
         decorate.y = this.stage.stageHeight - decorate.height - 40
         this.addChild(decorate)
 
-        let tips = new Alert('新功能孵化中，敬请期待', 'right')
-        tips.x = 325
-        tips.y = this.stage.stageHeight - decorate.height - 40 - tips.height
-        this.addChild(tips)
-
         decorate.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            // Util.animate(tips)
             _decorate()
         }, this)
     }
@@ -328,6 +324,14 @@ class IndexScene extends Scene {
                 alias.verticalAlign = 'middle'
                 alias.size = 18
                 group.addChild(alias)
+
+                // 食物类型图标
+                let icon = Util.createBitmapByName(FoodList[item.food_type_id - 1].image)
+                icon.scaleX = 0.8
+                icon.scaleY = 0.8
+                icon.x = group.width - (icon.width * 0.8)
+                icon.y = bitmap.height - (icon.height * 0.8) + 5
+                group.addChild(icon)
             }
         }, this)
 

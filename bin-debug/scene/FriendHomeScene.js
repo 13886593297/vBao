@@ -12,6 +12,8 @@ var FriendHomeScene = (function (_super) {
     __extends(FriendHomeScene, _super);
     function FriendHomeScene(userId, befeedId) {
         var _this = _super.call(this) || this;
+        _this.interval = 1000;
+        _this.goal = new egret.TextField;
         _this.userId = userId;
         _this.befeedId = befeedId;
         return _this;
@@ -24,7 +26,8 @@ var FriendHomeScene = (function (_super) {
             var head = new Head();
             _this.addChild(head);
             _this.vBaoInfo(res.data.visitedInfo);
-            _this.vBao(res.data.visitedInfo);
+            var vbao = new IndexScene().vBao(res.data.visitedInfo, _this.stage.stageHeight);
+            _this.addChild(vbao);
             _this.present(res.data);
             _this.randomGift(res.data);
             _this.goHome();
@@ -36,8 +39,11 @@ var FriendHomeScene = (function (_super) {
             userId: this.befeedId
         }, function (res) {
             if (res.data.code) {
-                ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] += 1;
+                setTimeout(function () {
+                    ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] += 1;
+                }, _this.interval);
                 Util.animate(_this.getGiftTips);
+                _this.foodIncreaseAni(data);
             }
         });
     };
@@ -91,26 +97,7 @@ var FriendHomeScene = (function (_super) {
         hobby.size = 22;
         group.addChild(hobby);
     };
-    FriendHomeScene.prototype.vBao = function (data) {
-        var id = data.kind_id - 1;
-        var y;
-        if (data.level_id == 2) {
-            if (id == 0) {
-                y = this.stage.stageHeight - this.stage.stageHeight / 7 * 3;
-            }
-            else if (id == 1) {
-                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2;
-            }
-            else if (id == 2) {
-                y = this.stage.stageHeight - this.stage.stageHeight / 5 * 2 + 60;
-            }
-        }
-        else {
-            y = this.stage.stageHeight - this.stage.stageHeight / 3;
-        }
-        var bones = new Bones(id, data.level_id, 380, y);
-        this.addChild(bones);
-    };
+    // 送礼
     FriendHomeScene.prototype.present = function (data) {
         var _this = this;
         var present = new BtnBase('present');
@@ -137,7 +124,10 @@ var FriendHomeScene = (function (_super) {
                 }, function (res) {
                     if (res.data.code == 1) {
                         ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] -= 1;
-                        ViewManager.getInstance().headInfo.score += 1;
+                        setTimeout(function () {
+                            ViewManager.getInstance().headInfo.score += 1;
+                        }, _this.interval);
+                        _this.scoreIncreaseAni(1);
                         Util.animate(feedTip);
                     }
                     else {
@@ -153,6 +143,55 @@ var FriendHomeScene = (function (_super) {
             }, 300);
         }, this);
     };
+    /**
+     * 积分增加动画
+     * @param score 增加的分数
+     */
+    FriendHomeScene.prototype.scoreIncreaseAni = function (score) {
+        this.goal.text = "+" + score;
+        this.goal.x = 500;
+        this.goal.y = this.stage.stageHeight / 2 + 50;
+        this.goal.anchorOffsetX = this.goal.width / 2;
+        this.goal.anchorOffsetY = this.goal.height / 2;
+        this.goal.textColor = Config.COLOR_DOC;
+        this.goal.size = 40;
+        this.goal.visible = true;
+        this.addChild(this.goal);
+        egret.Tween.get(this).to({ factor: 1 }, this.interval);
+        egret.Tween.get(this.goal).to({ visible: false }, this.interval);
+    };
+    Object.defineProperty(FriendHomeScene.prototype, "factor", {
+        get: function () {
+            return 0;
+        },
+        set: function (value) {
+            this.goal.x = (1 - value) * (1 - value) * 500 + 2 * value * (1 - value) * 800 + value * value * 330;
+            this.goal.y = (1 - value) * (1 - value) * (this.stage.stageHeight / 2 + 50) + 2 * value * (1 - value) * 300 + value * value * 160;
+            this.goal.size = 30;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    FriendHomeScene.prototype.foodIncreaseAni = function (data) {
+        this.foodX = data.visitedInfo.kind_id == 1 ? 210 : data.visitedInfo.kind_id == 2 ? 380 : 550;
+        this.food = Util.createBitmapByName(FoodList[data.visitedInfo.kind_id - 1].image);
+        this.food.x = 500;
+        this.food.y = this.stage.stageHeight / 2 + 50;
+        this.addChild(this.food);
+        egret.Tween.get(this).to({ factor1: 1 }, this.interval);
+        egret.Tween.get(this.goal).to({ visible: false }, this.interval);
+    };
+    Object.defineProperty(FriendHomeScene.prototype, "factor1", {
+        get: function () {
+            return 0;
+        },
+        set: function (value) {
+            this.food.x = (1 - value) * (1 - value) * 500 + 2 * value * (1 - value) * 800 + value * value * this.foodX;
+            this.food.y = (1 - value) * (1 - value) * (this.stage.stageHeight / 2 + 50) + 2 * value * (1 - value) * 300 + value * value * 65;
+        },
+        enumerable: true,
+        configurable: true
+    });
     // 回家
     FriendHomeScene.prototype.goHome = function () {
         var goHome = new BtnBase('goHome');
