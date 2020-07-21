@@ -97,12 +97,19 @@ var Task = (function (_super) {
                     case 4:
                         // 签到
                         cb = function () {
+                            var scoreAni = new ScoreAni(1);
+                            _this.parent.addChild(scoreAni);
+                            var foodAni = new FoodAni();
+                            _this.parent.addChild(foodAni);
                             var daily_task_tips = _this.parent['daily_task_tips'];
                             Http.getInstance().get(Url.HTTP_USER_SIGN, function () {
-                                ViewManager.getInstance().headInfo.food[0] += 1;
-                                ViewManager.getInstance().headInfo.food[1] += 1;
-                                ViewManager.getInstance().headInfo.food[2] += 1;
+                                var i = 0, len = ViewManager.getInstance().headInfo.food.length;
+                                for (; i < len; i++) {
+                                    ViewManager.getInstance().headInfo.food[i] += 1;
+                                }
                                 ViewManager.getInstance().headInfo.score += 1;
+                                scoreAni.move();
+                                foodAni.move();
                                 _this.parent.removeChild(_this);
                                 Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
                                     if (res.data.isfinish) {

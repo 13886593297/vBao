@@ -1,15 +1,17 @@
-/**
- * 创建帧动画
- */
 class MyMovieClip extends egret.DisplayObjectContainer {
     private _mcData: any
     private _mcTexture: egret.Texture
-    private aniName: string // gif名字
-    private playTimes: number // 循环次数
+    private aniName: string
+    private playTimes: number
 
-    constructor(name, playTimes = -1) {
+    /**
+     * 创建帧动画
+     * @param aniName gif名字
+     * @param playTimes 循环次数
+     */
+    constructor(aniName, playTimes = -1) {
         super()
-        this.aniName = name
+        this.aniName = aniName
         this.playTimes = playTimes
         this.addEventListener(
             egret.Event.ADDED_TO_STAGE,

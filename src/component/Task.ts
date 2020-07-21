@@ -90,12 +90,21 @@ class Task extends eui.Group {
                     case 4:
                         // 签到
                         cb = () => {
+                            let scoreAni = new ScoreAni(1)
+                            this.parent.addChild(scoreAni)
+
+                            let foodAni = new FoodAni()
+                            this.parent.addChild(foodAni)
+
                             let daily_task_tips = this.parent['daily_task_tips']
                             Http.getInstance().get(Url.HTTP_USER_SIGN, () => {
-                                ViewManager.getInstance().headInfo.food[0] += 1
-                                ViewManager.getInstance().headInfo.food[1] += 1
-                                ViewManager.getInstance().headInfo.food[2] += 1
+                                let i = 0, len = ViewManager.getInstance().headInfo.food.length
+                                for (; i < len; i++) {
+                                    ViewManager.getInstance().headInfo.food[i] += 1
+                                }
                                 ViewManager.getInstance().headInfo.score += 1
+                                scoreAni.move()
+                                foodAni.move()
                                 this.parent.removeChild(this)
 
                                 Http.getInstance().get(Url.HTTP_USER_INFO, res => {

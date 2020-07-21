@@ -52,9 +52,42 @@ var GetVbaoScene = (function (_super) {
         light.anchorOffsetY = light.height / 2;
         group.addChild(light);
         egret.Tween.get(light, { loop: true }).to({ rotation: 360 }, 6000);
-        var bones = new Bones(this.id, this.level, 380, 650);
+        var arr = [[
+                {
+                    x: this.stage.stageWidth + 50,
+                    y: 1050
+                },
+                {
+                    x: this.stage.stageWidth + 50,
+                    y: 940
+                },
+                {
+                    x: this.stage.stageWidth,
+                    y: 910
+                },
+            ], [
+                {
+                    x: this.stage.stageWidth,
+                    y: 1150
+                },
+                {
+                    x: this.stage.stageWidth,
+                    y: 1130
+                },
+                {
+                    x: this.stage.stageWidth + 50,
+                    y: 1150
+                },
+            ]];
+        var bones = new Bones({
+            id: this.id,
+            level: this.level,
+            x: arr[this.level - 1][this.id].x,
+            y: arr[this.level - 1][this.id].y,
+        });
         group.addChild(bones);
-        var type = Util.setTitle(VbaoType[this.id].label, 90, VbaoType[this.id].color);
+        // vbao类型
+        var type = Util.setTitle(VbaoType[this.id].label, 90, Config.COLOR_DOC);
         type.x = this.center(type);
         type.y = 872;
         group.addChild(type);
@@ -70,7 +103,7 @@ var GetVbaoScene = (function (_super) {
             }, 3000);
         });
         var text = this.level == 1 ? '恭喜获得V宝!' : 'V宝进化啦!';
-        var label = Util.setTitle(text, 60, VbaoType[this.id].color);
+        var label = Util.setTitle(text, 60, Config.COLOR_DOC);
         label.x = this.center(label);
         label.y = 206;
         this.addChild(label);

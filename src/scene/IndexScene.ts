@@ -1,6 +1,8 @@
 class IndexScene extends Scene {
     private userInfo // 用户信息
     private shareScene // 分享
+    private outdoorTip
+    private outdoorText = '我去找别的V宝啦，快来\n找我吧！'
     public constructor() {
         super()
     }
@@ -10,20 +12,27 @@ class IndexScene extends Scene {
         Http.getInstance().get(Url.HTTP_USER_INFO, (res) => {
             this.userInfo = res.data
             window.localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
-            ViewManager.getInstance().updateUserInfo()
             // 播放升级动画
             if (this.userInfo.isUpdate) {
                 let scene = new GetVbaoScene(this.userInfo.kind_id - 1, 2)
                 ViewManager.getInstance().changeScene(scene)
             } else {
-                let head = new Head()
+                let head = new Head(this.userInfo)
                 this.addChild(head)
 
                 this.daily_task()
                 this.legendary()
 
-                let vbao = this.vBao(this.userInfo, this.stage.stageHeight)
-                this.addChild(vbao)
+                if (this.userInfo.level_id == 2 && this.userInfo.isoutdoor) {
+                    let tip = new Alert(this.outdoorText)
+                    tip.x = 250
+                    tip.y = tip.y + 100
+                    tip.visible = true
+                    this.addChild(tip)
+                    this.outdoorTip = tip
+                } else {
+                    this.showVbao()
+                }
 
                 if (this.userInfo.level_id == 2) {
                     this.feed()
@@ -85,22 +94,31 @@ class IndexScene extends Scene {
         }, this)
     }
 
-    public vBao(data, stageHeight) {
-        let id = data.kind_id - 1
-        let y
-        if (data.level_id == 2) {
-            if (id == 0) {
-                y = stageHeight / 7 * 4
-            } else if (id == 1) {
-                y = stageHeight / 5 * 3
-            } else if (id == 2) {
-                y = stageHeight / 5 * 3 + 60
-            }
-        } else {
-            y = stageHeight / 3 * 2
-        }
-        let bones = new Bones(id, data.level_id, 380, y)
-        return bones
+    private showVbao() {
+        let id = this.userInfo.kind_id - 1
+        let level = this.userInfo.level_id
+        let w = this.stage.stageWidth
+        let h = this.stage.stageHeight
+        let arr = [
+            [
+                { x: w + 50, y: h },
+                { x: w + 50, y: h - 100 },
+                { x: w, y: h - 120 },
+            ],
+            [
+                { x: w, y: h - 50 },
+                { x: w, y: h - 70 },
+                { x: w + 50, y: h + 20 },
+            ],
+        ]
+
+        let bones = new Bones({
+            id,
+            level,
+            x: arr[level - 1][id].x,
+            y: arr[level - 1][id].y,
+        })
+        this.addChild(bones)
     }
 
     // 投喂
@@ -113,20 +131,33 @@ class IndexScene extends Scene {
 
         let feedTip = new Alert('谢谢主人！好吃又\n营养！')
         let feedTipDone = new Alert('每日2次就够啦！明\n天请再来投喂V宝哦！')
-        let feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧', 'left', true)
+        let feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧')
         this.addChild(feedTip)
         this.addChild(feedTipDone)
         this.addChild(feedTipNone)
+
+        let scoreAni = new ScoreAni(1)
+        this.addChild(scoreAni)
         
+        let food_type_id = this.userInfo.food_type_id - 1
         feed.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            if (ViewManager.getInstance().headInfo.food[this.userInfo.food_type_id - 1] > 0) {
+            if (this.userInfo.isoutdoor) {
+                this.outdoorTip.setText('vbao不在家，不能喂食。\n先把vbao找回来吧')
+                setTimeout(() => {
+                    this.outdoorTip.setText(this.outdoorText)
+                }, 2000)
+                return
+            }
+            if (ViewManager.getInstance().headInfo.food[food_type_id] > 0) {
                 Http.getInstance().post(Url.HTTP_FEED, {
                     feedId: this.userInfo.id,
                     type: 5,
                 }, res => {
                     if (res.data.code) {
-                        ViewManager.getInstance().headInfo.food[this.userInfo.food_type_id - 1] -= 1
+                        ViewManager.getInstance().headInfo.food[food_type_id] -= 1
                         ViewManager.getInstance().headInfo.score += 1
+
+                        scoreAni.move()
                         Util.animate(feedTip)
 
                         Http.getInstance().get(Url.HTTP_USER_INFO, res => {
@@ -250,108 +281,17 @@ class IndexScene extends Scene {
 
     private addItem(data) {
         data.forEach(item => {
-            let rankImg = ''
-            if (item.serialNo <= 3) {
-                rankImg = `rank_0${item.serialNo}`
-            } else {
-                rankImg = 'rank_04'
-            }
-
-            let friend = this.friendAvatar(item, rankImg, item.serialNo)
-            friend.x = (item.serialNo - 1) * (friend.width + 42) + 42
+            let friend = new FriendAvatar(item)
+            let space = 42
+            friend.x = (item.serialNo - 1) * (friend.width + space) + space
             friend.y = 45
+            friend.touchEnabled = true
+            friend.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
+                this.aroundGroup.visible = false
+                let friendHome = new FriendHomeScene(this.userInfo.id, item.id)
+                ViewManager.getInstance().changeScene(friendHome)
+            }, this)
             this.friendList.addChild(friend)
         })
-    }
-
-    // 好友头像
-    private friendAvatar(item, rankImg, num) {
-        if (!item) return
-        let group = new eui.Group
-        let bitmap = new egret.Bitmap
-
-        // 背景
-        let border = Util.drawRoundRect(3, 0x153344, 0xffffff, 110, 110, 20)
-        group.addChild(border)
-        group.width = border.width
-        group.height = 150
-        bitmap.width = border.width - 6
-        bitmap.height = bitmap.width
-        bitmap.x = 2
-        bitmap.y = bitmap.x
-
-        let imgLoader = new egret.ImageLoader()
-        imgLoader.crossOrigin = 'anonymous' // 跨域请求
-        imgLoader.load(item.avatar)
-        imgLoader.once(egret.Event.COMPLETE, (evt: egret.Event) => {
-            if (evt.currentTarget.data) {
-                let texture = new egret.Texture()
-                texture._setBitmapData(evt.currentTarget.data)
-                bitmap.texture = texture
-                group.addChild(bitmap)
-
-                let rank_bg = Util.createBitmapByName(rankImg)
-                rank_bg.anchorOffsetX = rank_bg.width / 2
-                rank_bg.anchorOffsetY = rank_bg.height / 2
-                group.addChild(rank_bg)
-
-                if (num > 3) {
-                    let rank_num = new egret.TextField
-                    rank_num.text = num
-                    rank_num.width = rank_bg.width
-                    rank_num.height = rank_bg.height
-                    rank_num.anchorOffsetX = rank_bg.width / 2
-                    rank_num.anchorOffsetY = rank_bg.height / 2
-                    rank_num.textAlign = 'center'
-                    rank_num.verticalAlign = 'middle'
-                    rank_num.size = 24
-                    rank_num.textColor = 0x153344
-                    rank_num.bold = true
-                    group.addChild(rank_num)
-                }
-
-                let name_bg = Util.drawRoundRect(0, 0x000000, 0x000000, 107, 26, 0, 0.4)
-                name_bg.x = 2
-                name_bg.y = 82
-                group.addChild(name_bg)
-
-                let alias = new egret.TextField
-                alias.text = item.name
-                alias.width = group.width
-                alias.height = name_bg.height
-                alias.y = name_bg.y
-                alias.textAlign = 'center'
-                alias.verticalAlign = 'middle'
-                alias.size = 18
-                group.addChild(alias)
-
-                // 食物类型图标
-                let icon = Util.createBitmapByName(FoodList[item.food_type_id - 1].image)
-                icon.scaleX = 0.8
-                icon.scaleY = 0.8
-                icon.x = group.width - (icon.width * 0.8)
-                icon.y = bitmap.height - (icon.height * 0.8) + 5
-                group.addChild(icon)
-            }
-        }, this)
-
-        let aroundCount = new egret.TextField
-        aroundCount.text = `串门${item.aroundCount}次`
-        aroundCount.y = group.height - aroundCount.height
-        aroundCount.width = group.width
-        aroundCount.textColor = Config.COLOR_DOC
-        aroundCount.textAlign = 'center'
-        aroundCount.size = 20
-        aroundCount.bold = true
-        group.addChild(aroundCount)
-
-        group.touchEnabled = true
-        group.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            this.aroundGroup.visible = false
-            let friendHome = new FriendHomeScene(this.userInfo.id, item.id)
-            ViewManager.getInstance().changeScene(friendHome)
-        }, this)
-
-        return group
     }
 }

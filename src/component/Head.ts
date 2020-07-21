@@ -1,9 +1,10 @@
 class Head extends egret.DisplayObjectContainer {
-    private userInfo = ViewManager.getInstance().userInfo
+    private userInfo
     
     /** 公用头部 */
-    constructor() {
+    constructor(userInfo) {
         super()
+        this.userInfo = userInfo
         this.init()
     }
 
@@ -81,6 +82,7 @@ class Head extends egret.DisplayObjectContainer {
         this.tweenAni(this.score, () => {
             this.flag = true
         })
+        // this.scoreIncreaseAni(1)
     }
 
     /** 初始化食物列表 */
@@ -158,4 +160,6 @@ class Head extends egret.DisplayObjectContainer {
             .to({ scaleX: 1, scaleY: 1 }, 100)
             .call(cb)
     }
+
+    
 }

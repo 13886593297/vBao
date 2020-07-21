@@ -78,9 +78,6 @@ var ViewManager = (function () {
     ViewManager.prototype.setBones = function (id, bone) {
         this.bones[id] = bone;
     };
-    ViewManager.prototype.updateUserInfo = function () {
-        this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
-    };
     return ViewManager;
 }());
 __reflect(ViewManager.prototype, "ViewManager");

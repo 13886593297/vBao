@@ -81,9 +81,6 @@ class ViewManager {
     }
 
     public userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
-    public updateUserInfo() {
-        this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
-    }
     // 食物个数和积分
     public headInfo = {
         food: [this.userInfo.v_bfood, this.userInfo.v_tfood, this.userInfo.v_ffood],

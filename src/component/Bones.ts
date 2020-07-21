@@ -1,25 +1,28 @@
 class Bones extends egret.DisplayObjectContainer {
+    private option
     /**
-     * @param id 形象id
-     * @param level 等级
-     * @param x 
-     * @param y 
+     * vbao动画
+     * @param {object} option vbao参数
      */
-    public constructor(id, level, x, y) {
+    public constructor(option) {
         super()
-        this.init(id, level, x, y)
+        this.option = option
+        this.init()
     }
 
-    private init(id, level, x, y) {
-        let arr = ['doc', 'box', 'pilot']
-        let ske = RES.getRes(`${arr[id]}${level}_ske`)
-        let tex = RES.getRes(`${arr[id]}${level}_tex`)
-        let tex_png = RES.getRes(`${arr[id]}${level}_tex_png`)
+    private init() {
+        console.log(this.option)
+        let type = this.option.type ? this.option.type : VbaoType[this.option.id].name + this.option.level
+        let ske = RES.getRes(`${type}_ske`)
+        let tex = RES.getRes(`${type}_tex`)
+        let tex_png = RES.getRes(`${type}_tex_png`)
 
-        let bone = ViewManager.getInstance().getBones(`${id}${level}`)
-        if (bone) {
-            bone.x = x
-            bone.y = y
+        let bone = ViewManager.getInstance().getBones(type)
+        let stage = ViewManager.getInstance().stage
+
+        if (bone && this.option.isback != 1) {
+            bone.x = this.option.x ? this.option.x : stage.stageWidth
+            bone.y = this.option.y ? this.option.y : stage.stageHeight
             this.addChild(bone)
             return 
         } else {
@@ -27,18 +30,21 @@ class Bones extends egret.DisplayObjectContainer {
             egretFactory.parseDragonBonesData(ske)
             egretFactory.parseTextureAtlasData(tex, tex_png)
 
-            let armatureDisplay = egretFactory.buildArmatureDisplay(`${arr[id]}${level}Armature`)
+            let armatureDisplay = egretFactory.buildArmatureDisplay(`${type}Armature`)
             this.addChild(armatureDisplay)
-            armatureDisplay.x = x
-            armatureDisplay.y = y
-            let scale = level == 1 ? 0.4 : 0.25
-            if (level == 2 && id == 2) {
+            armatureDisplay.x = this.option.x ? this.option.x : stage.stageWidth
+            armatureDisplay.y = this.option.y ? this.option.y : stage.stageHeight
+            armatureDisplay.anchorOffsetX = armatureDisplay.width
+            armatureDisplay.anchorOffsetY = armatureDisplay.height
+
+            let scale = this.option.level == 1 ? 0.4 : 0.25
+            if (this.option.level == 2 && this.option.id == 2) {
                 scale = 0.2
             }
             armatureDisplay.scaleX = scale
             armatureDisplay.scaleY = scale
             armatureDisplay.animation.play('newAnimation')
-            ViewManager.getInstance().setBones(`${id}${level}`, armatureDisplay)
+            ViewManager.getInstance().setBones(type, armatureDisplay)
         }
     }
 }

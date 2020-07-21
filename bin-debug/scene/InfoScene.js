@@ -10,9 +10,13 @@ r.prototype = e.prototype, t.prototype = new r();
 };
 var InfoScene = (function (_super) {
     __extends(InfoScene, _super);
+    /**
+     * 填写vbao基本信息
+     * @param id vbao类型
+     */
     function InfoScene(id) {
         var _this = _super.call(this) || this;
-        _this.propertyList = ['nickName', 'constellation', 'blood', 'hobby'];
+        _this.propertyKey = ['nickName', 'constellation', 'blood', 'hobby'];
         _this.id = id;
         _this.property = {
             kindId: _this.id + 1
@@ -36,7 +40,7 @@ var InfoScene = (function (_super) {
             var scene = new KindScene();
             ViewManager.getInstance().changeScene(scene);
         }, this);
-        var title = Util.setTitle(VbaoType[this.id].label, 80, VbaoType[this.id].color);
+        var title = Util.setTitle(VbaoType[this.id].label, 80, Config.COLOR_DOC);
         title.x = this.center(title);
         title.y = 190;
         this.addChild(title);
@@ -53,7 +57,7 @@ var InfoScene = (function (_super) {
         var label = new egret.TextField;
         label.text = '你心中独一无二的V宝是什么样的呢？\n快点写下来！';
         label.x = label.y = x;
-        label.textColor = VbaoType[this.id].color;
+        label.textColor = Config.COLOR_DOC;
         des_Group.addChild(label);
         var size = 50;
         var text_y = 175;
@@ -64,7 +68,7 @@ var InfoScene = (function (_super) {
             label_name.x = x;
             label_name.y = text_y;
             label_name.size = size;
-            label_name.textColor = VbaoType[this.id].color;
+            label_name.textColor = Config.COLOR_DOC;
             des_Group.addChild(label_name);
             var line = Util.createBitmapByName('line');
             line.x = 170;
@@ -76,7 +80,7 @@ var InfoScene = (function (_super) {
             input.x = line.x;
             input.y = text_y - 15;
             input.text = '';
-            input.textColor = VbaoType[this.id].color;
+            input.textColor = Config.COLOR_DOC;
             input.size = 40;
             input.textAlign = 'center';
             input.verticalAlign = 'middle';
@@ -90,7 +94,7 @@ var InfoScene = (function (_super) {
         btn_done.y = 968;
         this.addChild(btn_done);
         btn_done.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            var done = _this.propertyList.every(function (item) {
+            var done = _this.propertyKey.every(function (item) {
                 return _this.property.hasOwnProperty(item);
             });
             if (!done)
@@ -106,7 +110,7 @@ var InfoScene = (function (_super) {
     InfoScene.prototype.onChange = function (i) {
         var _this = this;
         return function (e) {
-            _this.property[_this.propertyList[i]] = e.target.text;
+            _this.property[_this.propertyKey[i]] = e.target.text;
         };
     };
     return InfoScene;

@@ -12,12 +12,12 @@ class GetVbaoScene extends Scene {
         this.level = level
     }
 
-    init() {
+    public init() {
         if (this.level == 1) {
             let sceneBg = Util.createBitmapByName('getVbao_bg')
             sceneBg.width = this.stage.stageWidth
             sceneBg.height = this.stage.stageHeight
-            this.addChild(sceneBg)            
+            this.addChild(sceneBg)    
         } else {
             Http.getInstance().get(Url.HTTP_UPDATED, null)
         }
@@ -45,10 +45,44 @@ class GetVbaoScene extends Scene {
         group.addChild(light)
         egret.Tween.get(light, { loop: true }).to({ rotation: 360 }, 6000)
 
-        let bones = new Bones(this.id, this.level, 380, 650)
+        let arr = [[
+            {
+                x: this.stage.stageWidth + 50,
+                y: 1050
+            },
+            {
+                x: this.stage.stageWidth + 50,
+                y: 940
+            },
+            {
+                x: this.stage.stageWidth,
+                y: 910
+            },
+        ], [
+            {
+                x: this.stage.stageWidth,
+                y: 1150
+            },
+            {
+                x: this.stage.stageWidth,
+                y: 1130
+            },
+            {
+                x: this.stage.stageWidth + 50,
+                y: 1150
+            },
+        ]]
+        
+        let bones = new Bones({
+            id: this.id, 
+            level: this.level,
+            x: arr[this.level - 1][this.id].x,
+            y: arr[this.level - 1][this.id].y,
+        })
         group.addChild(bones)
 
-        let type = Util.setTitle(VbaoType[this.id].label, 90, VbaoType[this.id].color)
+        // vbao类型
+        let type = Util.setTitle(VbaoType[this.id].label, 90, Config.COLOR_DOC)
         type.x = this.center(type)
         type.y = 872
         group.addChild(type)
@@ -64,8 +98,9 @@ class GetVbaoScene extends Scene {
                     ViewManager.getInstance().changeScene(scene)
                 }, 3000)
             })
+            
         let text = this.level == 1 ? '恭喜获得V宝!' : 'V宝进化啦!'
-        let label = Util.setTitle(text, 60, VbaoType[this.id].color)
+        let label = Util.setTitle(text, 60, Config.COLOR_DOC)
         label.x = this.center(label)
         label.y = 206
         this.addChild(label)

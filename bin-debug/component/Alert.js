@@ -10,19 +10,24 @@ r.prototype = e.prototype, t.prototype = new r();
 };
 var Alert = (function (_super) {
     __extends(Alert, _super);
-    function Alert(text, toward, flag) {
+    /**
+     * vbao要说的话
+     * @param text 文本
+     * @param toward 尾巴方向
+     */
+    function Alert(text, toward) {
         if (toward === void 0) { toward = 'left'; }
-        if (flag === void 0) { flag = false; }
         var _this = _super.call(this) || this;
-        _this.init(text, toward, flag);
+        _this.init(text, toward);
         return _this;
     }
-    Alert.prototype.init = function (text, toward, flag) {
+    Alert.prototype.init = function (text, toward) {
         var stage = ViewManager.getInstance().stage;
         var tips = new egret.TextField;
         tips.text = text;
         tips.size = 22;
         tips.lineSpacing = 16;
+        this.tips = tips;
         var bg = Util.drawRoundRect(0, 0x000000, 0x000000, tips.width + 40, tips.height + 40, 20, 0.6);
         this.addChild(bg);
         tips.x = 20;
@@ -34,7 +39,10 @@ var Alert = (function (_super) {
         this.addChild(tail);
         this.visible = false;
         this.x = stage.stageWidth - bg.width - 32;
-        this.y = flag ? stage.stageHeight / 2 - 100 : stage.stageHeight / 2 - 60;
+        this.y = stage.stageHeight / 2 - bg.height + 50;
+    };
+    Alert.prototype.setText = function (text) {
+        this.tips.text = text;
     };
     return Alert;
 }(egret.DisplayObjectContainer));

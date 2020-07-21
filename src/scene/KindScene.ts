@@ -1,17 +1,20 @@
 class KindScene extends Scene {
+    /**
+     * 选择vbao页面
+     */
     constructor() {
         super()
     }
 
-    init() {
-        // 标题背景
+    public init() {
+        // 标题的背景
         let title_bg: egret.Shape = new egret.Shape
         title_bg.graphics.beginFill(0x000000, 0.6)
         title_bg.graphics.drawRect(0, 50, this.stage.stageWidth, 150)
         title_bg.graphics.endFill()
         this.addChild(title_bg)
 
-        // 标题文字
+        // 标题
         let title_text: egret.TextField = new egret.TextField
         title_text.text = 'V宝们完美地继承了Verzenios鲜明的品牌个性。你觉得下面哪一个个性最符合你心中的V宝呢？'
         title_text.x = 25
@@ -28,36 +31,36 @@ class KindScene extends Scene {
         let y = 280
         Http.getInstance().get(Url.HTTP_KIND_INFO, res => {
             res.data.forEach((item, index) => {
-                let vBao = new Kind(item.description, VbaoType[index].color, index)
+                let vBao = this.kind(item.description, VbaoType[index].color, index)
                 vBao.x = this.center(vBao)
                 vBao.y = y
                 this.addChild(vBao)
+
+                vBao.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
+                    let scene = new GetVbaoScene(index, 1)
+                    ViewManager.getInstance().changeScene(scene)
+                }, this)
                 y += vBao.height + 10
             })
         })
     }
-}
 
-class Kind extends eui.Group {
-    public constructor(des: string, color: number, id: number) {
-        super()
-        this.init(des, color, id)
-    }
+    private kind(des, color, id) {
+        let group = new eui.Group
 
-    private init(des, color, id) {
-        let box = new BtnBase(`chooseVbao_${VbaoType[id].name}`)
-        this.width = box.width
-        this.height = box.height + 30
-        this.addChild(box)
+        let bg = new BtnBase(`chooseVbao_${VbaoType[id].name}`)
+        group.width = bg.width
+        group.height = bg.height + 30
+        group.addChild(bg)
 
-        let kind = Util.setTitle(VbaoType[id].label, 70, VbaoType[id].color)
-        kind.x = (this.width - kind.width) / 2
-        kind.anchorOffsetY = 30
-        this.addChild(kind)
+        let kindTitle = Util.setTitle(VbaoType[id].label, 70, VbaoType[id].color)
+        kindTitle.x = (group.width - kindTitle.width) / 2
+        kindTitle.anchorOffsetY = 30
+        group.addChild(kindTitle)
 
         let blank_bg = Util.drawRoundRect(0, 0xffffff, 0xffffff, 430, 150, 20)
         blank_bg.x = blank_bg.y = 44
-        this.addChild(blank_bg)
+        group.addChild(blank_bg)
 
         let text: egret.TextField = new egret.TextField
         text.text = des
@@ -67,17 +70,13 @@ class Kind extends eui.Group {
         text.size = 24
         text.width = 360
         text.lineSpacing = 15
-        this.addChild(text)
+        group.addChild(text)
 
         let rightText = Util.setTitle('就是你啦', 30, VbaoType[id].color)
-        rightText.x = this.width - rightText.width - 35
+        rightText.x = group.width - rightText.width - 35
         rightText.y = 98
-        this.addChild(rightText)
+        group.addChild(rightText)
 
-        this.touchEnabled = true
-        this.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            let scene = new GetVbaoScene(id, 1)
-            ViewManager.getInstance().changeScene(scene)
-        }, this)
+        return group
     }
 }

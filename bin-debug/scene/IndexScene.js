@@ -12,6 +12,7 @@ var IndexScene = (function (_super) {
     __extends(IndexScene, _super);
     function IndexScene() {
         var _this = _super.call(this) || this;
+        _this.outdoorText = '我去找别的V宝啦，快来\n找我吧！';
         _this.currentIdx = 1; // 好友列表当前页数
         return _this;
     }
@@ -21,19 +22,27 @@ var IndexScene = (function (_super) {
         Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
             _this.userInfo = res.data;
             window.localStorage.setItem('userInfo', JSON.stringify(_this.userInfo));
-            ViewManager.getInstance().updateUserInfo();
             // 播放升级动画
             if (_this.userInfo.isUpdate) {
                 var scene = new GetVbaoScene(_this.userInfo.kind_id - 1, 2);
                 ViewManager.getInstance().changeScene(scene);
             }
             else {
-                var head = new Head();
+                var head = new Head(_this.userInfo);
                 _this.addChild(head);
                 _this.daily_task();
                 _this.legendary();
-                var vbao = _this.vBao(_this.userInfo, _this.stage.stageHeight);
-                _this.addChild(vbao);
+                if (_this.userInfo.level_id == 2 && _this.userInfo.isoutdoor) {
+                    var tip = new Alert(_this.outdoorText);
+                    tip.x = 250;
+                    tip.y = tip.y + 100;
+                    tip.visible = true;
+                    _this.addChild(tip);
+                    _this.outdoorTip = tip;
+                }
+                else {
+                    _this.showVbao();
+                }
                 if (_this.userInfo.level_id == 2) {
                     _this.feed();
                     _this.decorate();
@@ -86,25 +95,30 @@ var IndexScene = (function (_super) {
             });
         }, this);
     };
-    IndexScene.prototype.vBao = function (data, stageHeight) {
-        var id = data.kind_id - 1;
-        var y;
-        if (data.level_id == 2) {
-            if (id == 0) {
-                y = stageHeight / 7 * 4;
-            }
-            else if (id == 1) {
-                y = stageHeight / 5 * 3;
-            }
-            else if (id == 2) {
-                y = stageHeight / 5 * 3 + 60;
-            }
-        }
-        else {
-            y = stageHeight / 3 * 2;
-        }
-        var bones = new Bones(id, data.level_id, 380, y);
-        return bones;
+    IndexScene.prototype.showVbao = function () {
+        var id = this.userInfo.kind_id - 1;
+        var level = this.userInfo.level_id;
+        var w = this.stage.stageWidth;
+        var h = this.stage.stageHeight;
+        var arr = [
+            [
+                { x: w + 50, y: h },
+                { x: w + 50, y: h - 100 },
+                { x: w, y: h - 120 },
+            ],
+            [
+                { x: w, y: h - 50 },
+                { x: w, y: h - 70 },
+                { x: w + 50, y: h + 20 },
+            ],
+        ];
+        var bones = new Bones({
+            id: id,
+            level: level,
+            x: arr[level - 1][id].x,
+            y: arr[level - 1][id].y,
+        });
+        this.addChild(bones);
     };
     // 投喂
     IndexScene.prototype.feed = function () {
@@ -116,19 +130,30 @@ var IndexScene = (function (_super) {
         this.addChild(feed);
         var feedTip = new Alert('谢谢主人！好吃又\n营养！');
         var feedTipDone = new Alert('每日2次就够啦！明\n天请再来投喂V宝哦！');
-        var feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧', 'left', true);
+        var feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧');
         this.addChild(feedTip);
         this.addChild(feedTipDone);
         this.addChild(feedTipNone);
+        var scoreAni = new ScoreAni(1);
+        this.addChild(scoreAni);
+        var food_type_id = this.userInfo.food_type_id - 1;
         feed.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            if (ViewManager.getInstance().headInfo.food[_this.userInfo.food_type_id - 1] > 0) {
+            if (_this.userInfo.isoutdoor) {
+                _this.outdoorTip.setText('vbao不在家，不能喂食。\n先把vbao找回来吧');
+                setTimeout(function () {
+                    _this.outdoorTip.setText(_this.outdoorText);
+                }, 2000);
+                return;
+            }
+            if (ViewManager.getInstance().headInfo.food[food_type_id] > 0) {
                 Http.getInstance().post(Url.HTTP_FEED, {
                     feedId: _this.userInfo.id,
                     type: 5,
                 }, function (res) {
                     if (res.data.code) {
-                        ViewManager.getInstance().headInfo.food[_this.userInfo.food_type_id - 1] -= 1;
+                        ViewManager.getInstance().headInfo.food[food_type_id] -= 1;
                         ViewManager.getInstance().headInfo.score += 1;
+                        scoreAni.move();
                         Util.animate(feedTip);
                         Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
                             if (res.data.isfinish) {
@@ -237,100 +262,18 @@ var IndexScene = (function (_super) {
     IndexScene.prototype.addItem = function (data) {
         var _this = this;
         data.forEach(function (item) {
-            var rankImg = '';
-            if (item.serialNo <= 3) {
-                rankImg = "rank_0" + item.serialNo;
-            }
-            else {
-                rankImg = 'rank_04';
-            }
-            var friend = _this.friendAvatar(item, rankImg, item.serialNo);
-            friend.x = (item.serialNo - 1) * (friend.width + 42) + 42;
+            var friend = new FriendAvatar(item);
+            var space = 42;
+            friend.x = (item.serialNo - 1) * (friend.width + space) + space;
             friend.y = 45;
+            friend.touchEnabled = true;
+            friend.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
+                _this.aroundGroup.visible = false;
+                var friendHome = new FriendHomeScene(_this.userInfo.id, item.id);
+                ViewManager.getInstance().changeScene(friendHome);
+            }, _this);
             _this.friendList.addChild(friend);
         });
-    };
-    // 好友头像
-    IndexScene.prototype.friendAvatar = function (item, rankImg, num) {
-        var _this = this;
-        if (!item)
-            return;
-        var group = new eui.Group;
-        var bitmap = new egret.Bitmap;
-        // 背景
-        var border = Util.drawRoundRect(3, 0x153344, 0xffffff, 110, 110, 20);
-        group.addChild(border);
-        group.width = border.width;
-        group.height = 150;
-        bitmap.width = border.width - 6;
-        bitmap.height = bitmap.width;
-        bitmap.x = 2;
-        bitmap.y = bitmap.x;
-        var imgLoader = new egret.ImageLoader();
-        imgLoader.crossOrigin = 'anonymous'; // 跨域请求
-        imgLoader.load(item.avatar);
-        imgLoader.once(egret.Event.COMPLETE, function (evt) {
-            if (evt.currentTarget.data) {
-                var texture = new egret.Texture();
-                texture._setBitmapData(evt.currentTarget.data);
-                bitmap.texture = texture;
-                group.addChild(bitmap);
-                var rank_bg = Util.createBitmapByName(rankImg);
-                rank_bg.anchorOffsetX = rank_bg.width / 2;
-                rank_bg.anchorOffsetY = rank_bg.height / 2;
-                group.addChild(rank_bg);
-                if (num > 3) {
-                    var rank_num = new egret.TextField;
-                    rank_num.text = num;
-                    rank_num.width = rank_bg.width;
-                    rank_num.height = rank_bg.height;
-                    rank_num.anchorOffsetX = rank_bg.width / 2;
-                    rank_num.anchorOffsetY = rank_bg.height / 2;
-                    rank_num.textAlign = 'center';
-                    rank_num.verticalAlign = 'middle';
-                    rank_num.size = 24;
-                    rank_num.textColor = 0x153344;
-                    rank_num.bold = true;
-                    group.addChild(rank_num);
-                }
-                var name_bg = Util.drawRoundRect(0, 0x000000, 0x000000, 107, 26, 0, 0.4);
-                name_bg.x = 2;
-                name_bg.y = 82;
-                group.addChild(name_bg);
-                var alias = new egret.TextField;
-                alias.text = item.name;
-                alias.width = group.width;
-                alias.height = name_bg.height;
-                alias.y = name_bg.y;
-                alias.textAlign = 'center';
-                alias.verticalAlign = 'middle';
-                alias.size = 18;
-                group.addChild(alias);
-                // 食物类型图标
-                var icon = Util.createBitmapByName(FoodList[item.food_type_id - 1].image);
-                icon.scaleX = 0.8;
-                icon.scaleY = 0.8;
-                icon.x = group.width - (icon.width * 0.8);
-                icon.y = bitmap.height - (icon.height * 0.8) + 5;
-                group.addChild(icon);
-            }
-        }, this);
-        var aroundCount = new egret.TextField;
-        aroundCount.text = "\u4E32\u95E8" + item.aroundCount + "\u6B21";
-        aroundCount.y = group.height - aroundCount.height;
-        aroundCount.width = group.width;
-        aroundCount.textColor = Config.COLOR_DOC;
-        aroundCount.textAlign = 'center';
-        aroundCount.size = 20;
-        aroundCount.bold = true;
-        group.addChild(aroundCount);
-        group.touchEnabled = true;
-        group.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            _this.aroundGroup.visible = false;
-            var friendHome = new FriendHomeScene(_this.userInfo.id, item.id);
-            ViewManager.getInstance().changeScene(friendHome);
-        }, this);
-        return group;
     };
     return IndexScene;
 }(Scene));

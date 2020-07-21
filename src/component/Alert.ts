@@ -1,15 +1,22 @@
 class Alert extends egret.DisplayObjectContainer {
-    constructor(text, toward = 'left', flag = false) {
+    private tips
+    /**
+     * vbao要说的话
+     * @param text 文本
+     * @param toward 尾巴方向
+     */
+    constructor(text, toward = 'left') {
         super()
-        this.init(text, toward, flag)
+        this.init(text, toward)
     }
 
-    private init(text, toward, flag) {
+    private init(text, toward) {
         let stage = ViewManager.getInstance().stage
         let tips = new egret.TextField
         tips.text = text
         tips.size = 22
         tips.lineSpacing = 16
+        this.tips = tips
 
         let bg = Util.drawRoundRect(0, 0x000000, 0x000000, tips.width + 40, tips.height + 40, 20, 0.6)
         this.addChild(bg)
@@ -24,7 +31,11 @@ class Alert extends egret.DisplayObjectContainer {
         this.addChild(tail)
         this.visible = false
         this.x = stage.stageWidth - bg.width - 32
-        this.y = flag ? stage.stageHeight / 2 - 100 : stage.stageHeight / 2 - 60
+        this.y = stage.stageHeight / 2 - bg.height + 50
+    }
+
+    public setText(text) {
+        this.tips.text = text
     }
 }
 

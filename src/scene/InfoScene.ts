@@ -1,8 +1,12 @@
 class InfoScene extends Scene {
     private id: number
-    private property: object
-    private propertyList: Array<string> = ['nickName', 'constellation', 'blood', 'hobby']
-    public constructor(id) {
+    private property: object // 基本信息对象
+    private propertyKey: Array<string> = ['nickName', 'constellation', 'blood', 'hobby']
+    /**
+     * 填写vbao基本信息
+     * @param id vbao类型
+     */
+    constructor(id) {
         super()
         this.id = id
         this.property = {
@@ -29,7 +33,7 @@ class InfoScene extends Scene {
             ViewManager.getInstance().changeScene(scene)
         }, this)
 
-        let title = Util.setTitle(VbaoType[this.id].label, 80, VbaoType[this.id].color)
+        let title = Util.setTitle(VbaoType[this.id].label, 80, Config.COLOR_DOC)
         title.x = this.center(title)
         title.y = 190
         this.addChild(title)
@@ -49,7 +53,7 @@ class InfoScene extends Scene {
         let label: egret.TextField = new egret.TextField
         label.text = '你心中独一无二的V宝是什么样的呢？\n快点写下来！'
         label.x = label.y = x
-        label.textColor = VbaoType[this.id].color
+        label.textColor = Config.COLOR_DOC
         des_Group.addChild(label)
 
         let size = 50
@@ -61,7 +65,7 @@ class InfoScene extends Scene {
             label_name.x = x
             label_name.y = text_y
             label_name.size = size
-            label_name.textColor = VbaoType[this.id].color
+            label_name.textColor = Config.COLOR_DOC
             des_Group.addChild(label_name)
 
             let line: egret.Bitmap = Util.createBitmapByName('line')
@@ -75,7 +79,7 @@ class InfoScene extends Scene {
             input.x = line.x
             input.y = text_y - 15
             input.text = ''
-            input.textColor = VbaoType[this.id].color
+            input.textColor = Config.COLOR_DOC
             input.size = 40
             input.textAlign = 'center'
             input.verticalAlign = 'middle'
@@ -91,7 +95,7 @@ class InfoScene extends Scene {
         btn_done.y = 968
         this.addChild(btn_done)
         btn_done.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            let done = this.propertyList.every(item => {
+            let done = this.propertyKey.every(item => {
                 return this.property.hasOwnProperty(item)
             })
             if (!done) return
@@ -106,7 +110,7 @@ class InfoScene extends Scene {
 
     private onChange(i: number) {
         return (e:egret.Event) => {
-            this.property[this.propertyList[i]] = e.target.text
+            this.property[this.propertyKey[i]] = e.target.text
         }
     }
 }

@@ -11,25 +11,26 @@ r.prototype = e.prototype, t.prototype = new r();
 var Bones = (function (_super) {
     __extends(Bones, _super);
     /**
-     * @param id 形象id
-     * @param level 等级
-     * @param x
-     * @param y
+     * vbao动画
+     * @param {object} option vbao参数
      */
-    function Bones(id, level, x, y) {
+    function Bones(option) {
         var _this = _super.call(this) || this;
-        _this.init(id, level, x, y);
+        _this.option = option;
+        _this.init();
         return _this;
     }
-    Bones.prototype.init = function (id, level, x, y) {
-        var arr = ['doc', 'box', 'pilot'];
-        var ske = RES.getRes("" + arr[id] + level + "_ske");
-        var tex = RES.getRes("" + arr[id] + level + "_tex");
-        var tex_png = RES.getRes("" + arr[id] + level + "_tex_png");
-        var bone = ViewManager.getInstance().getBones("" + id + level);
-        if (bone) {
-            bone.x = x;
-            bone.y = y;
+    Bones.prototype.init = function () {
+        console.log(this.option);
+        var type = this.option.type ? this.option.type : VbaoType[this.option.id].name + this.option.level;
+        var ske = RES.getRes(type + "_ske");
+        var tex = RES.getRes(type + "_tex");
+        var tex_png = RES.getRes(type + "_tex_png");
+        var bone = ViewManager.getInstance().getBones(type);
+        var stage = ViewManager.getInstance().stage;
+        if (bone && this.option.isback != 1) {
+            bone.x = this.option.x ? this.option.x : stage.stageWidth;
+            bone.y = this.option.y ? this.option.y : stage.stageHeight;
             this.addChild(bone);
             return;
         }
@@ -37,18 +38,20 @@ var Bones = (function (_super) {
             var egretFactory = dragonBones.EgretFactory.factory;
             egretFactory.parseDragonBonesData(ske);
             egretFactory.parseTextureAtlasData(tex, tex_png);
-            var armatureDisplay = egretFactory.buildArmatureDisplay("" + arr[id] + level + "Armature");
+            var armatureDisplay = egretFactory.buildArmatureDisplay(type + "Armature");
             this.addChild(armatureDisplay);
-            armatureDisplay.x = x;
-            armatureDisplay.y = y;
-            var scale = level == 1 ? 0.4 : 0.25;
-            if (level == 2 && id == 2) {
+            armatureDisplay.x = this.option.x ? this.option.x : stage.stageWidth;
+            armatureDisplay.y = this.option.y ? this.option.y : stage.stageHeight;
+            armatureDisplay.anchorOffsetX = armatureDisplay.width;
+            armatureDisplay.anchorOffsetY = armatureDisplay.height;
+            var scale = this.option.level == 1 ? 0.4 : 0.25;
+            if (this.option.level == 2 && this.option.id == 2) {
                 scale = 0.2;
             }
             armatureDisplay.scaleX = scale;
             armatureDisplay.scaleY = scale;
             armatureDisplay.animation.play('newAnimation');
-            ViewManager.getInstance().setBones("" + id + level, armatureDisplay);
+            ViewManager.getInstance().setBones(type, armatureDisplay);
         }
     };
     return Bones;

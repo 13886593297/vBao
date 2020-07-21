@@ -13,7 +13,6 @@ var FriendHomeScene = (function (_super) {
     function FriendHomeScene(userId, befeedId) {
         var _this = _super.call(this) || this;
         _this.interval = 1000;
-        _this.goal = new egret.TextField;
         _this.userId = userId;
         _this.befeedId = befeedId;
         return _this;
@@ -23,11 +22,10 @@ var FriendHomeScene = (function (_super) {
         Http.getInstance().post(Url.HTTP_AROUND, {
             visitedId: this.befeedId
         }, function (res) {
-            var head = new Head();
+            var head = new Head(res.data.visitInfo);
             _this.addChild(head);
             _this.vBaoInfo(res.data.visitedInfo);
-            var vbao = new IndexScene().vBao(res.data.visitedInfo, _this.stage.stageHeight);
-            _this.addChild(vbao);
+            _this.showVbao(res.data);
             _this.present(res.data);
             _this.randomGift(res.data);
             _this.goHome();
@@ -43,7 +41,9 @@ var FriendHomeScene = (function (_super) {
                     ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] += 1;
                 }, _this.interval);
                 Util.animate(_this.getGiftTips);
-                _this.foodIncreaseAni(data);
+                var foodAni = new FoodAni(data.visitedInfo.kind_id);
+                _this.addChild(foodAni);
+                foodAni.move();
             }
         });
     };
@@ -97,6 +97,54 @@ var FriendHomeScene = (function (_super) {
         hobby.size = 22;
         group.addChild(hobby);
     };
+    FriendHomeScene.prototype.showVbao = function (data) {
+        var w = this.stage.stageWidth;
+        var h = this.stage.stageHeight;
+        var level = data.visitInfo.level_id;
+        var isback = data.visitInfo.isback;
+        // isback = 1
+        var visitId = data.visitInfo.kind_id - 1;
+        var arr = [
+            { y: h - 50 },
+            { y: h - 70 },
+            { y: h + 20 },
+        ];
+        if (isback == 1) {
+            var myVbao = new Bones({
+                id: visitId,
+                level: level,
+                x: w - 150,
+                y: arr[visitId].y,
+                isback: isback
+            });
+            this.addChild(myVbao);
+            var tip = new Alert('主人，恭喜你找到我啦！', 'right');
+            tip.x = 20;
+            tip.visible = true;
+            this.addChild(tip);
+        }
+        var visitedId = data.visitedInfo.kind_id - 1;
+        var x;
+        var y = arr[visitedId].y;
+        var type;
+        var scaleX = 1;
+        if (visitedId == 2 && isback != 1) {
+            x = w + 50;
+        }
+        else if (isback == 1) {
+            if (visitedId == 1) {
+                x = w + 250;
+                type = 'box2_r';
+            }
+            else {
+                x = -150;
+                scaleX = -1;
+            }
+        }
+        var friendVbao = new Bones({ id: visitedId, level: level, x: x, y: y, isback: isback, type: type });
+        friendVbao.scaleX = scaleX;
+        this.addChild(friendVbao);
+    };
     // 送礼
     FriendHomeScene.prototype.present = function (data) {
         var _this = this;
@@ -105,18 +153,20 @@ var FriendHomeScene = (function (_super) {
         present.y = this.stage.stageHeight - present.height - 40;
         this.addChild(present);
         var feedTip = new Alert('谢谢你的礼物！好\n吃又营养！');
-        var feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧', 'left', true);
+        var feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧');
         var getGiftTips = new GiftTip(FoodList[data.visitedInfo.kind_id - 1].image);
         this.addChild(feedTip);
         this.addChild(feedTipNone);
         this.addChild(getGiftTips);
         this.getGiftTips = getGiftTips;
+        var scoreAni = new ScoreAni(1);
+        this.addChild(scoreAni);
         var flag = true;
         present.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            if (!flag)
-                return;
-            flag = false;
             if (ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] > 0) {
+                if (!flag)
+                    return;
+                flag = false;
                 Http.getInstance().post(Url.HTTP_FEED, {
                     feedId: _this.userId,
                     befeedId: _this.befeedId,
@@ -127,8 +177,9 @@ var FriendHomeScene = (function (_super) {
                         setTimeout(function () {
                             ViewManager.getInstance().headInfo.score += 1;
                         }, _this.interval);
-                        _this.scoreIncreaseAni(1);
+                        scoreAni.move();
                         Util.animate(feedTip);
+                        flag = true;
                     }
                     else {
                         Util.animate(feedTipNone);
@@ -138,60 +189,8 @@ var FriendHomeScene = (function (_super) {
             else {
                 Util.animate(feedTipNone);
             }
-            setTimeout(function () {
-                flag = true;
-            }, 300);
         }, this);
     };
-    /**
-     * 积分增加动画
-     * @param score 增加的分数
-     */
-    FriendHomeScene.prototype.scoreIncreaseAni = function (score) {
-        this.goal.text = "+" + score;
-        this.goal.x = 500;
-        this.goal.y = this.stage.stageHeight / 2 + 50;
-        this.goal.anchorOffsetX = this.goal.width / 2;
-        this.goal.anchorOffsetY = this.goal.height / 2;
-        this.goal.textColor = Config.COLOR_DOC;
-        this.goal.size = 40;
-        this.goal.visible = true;
-        this.addChild(this.goal);
-        egret.Tween.get(this).to({ factor: 1 }, this.interval);
-        egret.Tween.get(this.goal).to({ visible: false }, this.interval);
-    };
-    Object.defineProperty(FriendHomeScene.prototype, "factor", {
-        get: function () {
-            return 0;
-        },
-        set: function (value) {
-            this.goal.x = (1 - value) * (1 - value) * 500 + 2 * value * (1 - value) * 800 + value * value * 330;
-            this.goal.y = (1 - value) * (1 - value) * (this.stage.stageHeight / 2 + 50) + 2 * value * (1 - value) * 300 + value * value * 160;
-            this.goal.size = 30;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    FriendHomeScene.prototype.foodIncreaseAni = function (data) {
-        this.foodX = data.visitedInfo.kind_id == 1 ? 210 : data.visitedInfo.kind_id == 2 ? 380 : 550;
-        this.food = Util.createBitmapByName(FoodList[data.visitedInfo.kind_id - 1].image);
-        this.food.x = 500;
-        this.food.y = this.stage.stageHeight / 2 + 50;
-        this.addChild(this.food);
-        egret.Tween.get(this).to({ factor1: 1 }, this.interval);
-        egret.Tween.get(this.goal).to({ visible: false }, this.interval);
-    };
-    Object.defineProperty(FriendHomeScene.prototype, "factor1", {
-        get: function () {
-            return 0;
-        },
-        set: function (value) {
-            this.food.x = (1 - value) * (1 - value) * 500 + 2 * value * (1 - value) * 800 + value * value * this.foodX;
-            this.food.y = (1 - value) * (1 - value) * (this.stage.stageHeight / 2 + 50) + 2 * value * (1 - value) * 300 + value * value * 65;
-        },
-        enumerable: true,
-        configurable: true
-    });
     // 回家
     FriendHomeScene.prototype.goHome = function () {
         var goHome = new BtnBase('goHome');

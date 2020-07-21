@@ -13,14 +13,11 @@ class FriendHomeScene extends Scene {
         Http.getInstance().post(Url.HTTP_AROUND, {
             visitedId: this.befeedId
         }, (res) => {
-            let head = new Head()
+            let head = new Head(res.data.visitInfo)
             this.addChild(head)
-
             this.vBaoInfo(res.data.visitedInfo)
 
-            let vbao = new IndexScene().vBao(res.data.visitedInfo, this.stage.stageHeight)
-            this.addChild(vbao)
-
+            this.showVbao(res.data)
             this.present(res.data)
             this.randomGift(res.data)
             this.goHome()
@@ -36,7 +33,10 @@ class FriendHomeScene extends Scene {
                     ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] += 1
                 }, this.interval)
                 Util.animate(this.getGiftTips)
-                this.foodIncreaseAni(data)
+
+                let foodAni = new FoodAni(data.visitedInfo.kind_id)
+                this.addChild(foodAni)
+                foodAni.move()
             }
         })
     }
@@ -99,6 +99,56 @@ class FriendHomeScene extends Scene {
         group.addChild(hobby)
     }
 
+    private showVbao(data) {
+        let w = this.stage.stageWidth
+        let h = this.stage.stageHeight
+        let level = data.visitInfo.level_id
+        let isback = data.visitInfo.isback
+        // isback = 1
+        let visitId = data.visitInfo.kind_id - 1
+        let arr = [
+            { y: h - 50 },
+            { y: h - 70 },
+            { y: h + 20 },
+        ]
+        if (isback == 1) {
+            let myVbao = new Bones({
+                id: visitId, 
+                level,
+                x: w - 150,
+                y: arr[visitId].y,
+                isback
+            })
+            this.addChild(myVbao)
+
+            let tip = new Alert('主人，恭喜你找到我啦！', 'right')
+            tip.x = 20
+            tip.visible = true
+            this.addChild(tip)
+        }
+
+        let visitedId = data.visitedInfo.kind_id - 1
+        let x
+        let y = arr[visitedId].y
+        let type
+        let scaleX = 1
+        if (visitedId == 2 && isback != 1) {
+            x = w + 50
+        } else if (isback == 1) {
+            if (visitedId == 1) {
+                x = w + 250
+                type = 'box2_r'
+            } else {
+                x = -150
+                scaleX = -1
+            }
+        }
+
+        let friendVbao = new Bones({id: visitedId, level, x, y, isback, type})
+        friendVbao.scaleX = scaleX
+        this.addChild(friendVbao)
+    }
+
     // 送礼
     private present(data) {
         let present = new BtnBase('present')
@@ -107,18 +157,21 @@ class FriendHomeScene extends Scene {
         this.addChild(present)
 
         let feedTip = new Alert('谢谢你的礼物！好\n吃又营养！')
-        let feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧', 'left', true)
+        let feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧')
         let getGiftTips = new GiftTip(FoodList[data.visitedInfo.kind_id - 1].image)
         this.addChild(feedTip)
         this.addChild(feedTipNone)
         this.addChild(getGiftTips)
         this.getGiftTips = getGiftTips
 
+        let scoreAni = new ScoreAni(1)
+        this.addChild(scoreAni)
+
         let flag = true
         present.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            if (!flag) return
-            flag = false
             if (ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] > 0) {
+                if (!flag) return
+                flag = false
                 Http.getInstance().post(Url.HTTP_FEED, {
                     feedId: this.userId,
                     befeedId: this.befeedId,
@@ -130,9 +183,9 @@ class FriendHomeScene extends Scene {
                             ViewManager.getInstance().headInfo.score += 1
                         }, this.interval)
 
-                        this.scoreIncreaseAni(1)
-
+                        scoreAni.move()
                         Util.animate(feedTip)
+                        flag = true
                     } else {
                         Util.animate(feedTipNone)
                     }
@@ -140,61 +193,7 @@ class FriendHomeScene extends Scene {
             } else {
                 Util.animate(feedTipNone)
             }
-            setTimeout(() => {
-                flag = true
-            }, 300)
         }, this)
-    }
-
-    private goal = new egret.TextField
-    /**
-     * 积分增加动画
-     * @param score 增加的分数
-     */
-    private scoreIncreaseAni(score) {
-        this.goal.text = `+${score}`
-        this.goal.x = 500
-        this.goal.y = this.stage.stageHeight / 2 + 50
-        this.goal.anchorOffsetX = this.goal.width / 2
-        this.goal.anchorOffsetY = this.goal.height / 2
-        this.goal.textColor = Config.COLOR_DOC
-        this.goal.size = 40
-        this.goal.visible = true
-        this.addChild(this.goal)
-        egret.Tween.get(this).to({factor: 1}, this.interval)
-        egret.Tween.get(this.goal).to({visible: false}, this.interval)
-    }
-
-    private get factor():number {
-        return 0
-    }
-
-    private set factor(value: number) {
-        this.goal.x = (1 - value) * (1 - value) * 500 + 2 * value * (1 - value) * 800 + value * value * 330
-        this.goal.y = (1 - value) * (1 - value) * (this.stage.stageHeight / 2 + 50) + 2 * value * (1 - value) * 300 + value * value * 160
-        this.goal.size = 30
-    }
-
-    private food: egret.Bitmap
-    private foodX: number
-    private foodIncreaseAni(data) {
-        this.foodX = data.visitedInfo.kind_id == 1 ? 210 : data.visitedInfo.kind_id == 2 ? 380 : 550
-
-        this.food = Util.createBitmapByName(FoodList[data.visitedInfo.kind_id - 1].image)
-        this.food.x = 500
-        this.food.y = this.stage.stageHeight / 2 + 50
-        this.addChild(this.food)
-        egret.Tween.get(this).to({factor1: 1}, this.interval)
-        egret.Tween.get(this.goal).to({visible: false}, this.interval)
-    }
-
-    private get factor1():number {
-        return 0
-    }
-
-    private set factor1(value: number) {
-        this.food.x = (1 - value) * (1 - value) * 500 + 2 * value * (1 - value) * 800 + value * value * this.foodX
-        this.food.y = (1 - value) * (1 - value) * (this.stage.stageHeight / 2 + 50) + 2 * value * (1 - value) * 300 + value * value * 65
     }
 
     // 回家

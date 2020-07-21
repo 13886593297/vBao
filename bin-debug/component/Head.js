@@ -11,9 +11,8 @@ r.prototype = e.prototype, t.prototype = new r();
 var Head = (function (_super) {
     __extends(Head, _super);
     /** 公用头部 */
-    function Head() {
+    function Head(userInfo) {
         var _this = _super.call(this) || this;
-        _this.userInfo = ViewManager.getInstance().userInfo;
         _this.score = new egret.TextField;
         /** 预防用户连续点击时动画出现异常 */
         _this.flag = true;
@@ -21,6 +20,7 @@ var Head = (function (_super) {
         _this.food_count_arr = [];
         /** 预防用户连续点击时动画出现异常 */
         _this.flagArr = [1, 1, 1];
+        _this.userInfo = userInfo;
         _this.init();
         return _this;
     }
@@ -92,6 +92,7 @@ var Head = (function (_super) {
         this.tweenAni(this.score, function () {
             _this.flag = true;
         });
+        // this.scoreIncreaseAni(1)
     };
     /** 初始化食物列表 */
     Head.prototype.initialFoodList = function () {

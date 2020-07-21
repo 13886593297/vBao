@@ -8,15 +8,17 @@ var __extends = this && this.__extends || function __extends(t, e) {
 for (var i in e) e.hasOwnProperty(i) && (t[i] = e[i]);
 r.prototype = e.prototype, t.prototype = new r();
 };
-/**
- * 创建帧动画
- */
 var MyMovieClip = (function (_super) {
     __extends(MyMovieClip, _super);
-    function MyMovieClip(name, playTimes) {
+    /**
+     * 创建帧动画
+     * @param aniName gif名字
+     * @param playTimes 循环次数
+     */
+    function MyMovieClip(aniName, playTimes) {
         if (playTimes === void 0) { playTimes = -1; }
         var _this = _super.call(this) || this;
-        _this.aniName = name;
+        _this.aniName = aniName;
         _this.playTimes = playTimes;
         _this.addEventListener(egret.Event.ADDED_TO_STAGE, _this.onAddToStage, _this);
         return _this;
