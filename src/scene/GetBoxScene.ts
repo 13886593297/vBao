@@ -56,8 +56,12 @@ class GetBoxScene extends Scene {
         let group = new eui.Group()
 
         let circleGroup = new eui.Group()
-        circleGroup.x = this.stage.stageWidth * 0.86
-        circleGroup.y = this.stage.stageHeight / 2 - 50
+        circleGroup.width = this.stage.stageWidth
+        circleGroup.height = this.stage.stageHeight
+        circleGroup.anchorOffsetX = this.stage.stageWidth / 2
+        circleGroup.anchorOffsetY = this.stage.stageHeight / 2
+        circleGroup.x = this.stage.stageWidth / 2
+        circleGroup.y = 980
         circleGroup.skewX = 70
         circleGroup.skewY = 20
         group.addChild(circleGroup)
@@ -75,7 +79,7 @@ class GetBoxScene extends Scene {
         let treasure = new egret.Bitmap()
         treasure.texture = RES.getRes('box_close')
         treasure.x = this.center(treasure)
-        treasure.y = this.stage.stageHeight / 2 - 80
+        treasure.y = 590
         treasure.touchEnabled = true
         group.addChild(treasure)
 

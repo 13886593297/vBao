@@ -21,15 +21,14 @@ var FriendHomeScene = (function (_super) {
     FriendHomeScene.prototype.init = function () {
         var _this = this;
         Http.getInstance().post(Url.HTTP_SEARCHUSER, { visitedId: this.befeedId }, function (res) {
-            console.log(res.data.code);
             // code 2 第一次找到
             if (res.data.code == 2) {
                 var boxScene = new GetBoxScene();
                 ViewManager.getInstance().changeScene(boxScene);
             }
             else {
+                // code 1 找到V宝 但是没有回家
                 if (res.data.code == 1) {
-                    // 找到V宝 但是没有回家
                     _this.vbaoIsHere = true;
                 }
                 Http.getInstance().post(Url.HTTP_AROUND, {
