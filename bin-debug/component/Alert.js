@@ -15,13 +15,13 @@ var Alert = (function (_super) {
      * @param text 文本
      * @param toward 尾巴方向
      */
-    function Alert(text, toward) {
+    function Alert(text, toward, isTalk) {
         if (toward === void 0) { toward = 'left'; }
         var _this = _super.call(this) || this;
-        _this.init(text, toward);
+        _this.init(text, toward, isTalk);
         return _this;
     }
-    Alert.prototype.init = function (text, toward) {
+    Alert.prototype.init = function (text, toward, isTalk) {
         var stage = ViewManager.getInstance().stage;
         var tips = new egret.TextField;
         tips.text = text;
@@ -34,7 +34,7 @@ var Alert = (function (_super) {
         tips.y = 20;
         this.addChild(tips);
         var tail = Util.createBitmapByName("tail_" + toward);
-        tail.x = toward == 'right' ? 212 : 5;
+        tail.x = isTalk ? 100 : toward == 'right' ? 212 : 5;
         tail.y = bg.height;
         this.addChild(tail);
         this.visible = false;

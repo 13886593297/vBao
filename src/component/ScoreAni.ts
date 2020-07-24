@@ -37,8 +37,8 @@ class ScoreAni extends egret.DisplayObjectContainer {
             2 * value * (1 - value) * 800 +
             value * value * 330
         this.goal.y =
-            (1 - value) * (1 - value) * (this._stage.stageHeight / 2 + 50) +
-            2 * value * (1 - value) * 300 +
+            (1 - value) * (1 - value) * 300 +
+            2 * value * (1 - value) * 230 +
             value * value * 160
         this.goal.size = 30
     }

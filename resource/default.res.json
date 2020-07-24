@@ -1,7 +1,7 @@
 {
 	"groups": [
 		{
-			"keys": "MyFont_ttf,doc1_ske,doc1_tex,doc1_tex_png,pilot1_ske,pilot1_tex,pilot1_tex_png,box1_ske,box1_tex,box1_tex_png,doc2_ske,doc2_tex,doc2_tex_png,pilot2_ske,pilot2_tex,pilot2_tex_png,box2_ske,box2_r_ske,box2_tex,box2_r_tex,box2_tex_png,box2_r_tex_png,bg,info_doc,chooseVbao_doc,chooseVbao_doc_down,chooseVbao_pilot,chooseVbao_pilot_down,chooseVbao_box,chooseVbao_box_down,close,close_down,line,getVbao_light,getVbao_doc,getVbao_bg,daily_task_btn,daily_task_btn_down,daily_task_tips,flag,btn_go,btn_go_down,btn_sign,btn_sign_down,btn_done,btn_done_down,btn_wish,btn_wish_down,btn_done1,btn_done1_down,legendary,legendary_down,avatar_bg,header_bg,icon_air,icon_dir,icon_glove,feed,feed_down,tail_left,tail_right,around,around_down,decorate,decorate_down,goHome,goHome_down,present,present_down,around_bg,invite,invite_down,around_close,around_close_down,rank_01,rank_02,rank_03,rank_04,share_arrow,share_tips,share_tips_android",
+			"keys": "MyFont_ttf,doc1_ske,doc1_tex,doc1_tex_png,pilot1_ske,pilot1_tex,pilot1_tex_png,box1_ske,box1_tex,box1_tex_png,doc2_ske,doc2_tex,doc2_tex_png,pilot2_ske,pilot2_tex,pilot2_tex_png,box2_ske,box2_r_ske,box2_tex,box2_r_tex,box2_tex_png,box2_r_tex_png,bg,info_doc,chooseVbao_doc,chooseVbao_doc_down,chooseVbao_pilot,chooseVbao_pilot_down,chooseVbao_box,chooseVbao_box_down,close,close_down,line,getVbao_light,getVbao_doc,getVbao_bg,daily_task_btn,daily_task_btn_down,daily_task_tips,flag,btn_go,btn_go_down,btn_sign,btn_sign_down,btn_done,btn_done_down,btn_wish,btn_wish_down,btn_done1,btn_done1_down,legendary,legendary_down,avatar_bg,header_bg,icon_air,icon_dir,icon_glove,feed,feed_down,tail_left,tail_right,around,around_down,decorate,decorate_down,goHome,goHome_down,present,present_down,around_bg,invite,invite_down,around_close,around_close_down,rank_01,rank_02,rank_03,rank_04,share_arrow,share_tips,share_tips_android,tip_board,icon_doc,icon_box,icon_pilot,btn_V5,btn_V5_down,circle,box_open,box_close,fire",
 			"name": "preload"
         },
         {
@@ -397,6 +397,36 @@
 			"name": "rank_04"
         },
         {
+			"url": "assets/Index/tip_board.png",
+			"type": "image",
+			"name": "tip_board"
+        },
+        {
+			"url": "assets/Index/icon_doc.png",
+			"type": "image",
+			"name": "icon_doc"
+        },
+        {
+			"url": "assets/Index/icon_box.png",
+			"type": "image",
+			"name": "icon_box"
+        },
+        {
+			"url": "assets/Index/icon_pilot.png",
+			"type": "image",
+			"name": "icon_pilot"
+        },
+        {
+			"url": "assets/Index/btn_V5.png",
+			"type": "image",
+			"name": "btn_V5"
+        },
+        {
+			"url": "assets/Index/btn_V5_down.png",
+			"type": "image",
+			"name": "btn_V5_down"
+        },
+        {
 			"url": "assets/header/avatar_bg.png",
 			"type": "image",
 			"name": "avatar_bg"
@@ -420,6 +450,26 @@
 			"url": "assets/header/icon_glove.png",
 			"type": "image",
 			"name": "icon_glove"
+        },
+        {
+			"url": "assets/friend/box_open.png",
+			"type": "image",
+			"name": "box_open"
+        },
+        {
+			"url": "assets/friend/box_close.png",
+			"type": "image",
+			"name": "box_close"
+        },
+        {
+			"url": "assets/friend/circle.png",
+			"type": "image",
+			"name": "circle"
+        },
+        {
+			"url": "assets/friend/fire.png",
+			"type": "image",
+			"name": "fire"
         }
 	]
 }

@@ -66,7 +66,7 @@ class Head extends egret.DisplayObjectContainer {
         this.score.text = `积分：${this.userInfo.total_score}`
         this.score.x = 200
         this.score.y = this.userInfo.level_id == 1 ? 100 : 150
-        this.score.size = 24
+        this.score.size = 30
         this.score.bold = true
         this.score.strokeColor = Config.COLOR_DOC
         this.score.stroke = 1
@@ -82,7 +82,6 @@ class Head extends egret.DisplayObjectContainer {
         this.tweenAni(this.score, () => {
             this.flag = true
         })
-        // this.scoreIncreaseAni(1)
     }
 
     /** 初始化食物列表 */
@@ -107,7 +106,7 @@ class Head extends egret.DisplayObjectContainer {
             x += header_item.width
         })
     }
-    
+
     /** 食物数量数组 */
     private food_count_arr = []
     private food(item, index) {
@@ -117,15 +116,17 @@ class Head extends egret.DisplayObjectContainer {
         let icon = Util.createBitmapByName(item.image)
         group.addChild(icon)
 
-        let label = Util.setTitle(item.name, 18, Config.COLOR_DOC) 
+        // 类型文字
+        let label = Util.setTitle(item.name, 24, Config.COLOR_DOC) 
         label.x = icon.width + 8
         label.y = 8
         group.addChild(label)
         
+        // 食物数量
         let food_count = new egret.TextField
         food_count.textFlow = [
-            {text: 'X', style: { size: 20 }},
-            {text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 24 }}
+            {text: 'X', style: { size: 26 }},
+            {text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 26 }}
         ]
         food_count.strokeColor = Config.COLOR_DOC
         food_count.stroke = 2
@@ -140,8 +141,8 @@ class Head extends egret.DisplayObjectContainer {
     private flagArr = [1, 1, 1]
     private setFood(index) {
         this.food_count_arr[index].textFlow = [
-            {text: 'X', style: { size: 20 }},
-            {text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 24 }}
+            {text: 'X', style: { size: 26 }},
+            {text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 26 }}
         ]
         
         if (!this.flagArr[index]) return

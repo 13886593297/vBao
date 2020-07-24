@@ -109,7 +109,7 @@ var Task = (function (_super) {
                                 }
                                 ViewManager.getInstance().headInfo.score += 1;
                                 scoreAni.move();
-                                foodAni.move();
+                                foodAni.increaseMove();
                                 _this.parent.removeChild(_this);
                                 Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
                                     if (res.data.isfinish) {

@@ -73,11 +73,9 @@ class FriendAvatar extends eui.Group {
                 this.addChild(alias)
 
                 // 食物类型图标
-                let icon = Util.createBitmapByName(FoodList[item.food_type_id - 1].image)
-                icon.scaleX = 0.8
-                icon.scaleY = 0.8
-                icon.x = this.width - (icon.width * 0.8)
-                icon.y = bitmap.height - (icon.height * 0.8) + 5
+                let icon = Util.createBitmapByName(FoodList[item.food_type_id - 1].icon)
+                icon.x = this.width - icon.width
+                icon.y = - icon.height / 2
                 this.addChild(icon)
             }
         }, this)

@@ -104,7 +104,7 @@ class Task extends eui.Group {
                                 }
                                 ViewManager.getInstance().headInfo.score += 1
                                 scoreAni.move()
-                                foodAni.move()
+                                foodAni.increaseMove()
                                 this.parent.removeChild(this)
 
                                 Http.getInstance().get(Url.HTTP_USER_INFO, res => {

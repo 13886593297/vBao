@@ -32,25 +32,49 @@ class FoodAni extends egret.DisplayObjectContainer {
         this.imgArr.push(img)
     }
 
-    public move() {
+    // 食物增加
+    public increaseMove() {
         this.visible = true
-        egret.Tween.get(this).to({ factor: 1, visible: false }, 1000)
+        egret.Tween.get(this).to({ increaseFactor: 1, visible: false }, 1000)
     }
 
-    private get factor(): number {
+    private get increaseFactor(): number {
         return 0
     }
 
-    private set factor(value: number) {
+    private set increaseFactor(value: number) {
         this.imgArr.forEach((item, index) => {
             item.x =
                 (1 - value) * (1 - value) * 500 +
                 2 * value * (1 - value) * 800 +
                 value * value * this.foodXArr[index]
             item.y =
-                (1 - value) * (1 - value) * (this._stage.stageHeight / 2 + 50) +
-                2 * value * (1 - value) * 300 +
+                (1 - value) * (1 - value) * 300 +
+                2 * value * (1 - value) * 230 +
                 value * value * 65
+        })
+    }
+
+    // 食物减少
+    public decreaseMove() {
+        this.visible = true
+        egret.Tween.get(this).to({ decreaseFactor: 1, visible: false }, 1000)
+    }
+
+    private get decreaseFactor(): number {
+        return 0
+    }
+
+    private set decreaseFactor(value: number) {
+        this.imgArr.forEach((item, index) => {
+            item.x =
+                (1 - value) * (1 - value) * this.foodXArr[index] +
+                2 * value * (1 - value) * 800 +
+                value * value * 500
+            item.y =
+                (1 - value) * (1 - value) * 65 +
+                2 * value * (1 - value) * 230 +
+                value * value * 300
         })
     }
 }

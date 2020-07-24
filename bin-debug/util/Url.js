@@ -33,6 +33,10 @@ var Url = (function () {
     Url.HTTP_ISUPDATE = '/game/api/task/findIsUpdate';
     // 通知后台V宝已升级
     Url.HTTP_UPDATED = '/game/api/task/isUpdate';
+    // 寻找v宝
+    Url.HTTP_SEARCHUSER = '/game/api/around/searchUser';
+    // 回家
+    Url.HTTP_BACKHOME = '/game/api/around/backhome';
     return Url;
 }());
 __reflect(Url.prototype, "Url");

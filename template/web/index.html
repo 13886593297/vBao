@@ -11,7 +11,7 @@
     <meta name="screen-orientation" content="portrait" />
     <meta name="x5-fullscreen" content="true" />
     <meta name="360-fullscreen" content="true" />
-    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.3/weui.min.css">
+    <link rel="stylesheet" href="./static/weui.min.css">
     <style>
         @font-face {
             font-family: 'MyFont';
@@ -31,14 +31,12 @@
             border: 0;
             margin: 0;
             height: 100%;
-        }
-
-        body, #htmlBox {
-            background: url(./resource/assets/bg.png) no-repeat;
-            background-size: 100% 100%;
+            overflow: hidden;
         }
 
         .egret-player, #htmlBox {
+            background: url(./resource/assets/bg.png) no-repeat;
+            background-size: 100% 100%;
             width: 100%;
             height: 100%;
         }
@@ -96,7 +94,6 @@
             height: 42px;
             background: url('./resource/assets/home/index_btn.png') no-repeat;
             background-size: cover;
-            display: none;
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
@@ -104,6 +101,77 @@
 
         #htmlBox > div #btn:active {
             background-image: url('./resource/assets/home/index_btn_down.png');
+        }
+
+        .decorate {
+            display: none;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 326px;
+            margin-bottom: -326px;
+            background: url('./resource/assets/Index/decorate_bg.png') no-repeat;
+            background-size: cover;
+        }
+
+        .decorate .close {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            right: 18px;
+            top: 18px;
+            background: url('./resource/assets/index/around_close.png') no-repeat;
+            background-size: cover;
+        }
+
+        .decorate .close:active {
+            background-image: url('./resource/assets/index/around_close_down.png');
+        }
+
+        .decorate .list {
+            display: flex;
+            justify-content: space-evenly;
+            margin-top: 75px;
+            font-size: 0;
+        }
+
+        .decorate .list .item {
+            position: relative;
+            width: 26%;
+            border: 8px solid #cccccc;
+        }
+
+        .decorate .list .item.active {
+            border-color: #f0d237;
+        }
+
+        .decorate .list .item > img {
+            width: 100%;
+        }
+
+        .decorate .list .item p {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            margin-top: 10px;
+            color: #153444;
+        }
+
+        .decorate .list .item div {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .decorate .list .item div img {
+            position: absolute;
+            width: 50px;
+            top: 50%;
+            transform: translate(-50%, -50%);
         }
     </style>
 </head>
@@ -130,11 +198,36 @@
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js"></script>
-    <script src="https://res.wx.qq.com/open/libs/weuijs/1.1.4/weui.min.js"></script>
-    <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <div class="decorate">
+        <div class="close"></div>
+        <div class="list">
+            <div class="item">
+                <img class="bg1" src="./resource/assets/bg.png" alt="">
+                <p>默认背景</p>
+            </div>
+            <div class="item">
+                <img class="bg2" src="./resource/assets/bg1.jpg" alt="">
+                <div>
+                    <img src="./resource/assets/Index/lock.png" alt="">
+                </div>
+                <p>达到50积分解锁</p>
+            </div>
+            <div class="item">
+                <img class="bg3" src="./resource/assets/bg2.jpg" alt="">
+                <div>
+                    <img src="./resource/assets/Index/lock.png" alt="">
+                </div>
+                <p>达到100积分解锁</p>
+            </div>
+        </div>
+    </div>
+    <script src="./static/jquery-3.5.1.min.js"></script>
+    <script src="./static/weui.min.js"></script>
+    <script src="./static/jweixin-1.2.0.js"></script>
+    <script src="./static/vconsole.min.js"></script>
     <script>
+        new VConsole()
+
         var loadScript = function (list, callback) {
             var loaded = 0;
             var loadNext = function () {
@@ -185,7 +278,7 @@
             });
         });
         xhr.send(null);
-
+        
         var host = location.origin
         window.localStorage.setItem('host', host)
         $(function() {
@@ -214,15 +307,22 @@
                     if (data.data.level_id == 0) {
                         // 新用户
                         $('#htmlBox').show()
+                        window.localStorage.setItem('bgClass', null)
                     } else {
                         // 老用户
                         $('#htmlBox').hide()
                     }
+                    // 设置默认背景
+                    var bgClass = JSON.parse(window.localStorage.getItem('bgClass'))
+                    console.log(bgClass)
+                    if (bgClass) {
+                        $('.' + bgClass).parent().addClass('active')
+                        var url = $('.' + bgClass).attr('src')
+                        $('.egret-player').css('backgroundImage', `url(${url})`)
+                    } else {
+                        $('.bg1').parent().addClass('active')
+                    }
                 }
-            })
-            
-            $('#video').on('ended', function() {
-                $('#btn').css('display', 'block')
             })
 
             $('#btn').click(function() {
@@ -297,6 +397,40 @@
             wx.onMenuShareAppMessage(shareData)
             wx.onMenuShareTimeline(shareData)
         }
+
+        // 装扮
+        var userScore
+        function _decorate() {
+            userScore = JSON.parse(window.localStorage.getItem('userInfo')).total_score
+            $('.egret-player').animate({'top': '-194px'}, 500)
+            $('.decorate').show().animate({'margin-bottom': '0'}, 500)
+            if (userScore >= 50) {
+                $('.decorate .item:eq(1) div').hide()
+            }
+            if (userScore >= 100) {
+                $('.decorate .item div').hide()
+            }
+        }
+
+        $('.decorate .close').click(function() {
+            $('.egret-player').animate({'top': '0'}, 500)
+            $('.decorate').animate({'margin-bottom': '-326px'}, 500)
+            setTimeout(() => $('.decorate').hide(), 500)
+        })
+
+        $('.decorate .list').click(function(e) {
+            if (userScore < 50) return
+            if (e.target.tagName == 'IMG') {
+                var bgClass = e.target.getAttribute('class')
+                if (userScore < 100 && bgClass == 'bg3') return
+                $('.decorate .item').removeClass('active')
+                $(e.target.parentElement).addClass('active')
+                var src = e.target.getAttribute('src')
+                $('.egret-player').css('backgroundImage', `url(${src})`)
+
+                window.localStorage.setItem('bgClass', JSON.stringify(bgClass))
+            }
+        })
     </script>
 </body>
 

@@ -21,14 +21,13 @@ var Bones = (function (_super) {
         return _this;
     }
     Bones.prototype.init = function () {
-        console.log(this.option);
         var type = this.option.type ? this.option.type : VbaoType[this.option.id].name + this.option.level;
         var ske = RES.getRes(type + "_ske");
         var tex = RES.getRes(type + "_tex");
         var tex_png = RES.getRes(type + "_tex_png");
         var bone = ViewManager.getInstance().getBones(type);
         var stage = ViewManager.getInstance().stage;
-        if (bone && this.option.isback != 1) {
+        if (bone && !this.option.vbaoIsHere) {
             bone.x = this.option.x ? this.option.x : stage.stageWidth;
             bone.y = this.option.y ? this.option.y : stage.stageHeight;
             this.addChild(bone);

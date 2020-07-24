@@ -33,17 +33,19 @@ var IndexScene = (function (_super) {
                 _this.daily_task();
                 _this.legendary();
                 if (_this.userInfo.level_id == 2 && _this.userInfo.isoutdoor) {
-                    var tip = new Alert(_this.outdoorText);
-                    tip.x = 250;
-                    tip.y = tip.y + 100;
-                    tip.visible = true;
-                    _this.addChild(tip);
-                    _this.outdoorTip = tip;
+                    // let tip = new Alert(this.outdoorText)
+                    // tip.x = 250
+                    // tip.y = tip.y + 100
+                    // tip.visible = true
+                    // this.addChild(tip)
+                    // this.outdoorTip = tip
+                    _this.showTipBoard();
                 }
                 else {
                     _this.showVbao();
                 }
                 if (_this.userInfo.level_id == 2) {
+                    _this.v5Parent();
                     _this.feed();
                     _this.decorate();
                     _this.around();
@@ -95,6 +97,30 @@ var IndexScene = (function (_super) {
             });
         }, this);
     };
+    /** v5的爸妈 */
+    IndexScene.prototype.v5Parent = function () {
+        var btn_V5 = new BtnBase('btn_V5');
+        btn_V5.x = 30;
+        btn_V5.y = 218;
+        this.addChild(btn_V5);
+        btn_V5.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
+            Http.getInstance().get(Url.HTTP_LEGENDARY, function (res) {
+                ViewManager.getInstance().isPlay = false;
+                location.href = res.data[1].content;
+            });
+        }, this);
+    };
+    IndexScene.prototype.showTipBoard = function () {
+        var _this = this;
+        var tip_board = Util.createBitmapByName('tip_board');
+        tip_board.x = this.center(tip_board);
+        tip_board.y = this.stage.stageHeight / 2 + 60;
+        this.addChild(tip_board);
+        tip_board.touchEnabled = true;
+        tip_board.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
+            _this.getChildByName('around').dispatchEventWith(egret.TouchEvent.TOUCH_TAP);
+        }, this);
+    };
     IndexScene.prototype.showVbao = function () {
         var id = this.userInfo.kind_id - 1;
         var level = this.userInfo.level_id;
@@ -138,13 +164,8 @@ var IndexScene = (function (_super) {
         this.addChild(scoreAni);
         var food_type_id = this.userInfo.food_type_id - 1;
         feed.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            if (_this.userInfo.isoutdoor) {
-                _this.outdoorTip.setText('vbao不在家，不能喂食。\n先把vbao找回来吧');
-                setTimeout(function () {
-                    _this.outdoorTip.setText(_this.outdoorText);
-                }, 2000);
+            if (_this.userInfo.isoutdoor)
                 return;
-            }
             if (ViewManager.getInstance().headInfo.food[food_type_id] > 0) {
                 Http.getInstance().post(Url.HTTP_FEED, {
                     feedId: _this.userInfo.id,

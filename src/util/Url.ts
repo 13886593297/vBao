@@ -42,4 +42,10 @@ class Url {
 
     // 通知后台V宝已升级
     public static readonly HTTP_UPDATED = '/game/api/task/isUpdate'
+
+    // 寻找v宝
+    public static readonly HTTP_SEARCHUSER = '/game/api/around/searchUser'
+
+    // 回家
+    public static readonly HTTP_BACKHOME = '/game/api/around/backhome'
 }

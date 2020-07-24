@@ -11,7 +11,6 @@ class Bones extends egret.DisplayObjectContainer {
     }
 
     private init() {
-        console.log(this.option)
         let type = this.option.type ? this.option.type : VbaoType[this.option.id].name + this.option.level
         let ske = RES.getRes(`${type}_ske`)
         let tex = RES.getRes(`${type}_tex`)
@@ -20,7 +19,7 @@ class Bones extends egret.DisplayObjectContainer {
         let bone = ViewManager.getInstance().getBones(type)
         let stage = ViewManager.getInstance().stage
 
-        if (bone && this.option.isback != 1) {
+        if (bone && !this.option.vbaoIsHere) {
             bone.x = this.option.x ? this.option.x : stage.stageWidth
             bone.y = this.option.y ? this.option.y : stage.stageHeight
             this.addChild(bone)

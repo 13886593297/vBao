@@ -24,17 +24,19 @@ class IndexScene extends Scene {
                 this.legendary()
 
                 if (this.userInfo.level_id == 2 && this.userInfo.isoutdoor) {
-                    let tip = new Alert(this.outdoorText)
-                    tip.x = 250
-                    tip.y = tip.y + 100
-                    tip.visible = true
-                    this.addChild(tip)
-                    this.outdoorTip = tip
+                    // let tip = new Alert(this.outdoorText)
+                    // tip.x = 250
+                    // tip.y = tip.y + 100
+                    // tip.visible = true
+                    // this.addChild(tip)
+                    // this.outdoorTip = tip
+                    this.showTipBoard()
                 } else {
                     this.showVbao()
                 }
 
                 if (this.userInfo.level_id == 2) {
+                    this.v5Parent()
                     this.feed()
                     this.decorate()
                     this.around()
@@ -94,6 +96,31 @@ class IndexScene extends Scene {
         }, this)
     }
 
+    /** v5的爸妈 */
+    private v5Parent() {
+        let btn_V5 = new BtnBase('btn_V5')
+        btn_V5.x = 30
+        btn_V5.y = 218
+        this.addChild(btn_V5)
+        btn_V5.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
+            Http.getInstance().get(Url.HTTP_LEGENDARY, res => {
+                ViewManager.getInstance().isPlay = false
+                location.href = res.data[1].content
+            })
+        }, this)
+    }
+
+    private showTipBoard() {
+        let tip_board = Util.createBitmapByName('tip_board')
+        tip_board.x = this.center(tip_board)
+        tip_board.y = this.stage.stageHeight / 2 + 60
+        this.addChild(tip_board)
+        tip_board.touchEnabled = true
+        tip_board.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
+            this.getChildByName('around').dispatchEventWith(egret.TouchEvent.TOUCH_TAP)
+        }, this)
+    }
+
     private showVbao() {
         let id = this.userInfo.kind_id - 1
         let level = this.userInfo.level_id
@@ -141,13 +168,7 @@ class IndexScene extends Scene {
         
         let food_type_id = this.userInfo.food_type_id - 1
         feed.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            if (this.userInfo.isoutdoor) {
-                this.outdoorTip.setText('vbao不在家，不能喂食。\n先把vbao找回来吧')
-                setTimeout(() => {
-                    this.outdoorTip.setText(this.outdoorText)
-                }, 2000)
-                return
-            }
+            if (this.userInfo.isoutdoor) return
             if (ViewManager.getInstance().headInfo.food[food_type_id] > 0) {
                 Http.getInstance().post(Url.HTTP_FEED, {
                     feedId: this.userInfo.id,

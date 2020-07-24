@@ -77,7 +77,7 @@ var Head = (function (_super) {
         this.score.text = "\u79EF\u5206\uFF1A" + this.userInfo.total_score;
         this.score.x = 200;
         this.score.y = this.userInfo.level_id == 1 ? 100 : 150;
-        this.score.size = 24;
+        this.score.size = 30;
         this.score.bold = true;
         this.score.strokeColor = Config.COLOR_DOC;
         this.score.stroke = 1;
@@ -92,7 +92,6 @@ var Head = (function (_super) {
         this.tweenAni(this.score, function () {
             _this.flag = true;
         });
-        // this.scoreIncreaseAni(1)
     };
     /** 初始化食物列表 */
     Head.prototype.initialFoodList = function () {
@@ -120,14 +119,16 @@ var Head = (function (_super) {
         group.width = 170;
         var icon = Util.createBitmapByName(item.image);
         group.addChild(icon);
-        var label = Util.setTitle(item.name, 18, Config.COLOR_DOC);
+        // 类型文字
+        var label = Util.setTitle(item.name, 24, Config.COLOR_DOC);
         label.x = icon.width + 8;
         label.y = 8;
         group.addChild(label);
+        // 食物数量
         var food_count = new egret.TextField;
         food_count.textFlow = [
-            { text: 'X', style: { size: 20 } },
-            { text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 24 } }
+            { text: 'X', style: { size: 26 } },
+            { text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 26 } }
         ];
         food_count.strokeColor = Config.COLOR_DOC;
         food_count.stroke = 2;
@@ -140,8 +141,8 @@ var Head = (function (_super) {
     Head.prototype.setFood = function (index) {
         var _this = this;
         this.food_count_arr[index].textFlow = [
-            { text: 'X', style: { size: 20 } },
-            { text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 24 } }
+            { text: 'X', style: { size: 26 } },
+            { text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 26 } }
         ];
         if (!this.flagArr[index])
             return;

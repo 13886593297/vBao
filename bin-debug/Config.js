@@ -17,7 +17,7 @@ var VbaoType = [
     { name: 'pilot', color: Config.COLOR_PILOT, label: '敢' }
 ];
 var FoodList = [
-    { name: 'V宝典', image: 'icon_dir' },
-    { name: 'V拳套', image: 'icon_glove' },
-    { name: 'V飞机', image: 'icon_air' }
+    { name: 'V宝典', image: 'icon_dir', icon: 'icon_doc' },
+    { name: 'V拳套', image: 'icon_glove', icon: 'icon_box' },
+    { name: 'V飞机', image: 'icon_air', icon: 'icon_pilot' }
 ];

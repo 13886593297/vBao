@@ -5,12 +5,12 @@ class Alert extends egret.DisplayObjectContainer {
      * @param text 文本
      * @param toward 尾巴方向
      */
-    constructor(text, toward = 'left') {
+    constructor(text, toward = 'left', isTalk?) {
         super()
-        this.init(text, toward)
+        this.init(text, toward, isTalk)
     }
 
-    private init(text, toward) {
+    private init(text, toward, isTalk) {
         let stage = ViewManager.getInstance().stage
         let tips = new egret.TextField
         tips.text = text
@@ -26,7 +26,7 @@ class Alert extends egret.DisplayObjectContainer {
         this.addChild(tips)
 
         let tail = Util.createBitmapByName(`tail_${toward}`)
-        tail.x = toward == 'right' ? 212 : 5
+        tail.x = isTalk ? 100 : toward == 'right' ? 212 : 5
         tail.y = bg.height
         this.addChild(tail)
         this.visible = false
