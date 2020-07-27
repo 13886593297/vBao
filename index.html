@@ -41,6 +41,16 @@
             height: 100%;
         }
 
+        .egret-player .mask {
+            display: none;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            z-index: 1;
+        }
+
         #htmlBox {
             position: absolute;
             z-index: 1;
@@ -112,6 +122,7 @@
             margin-bottom: -326px;
             background: url('./resource/assets/Index/decorate_bg.png') no-repeat;
             background-size: cover;
+            z-index: 2;
         }
 
         .decorate .close {
@@ -120,12 +131,12 @@
             height: 30px;
             right: 18px;
             top: 18px;
-            background: url('./resource/assets/index/around_close.png') no-repeat;
+            background: url('./resource/assets/Index/around_close.png') no-repeat;
             background-size: cover;
         }
 
         .decorate .close:active {
-            background-image: url('./resource/assets/index/around_close_down.png');
+            background-image: url('./resource/assets/Index/around_close_down.png');
         }
 
         .decorate .list {
@@ -197,6 +208,7 @@
                 <button id="btn"></button>
             </div>
         </div>
+        <div class="mask"></div>
     </div>
     <div class="decorate">
         <div class="close"></div>
@@ -401,6 +413,7 @@
         // 装扮
         var userScore
         function _decorate() {
+            $('.mask').show()
             userScore = JSON.parse(window.localStorage.getItem('userInfo')).total_score
             $('.egret-player').animate({'top': '-194px'}, 500)
             $('.decorate').show().animate({'margin-bottom': '0'}, 500)
@@ -412,10 +425,15 @@
             }
         }
 
+        $('.mask').click(function() {
+            $('.decorate .close').trigger('click')
+        })
+
         $('.decorate .close').click(function() {
             $('.egret-player').animate({'top': '0'}, 500)
             $('.decorate').animate({'margin-bottom': '-326px'}, 500)
             setTimeout(() => $('.decorate').hide(), 500)
+            $('.mask').hide()
         })
 
         $('.decorate .list').click(function(e) {

@@ -32,7 +32,7 @@ class KindScene extends Scene {
         Http.getInstance().get(Url.HTTP_KIND_INFO, res => {
             res.data.forEach((item, index) => {
                 let vBao = this.kind(item.description, VbaoType[index].color, index)
-                vBao.x = this.center(vBao)
+                vBao.x = Util.center(vBao)
                 vBao.y = y
                 this.addChild(vBao)
 

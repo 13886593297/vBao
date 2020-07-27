@@ -10,16 +10,17 @@ r.prototype = e.prototype, t.prototype = new r();
 };
 var IndexScene = (function (_super) {
     __extends(IndexScene, _super);
-    function IndexScene() {
+    function IndexScene(isRandomOut) {
         var _this = _super.call(this) || this;
-        _this.outdoorText = '我去找别的V宝啦，快来\n找我吧！';
         _this.currentIdx = 1; // 好友列表当前页数
+        _this.isRandomOut = isRandomOut;
         return _this;
     }
     IndexScene.prototype.init = function () {
         var _this = this;
         // 获取用户信息
-        Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
+        var url = this.isRandomOut ? Url.HTTP_USER_INFO + '?isRandomOut=2' : Url.HTTP_USER_INFO;
+        Http.getInstance().get(url, function (res) {
             _this.userInfo = res.data;
             window.localStorage.setItem('userInfo', JSON.stringify(_this.userInfo));
             // 播放升级动画
@@ -33,12 +34,6 @@ var IndexScene = (function (_super) {
                 _this.daily_task();
                 _this.legendary();
                 if (_this.userInfo.level_id == 2 && _this.userInfo.isoutdoor) {
-                    // let tip = new Alert(this.outdoorText)
-                    // tip.x = 250
-                    // tip.y = tip.y + 100
-                    // tip.visible = true
-                    // this.addChild(tip)
-                    // this.outdoorTip = tip
                     _this.showTipBoard();
                 }
                 else {
@@ -113,7 +108,7 @@ var IndexScene = (function (_super) {
     IndexScene.prototype.showTipBoard = function () {
         var _this = this;
         var tip_board = Util.createBitmapByName('tip_board');
-        tip_board.x = this.center(tip_board);
+        tip_board.x = Util.center(tip_board);
         tip_board.y = this.stage.stageHeight / 2 + 60;
         this.addChild(tip_board);
         tip_board.touchEnabled = true;
@@ -176,7 +171,7 @@ var IndexScene = (function (_super) {
                         ViewManager.getInstance().headInfo.score += 1;
                         scoreAni.move();
                         Util.animate(feedTip);
-                        Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
+                        Http.getInstance().get(Url.HTTP_USER_INFO + '?isRandomOut=2', function (res) {
                             if (res.data.isfinish) {
                                 _this.daily_task_tips.visible = false;
                             }
@@ -192,13 +187,29 @@ var IndexScene = (function (_super) {
             }
         }, this);
     };
-    // 装扮
     IndexScene.prototype.decorate = function () {
+        var _this = this;
         var decorate = new BtnBase('decorate');
         decorate.x = 510;
         decorate.y = this.stage.stageHeight - decorate.height - 40;
         this.addChild(decorate);
+        var score = ViewManager.getInstance().headInfo.score;
+        if (score >= 50 && score < 100) {
+            score = '_50';
+        }
+        else if (score >= 100) {
+            score = '_100';
+        }
+        var isDecorateTipShow = JSON.parse(window.localStorage.getItem("isDecorateTipShow" + score));
+        var decorate_tip = Util.createBitmapByName('daily_task_tips');
+        decorate_tip.x = 600;
+        decorate_tip.y = decorate.y;
+        decorate_tip.visible = isDecorateTipShow;
+        this.decorate_tip = decorate_tip;
+        this.addChild(decorate_tip);
         decorate.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
+            window.localStorage.setItem("isDecorateTipShow" + score, 'false');
+            _this.decorate_tip.visible = false;
             _decorate();
         }, this);
     };

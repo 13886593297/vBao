@@ -23,7 +23,7 @@ class GetBoxScene extends Scene {
         this.addChild(group)
 
         let bg = Util.createBitmapByName('getVbao_doc')
-        bg.x = this.center(bg)
+        bg.x = Util.center(bg)
         bg.y = 330
         group.addChild(bg)
 
@@ -47,7 +47,7 @@ class GetBoxScene extends Scene {
             .to({ scaleX: 1, scaleY: 1 }, 800)
             
         let label = Util.setTitle('主人，恭喜你找到我啦!', 50, 0x0064ff, 2)
-        label.x = this.center(label)
+        label.x = Util.center(label)
         label.y = 206
         this.addChild(label)
     }
@@ -78,7 +78,7 @@ class GetBoxScene extends Scene {
 
         let treasure = new egret.Bitmap()
         treasure.texture = RES.getRes('box_close')
-        treasure.x = this.center(treasure)
+        treasure.x = Util.center(treasure)
         treasure.y = 590
         treasure.touchEnabled = true
         group.addChild(treasure)

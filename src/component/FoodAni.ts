@@ -1,80 +1,54 @@
 class FoodAni extends egret.DisplayObjectContainer {
-    private _stage = ViewManager.getInstance().stage
     private foodXArr = [210, 380, 550]
-    private imgArr = []
-
+    private imgArr = new Array(3).fill(0)
+    private kind_id
     /**
-     * 食物增加动画
+     * 食物动画
      * @param kind_id 食物种类ID，undefind为全部
      */
     constructor(kind_id?) {
         super()
-        this.init(kind_id)
-        this.visible = false
+        this.kind_id = kind_id
+        this.init()
     }
 
-    private init(kind_id) {
-        if (kind_id != undefined) {
-            this.foodXArr = [this.foodXArr[kind_id - 1]]
-            this.food(FoodList[kind_id - 1].image)
+    private init() {
+        if (this.kind_id != undefined) {
+            this.food(FoodList[this.kind_id - 1].image)
         } else {
-            FoodList.forEach((item) => {
-                this.food(item.image)
+            FoodList.forEach((item, index) => {
+                this.food(item.image, index)
             })
         }
     }
 
-    private food(image) {
+    private food(image, index?) {
         let img = Util.createBitmapByName(image)
-        img.x = 500
-        img.y = this._stage.stageHeight / 2 + 50
+        img.visible = false
         this.addChild(img)
-        this.imgArr.push(img)
+        if (this.kind_id) {
+            this.imgArr[this.kind_id - 1] = img
+        } else {
+            this.imgArr[index] = img
+        }
     }
 
     // 食物增加
     public increaseMove() {
-        this.visible = true
-        egret.Tween.get(this).to({ increaseFactor: 1, visible: false }, 1000)
-    }
-
-    private get increaseFactor(): number {
-        return 0
-    }
-
-    private set increaseFactor(value: number) {
         this.imgArr.forEach((item, index) => {
-            item.x =
-                (1 - value) * (1 - value) * 500 +
-                2 * value * (1 - value) * 800 +
-                value * value * this.foodXArr[index]
-            item.y =
-                (1 - value) * (1 - value) * 300 +
-                2 * value * (1 - value) * 230 +
-                value * value * 65
+            item.x = 380
+            item.y = 300
+            item.visible = true
+            egret.Tween.get(item).to({ x: this.foodXArr[index], y: 65, visible: false }, 300)
         })
     }
 
     // 食物减少
     public decreaseMove() {
-        this.visible = true
-        egret.Tween.get(this).to({ decreaseFactor: 1, visible: false }, 1000)
-    }
-
-    private get decreaseFactor(): number {
-        return 0
-    }
-
-    private set decreaseFactor(value: number) {
-        this.imgArr.forEach((item, index) => {
-            item.x =
-                (1 - value) * (1 - value) * this.foodXArr[index] +
-                2 * value * (1 - value) * 800 +
-                value * value * 500
-            item.y =
-                (1 - value) * (1 - value) * 65 +
-                2 * value * (1 - value) * 230 +
-                value * value * 300
-        })
+        this.imgArr[this.kind_id - 1].x = this.foodXArr[this.kind_id - 1]
+        this.imgArr[this.kind_id - 1].y = 65
+        this.imgArr[this.kind_id - 1].visible = true
+        egret.Tween.get(this.imgArr[this.kind_id - 1])
+            .to({ x: 380, y: 300, visible: false }, 300)
     }
 }

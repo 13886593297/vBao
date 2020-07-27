@@ -20,17 +20,17 @@ var WishScene = (function (_super) {
         var bg = Util.createBitmapByName('info_doc');
         bg.width = 670;
         bg.height = 725;
-        bg.x = this.center(bg);
+        bg.x = Util.center(bg);
         bg.y = 290;
         this.addChild(bg);
         var label = Util.setTitle('V宝正闭着眼睛竖起耳朵听你的祝福。\n你想对他/她说什么呢？', 36, Config.COLOR_DOC);
-        label.x = this.center(label);
+        label.x = Util.center(label);
         label.y = 345;
         label.textAlign = 'center';
         label.lineSpacing = 6;
         this.addChild(label);
         var write_bg = Util.drawRoundRect(0, 0, 0xffffff, 560, 360, 20);
-        write_bg.x = this.center(write_bg);
+        write_bg.x = Util.center(write_bg);
         write_bg.y = 455;
         this.addChild(write_bg);
         var write_area = new egret.TextField;
@@ -57,22 +57,23 @@ var WishScene = (function (_super) {
             content = e.target.text;
         }, this);
         var btn = new BtnBase('btn_wish');
-        btn.x = this.center(btn);
+        btn.x = Util.center(btn);
         btn.y = 860;
         btn.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             if (!content)
                 return;
-            Http.getInstance().post(Url.HTTP_TASK_FINISHTASK, {
-                taskId: _this.item.id,
-                score: _this.item.score
-            }, function (res) {
-                if (res.data.code) {
-                    var scene = new IndexScene();
-                    ViewManager.getInstance().headInfo.score += _this.item.score;
-                    ViewManager.getInstance().changeScene(scene);
-                }
+            Http.getInstance().post(Url.HTTP_SENDINFO, { content: content }, function () {
+                Http.getInstance().post(Url.HTTP_TASK_FINISHTASK, {
+                    taskId: _this.item.id,
+                    score: _this.item.score
+                }, function (res) {
+                    if (res.data.code) {
+                        var scene = new IndexScene(true);
+                        ViewManager.getInstance().headInfo.score += _this.item.score;
+                        ViewManager.getInstance().changeScene(scene);
+                    }
+                });
             });
-            Http.getInstance().post(Url.HTTP_SENDINFO, { content: content }, null);
         }, this);
         this.addChild(btn);
     };

@@ -171,6 +171,8 @@ class FriendHomeScene extends Scene {
         if (vbaoIsHere) this.vbaoTalk()
     }
 
+    private timer
+    private intervalTimer
     private vbaoTalk() {
         let initalText = '!@#$%^&*()_+-=`'
         let text = initalText.split('')
@@ -184,14 +186,14 @@ class FriendHomeScene extends Scene {
             left.setText(text.join(''))
         }, 3000)
 
-        setTimeout(() => {
+        this.timer = setTimeout(() => {
             let right = new Alert(initalText, 'left', true)
             right.x = this.stage.stageWidth - right.width - left.x
             right.y = left.y
             right.visible = true
             this.addChild(right)
 
-            setInterval(() => {
+            this.intervalTimer = setInterval(() => {
                 this.randomTalk(text)
                 right.setText(text.join(''))
             }, 3000)
@@ -283,7 +285,7 @@ class FriendHomeScene extends Scene {
             () => {
                 if (this.vbaoIsHere) {
                     Http.getInstance().get(Url.HTTP_BACKHOME, () => {
-                        let home = new IndexScene()
+                        let home = new IndexScene(true)
                         ViewManager.getInstance().changeScene(home)
                     })
                 } else {
@@ -293,5 +295,10 @@ class FriendHomeScene extends Scene {
             },
             this
         )
+    }
+
+    public release() {
+        clearTimeout(this.timer)
+        clearInterval(this.intervalTimer)
     }
 }

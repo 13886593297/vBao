@@ -36,7 +36,7 @@ class Bones extends egret.DisplayObjectContainer {
             armatureDisplay.anchorOffsetX = armatureDisplay.width
             armatureDisplay.anchorOffsetY = armatureDisplay.height
 
-            let scale = this.option.level == 1 ? 0.4 : 0.25
+            let scale = this.option.level == 1 ? 0.4 : 0.24
             if (this.option.level == 2 && this.option.id == 2) {
                 scale = 0.2
             }

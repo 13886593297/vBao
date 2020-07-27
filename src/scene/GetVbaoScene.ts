@@ -32,7 +32,7 @@ class GetVbaoScene extends Scene {
         this.addChild(group)
 
         let bg = Util.createBitmapByName('getVbao_doc')
-        bg.x = this.center(bg)
+        bg.x = Util.center(bg)
         bg.y = 330
         group.addChild(bg)
 
@@ -83,7 +83,7 @@ class GetVbaoScene extends Scene {
 
         // vbao类型
         let type = Util.setTitle(VbaoType[this.id].label, 90, Config.COLOR_DOC)
-        type.x = this.center(type)
+        type.x = Util.center(type)
         type.y = 872
         group.addChild(type)
 
@@ -94,14 +94,14 @@ class GetVbaoScene extends Scene {
             .to({ scaleX: 1, scaleY: 1 }, 800)
             .call(() => {
                 setTimeout(() => {
-                    let scene = this.level == 1 ? new InfoScene(this.id) : new IndexScene()
+                    let scene = this.level == 1 ? new InfoScene(this.id) : new IndexScene(true)
                     ViewManager.getInstance().changeScene(scene)
                 }, 3000)
             })
             
         let text = this.level == 1 ? '恭喜获得V宝!' : 'V宝进化啦!'
         let label = Util.setTitle(text, 60, Config.COLOR_DOC)
-        label.x = this.center(label)
+        label.x = Util.center(label)
         label.y = 206
         this.addChild(label)
     }

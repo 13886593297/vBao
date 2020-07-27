@@ -76,7 +76,15 @@ class Head extends egret.DisplayObjectContainer {
     /** 预防用户连续点击时动画出现异常 */
     private flag = true
     private setScore() {
-        this.score.text = `积分：${ViewManager.getInstance().headInfo.score}`
+        let score = ViewManager.getInstance().headInfo.score
+        this.score.text = `积分：${score}`
+        let isDecorateTipShow_50 = window.localStorage.getItem('isDecorateTipShow_50')
+        let isDecorateTipShow_100 = window.localStorage.getItem('isDecorateTipShow_100')
+        if (score >= 50 && score < 100 && !isDecorateTipShow_50) {
+            window.localStorage.setItem('isDecorateTipShow_50', 'true')
+        } else if (score >= 100 && !isDecorateTipShow_100) {
+            window.localStorage.setItem('isDecorateTipShow_100', 'true')
+        }
         if (!this.flag) return
         this.flag = false
         this.tweenAni(this.score, () => {
@@ -161,6 +169,4 @@ class Head extends egret.DisplayObjectContainer {
             .to({ scaleX: 1, scaleY: 1 }, 100)
             .call(cb)
     }
-
-    
 }

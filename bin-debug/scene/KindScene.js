@@ -40,7 +40,7 @@ var KindScene = (function (_super) {
         Http.getInstance().get(Url.HTTP_KIND_INFO, function (res) {
             res.data.forEach(function (item, index) {
                 var vBao = _this.kind(item.description, VbaoType[index].color, index);
-                vBao.x = _this.center(vBao);
+                vBao.x = Util.center(vBao);
                 vBao.y = y;
                 _this.addChild(vBao);
                 vBao.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {

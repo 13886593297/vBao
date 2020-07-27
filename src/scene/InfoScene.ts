@@ -19,7 +19,7 @@ class InfoScene extends Scene {
 
         // 中心背景
         let bg: egret.Bitmap = Util.createBitmapByName('info_doc')
-        bg.x = this.center(bg)
+        bg.x = Util.center(bg)
         bg.y = 142
         this.addChild(bg)
 
@@ -34,7 +34,7 @@ class InfoScene extends Scene {
         }, this)
 
         let title = Util.setTitle(VbaoType[this.id].label, 80, Config.COLOR_DOC)
-        title.x = this.center(title)
+        title.x = Util.center(title)
         title.y = 190
         this.addChild(title)
 
@@ -42,7 +42,7 @@ class InfoScene extends Scene {
         let des_Group: eui.Group = new eui.Group
         des_Group.width = 560
         des_Group.height = 620
-        des_Group.x = this.center(des_Group)
+        des_Group.x = Util.center(des_Group)
         des_Group.y = 302
         this.addChild(des_Group)
 
@@ -91,7 +91,7 @@ class InfoScene extends Scene {
         }
 
         let btn_done = new BtnBase('btn_done')
-        btn_done.x = this.center(btn_done)
+        btn_done.x = Util.center(btn_done)
         btn_done.y = 968
         this.addChild(btn_done)
         btn_done.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {

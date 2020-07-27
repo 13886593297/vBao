@@ -2,6 +2,7 @@ class Scene extends eui.UILayer {
     public constructor() {
         super()
         this.addEventListener(egret.Event.ADDED_TO_STAGE, this.initScene, this)
+        this.addEventListener(egret.Event.REMOVED_FROM_STAGE, this.release, this);
         this.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             if (!ViewManager.getInstance().isPlay) {
                 ViewManager.getInstance().isPlay = true
@@ -22,11 +23,7 @@ class Scene extends eui.UILayer {
     public init() {}
 
     /**
-     * 设置水平居中对齐
-     * @param texture 要居中的元素
-     * @param width 在哪个元素中水平居中对齐的宽度，默认stageWidth
+     * 释放界面
      */
-    public center(texture, width = this.stage.stageWidth) {
-        return (width - texture.width) / 2
-    }
+    public release() {}
 }

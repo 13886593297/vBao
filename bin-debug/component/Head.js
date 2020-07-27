@@ -85,7 +85,16 @@ var Head = (function (_super) {
     };
     Head.prototype.setScore = function () {
         var _this = this;
-        this.score.text = "\u79EF\u5206\uFF1A" + ViewManager.getInstance().headInfo.score;
+        var score = ViewManager.getInstance().headInfo.score;
+        this.score.text = "\u79EF\u5206\uFF1A" + score;
+        var isDecorateTipShow_50 = window.localStorage.getItem('isDecorateTipShow_50');
+        var isDecorateTipShow_100 = window.localStorage.getItem('isDecorateTipShow_100');
+        if (score >= 50 && score < 100 && !isDecorateTipShow_50) {
+            window.localStorage.setItem('isDecorateTipShow_50', 'true');
+        }
+        else if (score >= 100 && !isDecorateTipShow_100) {
+            window.localStorage.setItem('isDecorateTipShow_100', 'true');
+        }
         if (!this.flag)
             return;
         this.flag = false;

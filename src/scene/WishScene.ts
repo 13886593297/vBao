@@ -9,19 +9,19 @@ class WishScene extends Scene {
         let bg = Util.createBitmapByName('info_doc')
         bg.width = 670
         bg.height = 725
-        bg.x = this.center(bg)
+        bg.x = Util.center(bg)
         bg.y = 290
         this.addChild(bg)
 
         let label = Util.setTitle('V宝正闭着眼睛竖起耳朵听你的祝福。\n你想对他/她说什么呢？', 36, Config.COLOR_DOC)
-        label.x = this.center(label)
+        label.x = Util.center(label)
         label.y = 345
         label.textAlign = 'center'
         label.lineSpacing = 6
         this.addChild(label)
 
         let write_bg: egret.Shape = Util.drawRoundRect(0, 0, 0xffffff, 560, 360, 20)
-        write_bg.x = this.center(write_bg)
+        write_bg.x = Util.center(write_bg)
         write_bg.y = 455
         this.addChild(write_bg)
 
@@ -53,22 +53,22 @@ class WishScene extends Scene {
         }, this)
 
         let btn = new BtnBase('btn_wish')
-        btn.x = this.center(btn)
+        btn.x = Util.center(btn)
         btn.y = 860
         btn.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             if (!content) return
-            Http.getInstance().post(Url.HTTP_TASK_FINISHTASK, {
-                taskId: this.item.id,
-                score: this.item.score
-            }, res => {
-                if (res.data.code) {
-                    let scene = new IndexScene()
-                    ViewManager.getInstance().headInfo.score += this.item.score
-                    ViewManager.getInstance().changeScene(scene)
-                }
+            Http.getInstance().post(Url.HTTP_SENDINFO, { content }, () => {
+                Http.getInstance().post(Url.HTTP_TASK_FINISHTASK, {
+                    taskId: this.item.id,
+                    score: this.item.score
+                }, res => {
+                    if (res.data.code) {
+                        let scene = new IndexScene(true)
+                        ViewManager.getInstance().headInfo.score += this.item.score
+                        ViewManager.getInstance().changeScene(scene)
+                    }
+                })
             })
-
-            Http.getInstance().post(Url.HTTP_SENDINFO, { content }, null)
         }, this)
         this.addChild(btn)
     }

@@ -81,6 +81,15 @@ var Util = (function () {
         return group;
     };
     /**
+     * 设置水平居中对齐
+     * @param texture 要居中的元素
+     * @param width 在哪个元素中水平居中对齐的宽度，默认stageWidth
+     */
+    Util.center = function (texture, width) {
+        if (width === void 0) { width = ViewManager.getInstance().stage.stageWidth; }
+        return (width - texture.width) / 2;
+    };
+    /**
      * @param text 文字内容
      * @param size 文字大小
      * @param strokeColor 描边颜色

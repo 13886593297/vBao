@@ -41,7 +41,7 @@ var GetVbaoScene = (function (_super) {
         group.anchorOffsetY = group.height / 2;
         this.addChild(group);
         var bg = Util.createBitmapByName('getVbao_doc');
-        bg.x = this.center(bg);
+        bg.x = Util.center(bg);
         bg.y = 330;
         group.addChild(bg);
         // 炫光效果
@@ -88,7 +88,7 @@ var GetVbaoScene = (function (_super) {
         group.addChild(bones);
         // vbao类型
         var type = Util.setTitle(VbaoType[this.id].label, 90, Config.COLOR_DOC);
-        type.x = this.center(type);
+        type.x = Util.center(type);
         type.y = 872;
         group.addChild(type);
         // 3秒后跳转到填写信息页面
@@ -98,13 +98,13 @@ var GetVbaoScene = (function (_super) {
             .to({ scaleX: 1, scaleY: 1 }, 800)
             .call(function () {
             setTimeout(function () {
-                var scene = _this.level == 1 ? new InfoScene(_this.id) : new IndexScene();
+                var scene = _this.level == 1 ? new InfoScene(_this.id) : new IndexScene(true);
                 ViewManager.getInstance().changeScene(scene);
             }, 3000);
         });
         var text = this.level == 1 ? '恭喜获得V宝!' : 'V宝进化啦!';
         var label = Util.setTitle(text, 60, Config.COLOR_DOC);
-        label.x = this.center(label);
+        label.x = Util.center(label);
         label.y = 206;
         this.addChild(label);
     };

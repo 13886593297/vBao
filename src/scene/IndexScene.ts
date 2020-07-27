@@ -1,15 +1,16 @@
 class IndexScene extends Scene {
     private userInfo // 用户信息
     private shareScene // 分享
-    private outdoorTip
-    private outdoorText = '我去找别的V宝啦，快来\n找我吧！'
-    public constructor() {
+    private isRandomOut
+    public constructor(isRandomOut?) {
         super()
+        this.isRandomOut = isRandomOut
     }
 
     public init() {
         // 获取用户信息
-        Http.getInstance().get(Url.HTTP_USER_INFO, (res) => {
+        let url = this.isRandomOut ? Url.HTTP_USER_INFO + '?isRandomOut=2' : Url.HTTP_USER_INFO
+        Http.getInstance().get(url, (res) => {
             this.userInfo = res.data
             window.localStorage.setItem('userInfo', JSON.stringify(this.userInfo))
             // 播放升级动画
@@ -24,12 +25,6 @@ class IndexScene extends Scene {
                 this.legendary()
 
                 if (this.userInfo.level_id == 2 && this.userInfo.isoutdoor) {
-                    // let tip = new Alert(this.outdoorText)
-                    // tip.x = 250
-                    // tip.y = tip.y + 100
-                    // tip.visible = true
-                    // this.addChild(tip)
-                    // this.outdoorTip = tip
                     this.showTipBoard()
                 } else {
                     this.showVbao()
@@ -112,7 +107,7 @@ class IndexScene extends Scene {
 
     private showTipBoard() {
         let tip_board = Util.createBitmapByName('tip_board')
-        tip_board.x = this.center(tip_board)
+        tip_board.x = Util.center(tip_board)
         tip_board.y = this.stage.stageHeight / 2 + 60
         this.addChild(tip_board)
         tip_board.touchEnabled = true
@@ -181,7 +176,7 @@ class IndexScene extends Scene {
                         scoreAni.move()
                         Util.animate(feedTip)
 
-                        Http.getInstance().get(Url.HTTP_USER_INFO, res => {
+                        Http.getInstance().get(Url.HTTP_USER_INFO + '?isRandomOut=2', res => {
                             if (res.data.isfinish) {
                                 this.daily_task_tips.visible = false
                             }
@@ -197,13 +192,30 @@ class IndexScene extends Scene {
     }
 
     // 装扮
+    public decorate_tip
     private decorate() {
         let decorate = new BtnBase('decorate')
         decorate.x = 510
         decorate.y = this.stage.stageHeight - decorate.height - 40
         this.addChild(decorate)
 
+        let score = ViewManager.getInstance().headInfo.score
+        if (score >= 50 && score < 100) {
+            score = '_50'
+        } else if (score >= 100) {
+            score = '_100'
+        }
+        let isDecorateTipShow = JSON.parse(window.localStorage.getItem(`isDecorateTipShow${score}`))
+        let decorate_tip = Util.createBitmapByName('daily_task_tips')
+        decorate_tip.x = 600
+        decorate_tip.y = decorate.y
+        decorate_tip.visible = isDecorateTipShow
+        this.decorate_tip = decorate_tip
+        this.addChild(decorate_tip)
+
         decorate.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
+            window.localStorage.setItem(`isDecorateTipShow${score}`, 'false')
+            this.decorate_tip.visible = false
             _decorate()
         }, this)
     }

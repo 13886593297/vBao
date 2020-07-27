@@ -170,13 +170,13 @@ var FriendHomeScene = (function (_super) {
             _this.randomTalk(text);
             left.setText(text.join(''));
         }, 3000);
-        setTimeout(function () {
+        this.timer = setTimeout(function () {
             var right = new Alert(initalText, 'left', true);
             right.x = _this.stage.stageWidth - right.width - left.x;
             right.y = left.y;
             right.visible = true;
             _this.addChild(right);
-            setInterval(function () {
+            _this.intervalTimer = setInterval(function () {
                 _this.randomTalk(text);
                 right.setText(text.join(''));
             }, 3000);
@@ -244,7 +244,7 @@ var FriendHomeScene = (function (_super) {
         goHome.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             if (_this.vbaoIsHere) {
                 Http.getInstance().get(Url.HTTP_BACKHOME, function () {
-                    var home = new IndexScene();
+                    var home = new IndexScene(true);
                     ViewManager.getInstance().changeScene(home);
                 });
             }
@@ -253,6 +253,10 @@ var FriendHomeScene = (function (_super) {
                 ViewManager.getInstance().changeScene(home);
             }
         }, this);
+    };
+    FriendHomeScene.prototype.release = function () {
+        clearTimeout(this.timer);
+        clearInterval(this.intervalTimer);
     };
     return FriendHomeScene;
 }(Scene));

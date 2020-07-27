@@ -28,7 +28,7 @@ var InfoScene = (function (_super) {
         var list = ['名字', '星座', '血型', '爱好'];
         // 中心背景
         var bg = Util.createBitmapByName('info_doc');
-        bg.x = this.center(bg);
+        bg.x = Util.center(bg);
         bg.y = 142;
         this.addChild(bg);
         // 关闭按钮
@@ -41,14 +41,14 @@ var InfoScene = (function (_super) {
             ViewManager.getInstance().changeScene(scene);
         }, this);
         var title = Util.setTitle(VbaoType[this.id].label, 80, Config.COLOR_DOC);
-        title.x = this.center(title);
+        title.x = Util.center(title);
         title.y = 190;
         this.addChild(title);
         // 填写基本信息
         var des_Group = new eui.Group;
         des_Group.width = 560;
         des_Group.height = 620;
-        des_Group.x = this.center(des_Group);
+        des_Group.x = Util.center(des_Group);
         des_Group.y = 302;
         this.addChild(des_Group);
         var des_bg = Util.drawRoundRect(0, 0, 0xffffff, des_Group.width, des_Group.height, 16);
@@ -90,7 +90,7 @@ var InfoScene = (function (_super) {
             input.addEventListener(egret.Event.CHANGE, this.onChange(i), this);
         }
         var btn_done = new BtnBase('btn_done');
-        btn_done.x = this.center(btn_done);
+        btn_done.x = Util.center(btn_done);
         btn_done.y = 968;
         this.addChild(btn_done);
         btn_done.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
