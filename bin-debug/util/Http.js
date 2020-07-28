@@ -37,4 +37,3 @@ var Http = (function () {
     return Http;
 }());
 __reflect(Http.prototype, "Http");
-//# sourceMappingURL=Http.js.map

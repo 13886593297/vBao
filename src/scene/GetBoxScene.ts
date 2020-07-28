@@ -7,7 +7,8 @@ class GetBoxScene extends Scene {
     }
 
     public init() {
-        let sceneBg = Util.createBitmapByName('bg')
+        let bgName = window.localStorage.getItem('bgClass') || 'bg'
+        let sceneBg = Util.createBitmapByName(bgName)
         sceneBg.width = this.stage.stageWidth
         sceneBg.height = this.stage.stageHeight
         sceneBg.blendMode = 'add'

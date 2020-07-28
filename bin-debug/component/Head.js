@@ -172,4 +172,3 @@ var Head = (function (_super) {
     return Head;
 }(egret.DisplayObjectContainer));
 __reflect(Head.prototype, "Head");
-//# sourceMappingURL=Head.js.map

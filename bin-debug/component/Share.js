@@ -45,4 +45,3 @@ var Share = (function (_super) {
     return Share;
 }(eui.Group));
 __reflect(Share.prototype, "Share");
-//# sourceMappingURL=Share.js.map

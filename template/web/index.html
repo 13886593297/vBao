@@ -214,18 +214,18 @@
         <div class="close"></div>
         <div class="list">
             <div class="item">
-                <img class="bg1" src="./resource/assets/bg.png" alt="">
+                <img class="bg" src="./resource/assets/bg.png" alt="">
                 <p>默认背景</p>
             </div>
             <div class="item">
-                <img class="bg2" src="./resource/assets/bg1.jpg" alt="">
+                <img class="bg2" src="./resource/assets/bg2.jpg" alt="">
                 <div>
                     <img src="./resource/assets/Index/lock.png" alt="">
                 </div>
                 <p>达到50积分解锁</p>
             </div>
             <div class="item">
-                <img class="bg3" src="./resource/assets/bg2.jpg" alt="">
+                <img class="bg3" src="./resource/assets/bg3.jpg" alt="">
                 <div>
                     <img src="./resource/assets/Index/lock.png" alt="">
                 </div>
@@ -331,7 +331,7 @@
                         var url = $('.' + bgClass).attr('src')
                         $('.egret-player').css('backgroundImage', `url(${url})`)
                     } else {
-                        $('.bg1').parent().addClass('active')
+                        $('.bg').parent().addClass('active')
                     }
                 }
             })

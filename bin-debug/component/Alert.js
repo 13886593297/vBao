@@ -81,4 +81,3 @@ var GiftTip = (function (_super) {
     return GiftTip;
 }(egret.DisplayObjectContainer));
 __reflect(GiftTip.prototype, "GiftTip");
-//# sourceMappingURL=Alert.js.map

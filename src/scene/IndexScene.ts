@@ -214,7 +214,9 @@ class IndexScene extends Scene {
         this.addChild(decorate_tip)
 
         decorate.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
-            window.localStorage.setItem(`isDecorateTipShow${score}`, 'false')
+            if (decorate_tip.visible) {
+                window.localStorage.setItem(`isDecorateTipShow${score}`, 'false')
+            }
             this.decorate_tip.visible = false
             _decorate()
         }, this)

@@ -66,4 +66,3 @@ var MyMovieClip = (function (_super) {
     return MyMovieClip;
 }(egret.DisplayObjectContainer));
 __reflect(MyMovieClip.prototype, "MyMovieClip");
-//# sourceMappingURL=MyMovieClip.js.map

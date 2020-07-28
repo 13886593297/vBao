@@ -111,4 +111,3 @@ var GetVbaoScene = (function (_super) {
     return GetVbaoScene;
 }(Scene));
 __reflect(GetVbaoScene.prototype, "GetVbaoScene");
-//# sourceMappingURL=GetVbaoScene.js.map

@@ -267,4 +267,3 @@ var FriendHomeScene = (function (_super) {
     return FriendHomeScene;
 }(Scene));
 __reflect(FriendHomeScene.prototype, "FriendHomeScene");
-//# sourceMappingURL=FriendHomeScene.js.map

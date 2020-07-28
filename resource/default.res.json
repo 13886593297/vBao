@@ -1,7 +1,7 @@
 {
 	"groups": [
 		{
-			"keys": "MyFont_ttf,doc1_ske,doc1_tex,doc1_tex_png,pilot1_ske,pilot1_tex,pilot1_tex_png,box1_ske,box1_tex,box1_tex_png,doc2_ske,doc2_tex,doc2_tex_png,pilot2_ske,pilot2_tex,pilot2_tex_png,box2_ske,box2_r_ske,box2_tex,box2_r_tex,box2_tex_png,box2_r_tex_png,bg,info_doc,chooseVbao_doc,chooseVbao_doc_down,chooseVbao_pilot,chooseVbao_pilot_down,chooseVbao_box,chooseVbao_box_down,close,close_down,line,getVbao_light,getVbao_doc,getVbao_bg,daily_task_btn,daily_task_btn_down,daily_task_tips,flag,btn_go,btn_go_down,btn_sign,btn_sign_down,btn_done,btn_done_down,btn_wish,btn_wish_down,btn_done1,btn_done1_down,legendary,legendary_down,avatar_bg,header_bg,icon_air,icon_dir,icon_glove,feed,feed_down,tail_left,tail_right,around,around_down,decorate,decorate_down,goHome,goHome_down,present,present_down,around_bg,invite,invite_down,around_close,around_close_down,rank_01,rank_02,rank_03,rank_04,share_arrow,share_tips,share_tips_android,tip_board,icon_doc,icon_box,icon_pilot,btn_V5,btn_V5_down,circle,box_open,box_close,fire",
+			"keys": "MyFont_ttf,doc1_ske,doc1_tex,doc1_tex_png,pilot1_ske,pilot1_tex,pilot1_tex_png,box1_ske,box1_tex,box1_tex_png,doc2_ske,doc2_tex,doc2_tex_png,pilot2_ske,pilot2_tex,pilot2_tex_png,box2_ske,box2_r_ske,box2_tex,box2_r_tex,box2_tex_png,box2_r_tex_png,bg,bg2,bg3,info_doc,chooseVbao_doc,chooseVbao_doc_down,chooseVbao_pilot,chooseVbao_pilot_down,chooseVbao_box,chooseVbao_box_down,close,close_down,line,getVbao_light,getVbao_doc,getVbao_bg,daily_task_btn,daily_task_btn_down,daily_task_tips,flag,btn_go,btn_go_down,btn_sign,btn_sign_down,btn_done,btn_done_down,btn_wish,btn_wish_down,btn_done1,btn_done1_down,legendary,legendary_down,avatar_bg,header_bg,icon_air,icon_dir,icon_glove,feed,feed_down,tail_left,tail_right,around,around_down,decorate,decorate_down,goHome,goHome_down,present,present_down,around_bg,invite,invite_down,around_close,around_close_down,rank_01,rank_02,rank_03,rank_04,share_arrow,share_tips,share_tips_android,tip_board,icon_doc,icon_box,icon_pilot,btn_V5,btn_V5_down,circle,box_open,box_close,fire",
 			"name": "preload"
         },
         {
@@ -129,6 +129,16 @@
 			"url": "assets/bg.png",
 			"type": "image",
 			"name": "bg"
+        },
+        {
+			"url": "assets/bg2.jpg",
+			"type": "image",
+			"name": "bg2"
+        },
+        {
+			"url": "assets/bg3.jpg",
+			"type": "image",
+			"name": "bg3"
 		},
         {
 			"url": "assets/line.png",

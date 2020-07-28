@@ -82,4 +82,3 @@ var KindScene = (function (_super) {
     return KindScene;
 }(Scene));
 __reflect(KindScene.prototype, "KindScene");
-//# sourceMappingURL=KindScene.js.map

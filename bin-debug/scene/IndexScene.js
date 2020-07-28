@@ -208,7 +208,9 @@ var IndexScene = (function (_super) {
         this.decorate_tip = decorate_tip;
         this.addChild(decorate_tip);
         decorate.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
-            window.localStorage.setItem("isDecorateTipShow" + score, 'false');
+            if (decorate_tip.visible) {
+                window.localStorage.setItem("isDecorateTipShow" + score, 'false');
+            }
             _this.decorate_tip.visible = false;
             _decorate();
         }, this);
@@ -310,4 +312,3 @@ var IndexScene = (function (_super) {
     return IndexScene;
 }(Scene));
 __reflect(IndexScene.prototype, "IndexScene");
-//# sourceMappingURL=IndexScene.js.map

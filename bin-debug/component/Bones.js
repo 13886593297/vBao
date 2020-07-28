@@ -56,4 +56,3 @@ var Bones = (function (_super) {
     return Bones;
 }(egret.DisplayObjectContainer));
 __reflect(Bones.prototype, "Bones");
-//# sourceMappingURL=Bones.js.map
