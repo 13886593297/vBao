@@ -93,7 +93,7 @@ class GetBoxScene extends Scene {
 
                 let fire = Util.createBitmapByName('fire')
                 fire.x = this.stage.stageWidth / 2
-                fire.y = this.stage.stageHeight / 2 + 100
+                fire.y = 780
                 fire.anchorOffsetX = fire.width / 2
                 fire.anchorOffsetY = fire.height / 2
                 fire.blendMode = 'add'

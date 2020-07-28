@@ -37,3 +37,4 @@ var BtnBase = (function (_super) {
     return BtnBase;
 }(egret.DisplayObjectContainer));
 __reflect(BtnBase.prototype, "BtnBase");
+//# sourceMappingURL=BtnBase.js.map

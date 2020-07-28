@@ -165,10 +165,11 @@ var Head = (function (_super) {
             .to({ scaleX: 1, scaleY: 1 }, 10)
             .wait(10)
             .to({ scaleX: 1.2, scaleY: 1.2 }, 100)
-            .wait(1000)
+            .wait(500)
             .to({ scaleX: 1, scaleY: 1 }, 100)
             .call(cb);
     };
     return Head;
 }(egret.DisplayObjectContainer));
 __reflect(Head.prototype, "Head");
+//# sourceMappingURL=Head.js.map

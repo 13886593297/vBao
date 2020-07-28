@@ -128,9 +128,9 @@ var IndexScene = (function (_super) {
                 { x: w, y: h - 120 },
             ],
             [
-                { x: w, y: h - 50 },
-                { x: w, y: h - 70 },
-                { x: w + 50, y: h + 20 },
+                { x: w, y: h - 5 },
+                { x: w, y: h - 20 },
+                { x: w + 50, y: h + 130 },
             ],
         ];
         var bones = new Bones({
@@ -310,3 +310,4 @@ var IndexScene = (function (_super) {
     return IndexScene;
 }(Scene));
 __reflect(IndexScene.prototype, "IndexScene");
+//# sourceMappingURL=IndexScene.js.map

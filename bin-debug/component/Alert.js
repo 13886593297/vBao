@@ -39,7 +39,7 @@ var Alert = (function (_super) {
         this.addChild(tail);
         this.visible = false;
         this.x = stage.stageWidth - bg.width - 32;
-        this.y = stage.stageHeight / 2 - bg.height + 50;
+        this.y = stage.stageHeight / 2 - bg.height + 80;
     };
     Alert.prototype.setText = function (text) {
         this.tips.text = text;
@@ -81,3 +81,4 @@ var GiftTip = (function (_super) {
     return GiftTip;
 }(egret.DisplayObjectContainer));
 __reflect(GiftTip.prototype, "GiftTip");
+//# sourceMappingURL=Alert.js.map

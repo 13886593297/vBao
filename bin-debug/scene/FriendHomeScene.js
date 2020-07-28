@@ -12,7 +12,7 @@ var FriendHomeScene = (function (_super) {
     __extends(FriendHomeScene, _super);
     function FriendHomeScene(userId, befeedId) {
         var _this = _super.call(this) || this;
-        _this.interval = 1000;
+        _this.interval = 300;
         _this.vbaoIsHere = false;
         _this.userId = userId;
         _this.befeedId = befeedId;
@@ -122,20 +122,19 @@ var FriendHomeScene = (function (_super) {
         var h = this.stage.stageHeight;
         var level = data.visitInfo.level_id;
         var visitId = data.visitInfo.kind_id - 1;
-        var arr = [{ y: h - 50 }, { y: h - 70 }, { y: h + 20 }];
+        var arr = [h - 5, h - 20, h + 130];
         if (vbaoIsHere) {
             var myVbao = new Bones({
                 id: visitId,
                 level: level,
-                x: w - 150,
-                y: arr[visitId].y,
+                x: visitId == 2 ? w - 150 : w - 200,
+                y: arr[visitId],
                 vbaoIsHere: vbaoIsHere,
             });
             this.addChild(myVbao);
         }
         var visitedId = data.visitedInfo.kind_id - 1;
         var x;
-        var y = arr[visitedId].y;
         var type;
         var scaleX = 1;
         if (visitedId == 2 && !vbaoIsHere) {
@@ -143,15 +142,22 @@ var FriendHomeScene = (function (_super) {
         }
         else if (vbaoIsHere) {
             if (visitedId == 1) {
-                x = w + 250;
+                x = w + 200;
                 type = 'box2_r';
             }
             else {
-                x = -150;
+                x = visitedId == 2 ? -150 : -200;
                 scaleX = -1;
             }
         }
-        var friendVbao = new Bones({ id: visitedId, level: level, x: x, y: y, vbaoIsHere: vbaoIsHere, type: type });
+        var friendVbao = new Bones({
+            id: visitedId,
+            level: level,
+            x: x,
+            y: arr[visitedId],
+            vbaoIsHere: vbaoIsHere,
+            type: type,
+        });
         friendVbao.scaleX = scaleX;
         this.addChild(friendVbao);
         if (vbaoIsHere)
@@ -163,7 +169,7 @@ var FriendHomeScene = (function (_super) {
         var text = initalText.split('');
         var left = new Alert(initalText, 'right', true);
         left.x = 30;
-        left.y = 480;
+        left.y = this.stage.stageHeight / 2 - left.height;
         left.visible = true;
         this.addChild(left);
         setInterval(function () {
@@ -244,7 +250,7 @@ var FriendHomeScene = (function (_super) {
         goHome.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             if (_this.vbaoIsHere) {
                 Http.getInstance().get(Url.HTTP_BACKHOME, function () {
-                    var home = new IndexScene(true);
+                    var home = new IndexScene();
                     ViewManager.getInstance().changeScene(home);
                 });
             }
@@ -261,3 +267,4 @@ var FriendHomeScene = (function (_super) {
     return FriendHomeScene;
 }(Scene));
 __reflect(FriendHomeScene.prototype, "FriendHomeScene");
+//# sourceMappingURL=FriendHomeScene.js.map

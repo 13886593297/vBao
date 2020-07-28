@@ -2,7 +2,7 @@ class FriendHomeScene extends Scene {
     private userId
     private befeedId
     private getGiftTips
-    private interval = 1000
+    private interval = 300
     private vbaoIsHere = false
 
     public constructor(userId, befeedId) {
@@ -12,33 +12,37 @@ class FriendHomeScene extends Scene {
     }
 
     public init() {
-        Http.getInstance().post(Url.HTTP_SEARCHUSER, {visitedId: this.befeedId}, (res) => {
-            // code 2 第一次找到
-            if (res.data.code == 2) {
-                let boxScene = new GetBoxScene()
-                ViewManager.getInstance().changeScene(boxScene)
-            } else {
-                // code 1 找到V宝 但是没有回家
-                if (res.data.code == 1) {
-                    this.vbaoIsHere = true
-                }
-                Http.getInstance().post(
-                    Url.HTTP_AROUND,
-                    {
-                        visitedId: this.befeedId,
-                    },
-                    (res) => {
-                        let head = new Head(res.data.visitInfo)
-                        this.addChild(head)
-                        this.vBaoInfo(res.data.visitedInfo)
-                        this.showVbao(res.data, this.vbaoIsHere)
-                        this.present(res.data)
-                        this.randomGift(res.data)
-                        this.goHome()
+        Http.getInstance().post(
+            Url.HTTP_SEARCHUSER,
+            { visitedId: this.befeedId },
+            (res) => {
+                // code 2 第一次找到
+                if (res.data.code == 2) {
+                    let boxScene = new GetBoxScene()
+                    ViewManager.getInstance().changeScene(boxScene)
+                } else {
+                    // code 1 找到V宝 但是没有回家
+                    if (res.data.code == 1) {
+                        this.vbaoIsHere = true
                     }
-                )
+                    Http.getInstance().post(
+                        Url.HTTP_AROUND,
+                        {
+                            visitedId: this.befeedId,
+                        },
+                        (res) => {
+                            let head = new Head(res.data.visitInfo)
+                            this.addChild(head)
+                            this.vBaoInfo(res.data.visitedInfo)
+                            this.showVbao(res.data, this.vbaoIsHere)
+                            this.present(res.data)
+                            this.randomGift(res.data)
+                            this.goHome()
+                        }
+                    )
+                }
             }
-        })
+        )
     }
 
     private foodAni
@@ -135,13 +139,13 @@ class FriendHomeScene extends Scene {
         let h = this.stage.stageHeight
         let level = data.visitInfo.level_id
         let visitId = data.visitInfo.kind_id - 1
-        let arr = [{ y: h - 50 }, { y: h - 70 }, { y: h + 20 }]
+        let arr = [h - 5, h - 20, h + 130]
         if (vbaoIsHere) {
             let myVbao = new Bones({
                 id: visitId,
                 level,
-                x: w - 150,
-                y: arr[visitId].y,
+                x: visitId == 2 ? w - 150 : w - 200,
+                y: arr[visitId],
                 vbaoIsHere,
             })
             this.addChild(myVbao)
@@ -149,22 +153,28 @@ class FriendHomeScene extends Scene {
 
         let visitedId = data.visitedInfo.kind_id - 1
         let x
-        let y = arr[visitedId].y
         let type
         let scaleX = 1
         if (visitedId == 2 && !vbaoIsHere) {
             x = w + 50
         } else if (vbaoIsHere) {
             if (visitedId == 1) {
-                x = w + 250
+                x = w + 200
                 type = 'box2_r'
             } else {
-                x = -150
+                x = visitedId == 2 ? -150 : -200
                 scaleX = -1
             }
         }
 
-        let friendVbao = new Bones({ id: visitedId, level, x, y, vbaoIsHere, type })
+        let friendVbao = new Bones({
+            id: visitedId,
+            level,
+            x,
+            y: arr[visitedId],
+            vbaoIsHere,
+            type,
+        })
         friendVbao.scaleX = scaleX
         this.addChild(friendVbao)
 
@@ -178,7 +188,7 @@ class FriendHomeScene extends Scene {
         let text = initalText.split('')
         let left = new Alert(initalText, 'right', true)
         left.x = 30
-        left.y = 480
+        left.y = this.stage.stageHeight / 2 - left.height
         left.visible = true
         this.addChild(left)
         setInterval(() => {
@@ -227,7 +237,7 @@ class FriendHomeScene extends Scene {
 
         let scoreAni = new ScoreAni(1)
         this.addChild(scoreAni)
-        
+
         let flag = true
         present.addEventListener(
             egret.TouchEvent.TOUCH_TAP,
@@ -285,7 +295,7 @@ class FriendHomeScene extends Scene {
             () => {
                 if (this.vbaoIsHere) {
                     Http.getInstance().get(Url.HTTP_BACKHOME, () => {
-                        let home = new IndexScene(true)
+                        let home = new IndexScene()
                         ViewManager.getInstance().changeScene(home)
                     })
                 } else {

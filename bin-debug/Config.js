@@ -21,3 +21,4 @@ var FoodList = [
     { name: 'V拳套', image: 'icon_glove', icon: 'icon_box' },
     { name: 'V飞机', image: 'icon_air', icon: 'icon_pilot' }
 ];
+//# sourceMappingURL=Config.js.map

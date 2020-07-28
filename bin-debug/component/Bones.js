@@ -43,7 +43,7 @@ var Bones = (function (_super) {
             armatureDisplay.y = this.option.y ? this.option.y : stage.stageHeight;
             armatureDisplay.anchorOffsetX = armatureDisplay.width;
             armatureDisplay.anchorOffsetY = armatureDisplay.height;
-            var scale = this.option.level == 1 ? 0.4 : 0.24;
+            var scale = this.option.level == 1 ? 0.4 : 0.22;
             if (this.option.level == 2 && this.option.id == 2) {
                 scale = 0.2;
             }
@@ -56,3 +56,4 @@ var Bones = (function (_super) {
     return Bones;
 }(egret.DisplayObjectContainer));
 __reflect(Bones.prototype, "Bones");
+//# sourceMappingURL=Bones.js.map

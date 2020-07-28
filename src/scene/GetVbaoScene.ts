@@ -60,12 +60,12 @@ class GetVbaoScene extends Scene {
             },
         ], [
             {
-                x: this.stage.stageWidth,
-                y: 1150
+                x: this.stage.stageWidth - 30,
+                y: 1100
             },
             {
-                x: this.stage.stageWidth,
-                y: 1130
+                x: this.stage.stageWidth - 30,
+                y: 1080
             },
             {
                 x: this.stage.stageWidth + 50,

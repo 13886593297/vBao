@@ -116,3 +116,4 @@ var InfoScene = (function (_super) {
     return InfoScene;
 }(Scene));
 __reflect(InfoScene.prototype, "InfoScene");
+//# sourceMappingURL=InfoScene.js.map

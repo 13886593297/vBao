@@ -67,12 +67,12 @@ var GetVbaoScene = (function (_super) {
                 },
             ], [
                 {
-                    x: this.stage.stageWidth,
-                    y: 1150
+                    x: this.stage.stageWidth - 30,
+                    y: 1100
                 },
                 {
-                    x: this.stage.stageWidth,
-                    y: 1130
+                    x: this.stage.stageWidth - 30,
+                    y: 1080
                 },
                 {
                     x: this.stage.stageWidth + 50,
@@ -111,3 +111,4 @@ var GetVbaoScene = (function (_super) {
     return GetVbaoScene;
 }(Scene));
 __reflect(GetVbaoScene.prototype, "GetVbaoScene");
+//# sourceMappingURL=GetVbaoScene.js.map

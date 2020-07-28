@@ -165,7 +165,7 @@ class Head extends egret.DisplayObjectContainer {
             .to({ scaleX: 1, scaleY: 1 }, 10)
             .wait(10)
             .to({ scaleX: 1.2, scaleY: 1.2 }, 100)
-            .wait(1000)
+            .wait(500)
             .to({ scaleX: 1, scaleY: 1 }, 100)
             .call(cb)
     }

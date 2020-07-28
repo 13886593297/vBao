@@ -80,3 +80,4 @@ var WishScene = (function (_super) {
     return WishScene;
 }(Scene));
 __reflect(WishScene.prototype, "WishScene");
+//# sourceMappingURL=WishScene.js.map

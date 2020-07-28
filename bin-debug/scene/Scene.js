@@ -38,3 +38,4 @@ var Scene = (function (_super) {
     return Scene;
 }(eui.UILayer));
 __reflect(Scene.prototype, "Scene");
+//# sourceMappingURL=Scene.js.map
