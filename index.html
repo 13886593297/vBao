@@ -140,16 +140,23 @@
         }
 
         .decorate .list {
-            display: flex;
-            justify-content: space-evenly;
             margin-top: 75px;
             font-size: 0;
+            overflow-x: scroll;
+        }
+
+        .decorate .list .wrapper {
+            width: 545px;
+            height: 230px;
+            overflow: hidden;
         }
 
         .decorate .list .item {
             position: relative;
-            width: 26%;
+            width: 100px;
             border: 8px solid #cccccc;
+            float: left;
+            margin: 0 10px;
         }
 
         .decorate .list .item.active {
@@ -213,23 +220,32 @@
     <div class="decorate">
         <div class="close"></div>
         <div class="list">
-            <div class="item">
-                <img class="bg" src="./resource/assets/bg.png" alt="">
-                <p>默认背景</p>
-            </div>
-            <div class="item">
-                <img class="bg2" src="./resource/assets/bg2.jpg" alt="">
-                <div>
-                    <img class="lock" src="./resource/assets/Index/lock.png" alt="">
+            <div class="wrapper">
+                <div class="item">
+                    <img class="bg" src="./resource/assets/bg.png" alt="">
+                    <p>默认背景</p>
                 </div>
-                <p>达到50积分解锁</p>
-            </div>
-            <div class="item">
-                <img class="bg3" src="./resource/assets/bg3.jpg" alt="">
-                <div>
-                    <img class="lock" src="./resource/assets/Index/lock.png" alt="">
+                <div class="item">
+                    <img class="bg2" src="./resource/assets/bg2.png" alt="">
+                    <div>
+                        <img class="lock" src="./resource/assets/Index/lock.png" alt="">
+                    </div>
+                    <p>达到50积分解锁</p>
                 </div>
-                <p>达到100积分解锁</p>
+                <div class="item">
+                    <img class="bg3" src="./resource/assets/bg3.png" alt="">
+                    <div>
+                        <img class="lock" src="./resource/assets/Index/lock.png" alt="">
+                    </div>
+                    <p>达到100积分解锁</p>
+                </div>
+                <div class="item">
+                    <img class="bg4" src="./resource/assets/bg4.png" alt="">
+                    <div>
+                        <img class="lock" src="./resource/assets/Index/lock.png" alt="">
+                    </div>
+                    <p>达到150积分解锁</p>
+                </div>
             </div>
         </div>
     </div>
@@ -421,7 +437,10 @@
                 $('.decorate .item:eq(1) div').hide()
             }
             if (userScore >= 100) {
-                $('.decorate .item div').hide()
+                $('.decorate .item:eq(2) div').hide()
+            }
+            if (userScore >= 150) {
+                $('.decorate .item:eq(3) div').hide()
             }
         }
 
@@ -438,14 +457,12 @@
 
         $('.decorate .list').click(function(e) {
             if (userScore < 50) return
-            if (e.target.tagName == 'IMG') {
-                var bgClass = e.target.getAttribute('class')
-                if (userScore < 100 && bgClass == 'bg3' || bgClass == 'lock') return
+            var bgClass = e.target.getAttribute('class')
+            if (e.target.tagName == 'IMG' && bgClass != 'lock') {
                 $('.decorate .item').removeClass('active')
                 $(e.target.parentElement).addClass('active')
                 var src = e.target.getAttribute('src')
                 $('.egret-player').css('backgroundImage', `url(${src})`)
-
                 window.localStorage.setItem('bgClass', JSON.stringify(bgClass))
             }
         })

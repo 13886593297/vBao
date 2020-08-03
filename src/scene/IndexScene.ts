@@ -192,7 +192,6 @@ class IndexScene extends Scene {
     }
 
     // 装扮
-    public decorate_tip
     private decorate() {
         let decorate = new BtnBase('decorate')
         decorate.x = 510
@@ -203,13 +202,12 @@ class IndexScene extends Scene {
         decorate_tip.x = 600
         decorate_tip.y = decorate.y
         decorate_tip.visible = this.userInfo.imgstatus == 1
-        this.decorate_tip = decorate_tip
         this.addChild(decorate_tip)
 
         decorate.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             if (decorate_tip.visible) {
                 Http.getInstance().get(Url.HTTP_USERBGIMG, null)
-                this.decorate_tip.visible = false
+                decorate_tip.visible = false
             }
             _decorate()
         }, this)

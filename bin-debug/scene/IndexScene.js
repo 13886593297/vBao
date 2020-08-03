@@ -187,8 +187,8 @@ var IndexScene = (function (_super) {
             }
         }, this);
     };
+    // 装扮
     IndexScene.prototype.decorate = function () {
-        var _this = this;
         var decorate = new BtnBase('decorate');
         decorate.x = 510;
         decorate.y = this.stage.stageHeight - decorate.height - 40;
@@ -197,12 +197,11 @@ var IndexScene = (function (_super) {
         decorate_tip.x = 600;
         decorate_tip.y = decorate.y;
         decorate_tip.visible = this.userInfo.imgstatus == 1;
-        this.decorate_tip = decorate_tip;
         this.addChild(decorate_tip);
         decorate.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             if (decorate_tip.visible) {
                 Http.getInstance().get(Url.HTTP_USERBGIMG, null);
-                _this.decorate_tip.visible = false;
+                decorate_tip.visible = false;
             }
             _decorate();
         }, this);
