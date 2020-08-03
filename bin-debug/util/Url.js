@@ -37,6 +37,8 @@ var Url = (function () {
     Url.HTTP_SEARCHUSER = '/game/api/around/searchUser';
     // 回家
     Url.HTTP_BACKHOME = '/game/api/around/backhome';
+    // 修改装饰按钮红点状态
+    Url.HTTP_USERBGIMG = '/game/api/user/userBgimg';
     return Url;
 }());
 __reflect(Url.prototype, "Url");

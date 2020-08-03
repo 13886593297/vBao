@@ -199,25 +199,18 @@ class IndexScene extends Scene {
         decorate.y = this.stage.stageHeight - decorate.height - 40
         this.addChild(decorate)
 
-        let score = ViewManager.getInstance().headInfo.score
-        if (score >= 50 && score < 100) {
-            score = '_50'
-        } else if (score >= 100) {
-            score = '_100'
-        }
-        let isDecorateTipShow = JSON.parse(window.localStorage.getItem(`isDecorateTipShow${score}`))
         let decorate_tip = Util.createBitmapByName('daily_task_tips')
         decorate_tip.x = 600
         decorate_tip.y = decorate.y
-        decorate_tip.visible = isDecorateTipShow
+        decorate_tip.visible = this.userInfo.imgstatus == 1
         this.decorate_tip = decorate_tip
         this.addChild(decorate_tip)
 
         decorate.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             if (decorate_tip.visible) {
-                window.localStorage.setItem(`isDecorateTipShow${score}`, 'false')
+                Http.getInstance().get(Url.HTTP_USERBGIMG, null)
+                this.decorate_tip.visible = false
             }
-            this.decorate_tip.visible = false
             _decorate()
         }, this)
     }

@@ -220,14 +220,14 @@
             <div class="item">
                 <img class="bg2" src="./resource/assets/bg2.jpg" alt="">
                 <div>
-                    <img src="./resource/assets/Index/lock.png" alt="">
+                    <img class="lock" src="./resource/assets/Index/lock.png" alt="">
                 </div>
                 <p>达到50积分解锁</p>
             </div>
             <div class="item">
                 <img class="bg3" src="./resource/assets/bg3.jpg" alt="">
                 <div>
-                    <img src="./resource/assets/Index/lock.png" alt="">
+                    <img class="lock" src="./resource/assets/Index/lock.png" alt="">
                 </div>
                 <p>达到100积分解锁</p>
             </div>
@@ -440,7 +440,7 @@
             if (userScore < 50) return
             if (e.target.tagName == 'IMG') {
                 var bgClass = e.target.getAttribute('class')
-                if (userScore < 100 && bgClass == 'bg3') return
+                if (userScore < 100 && bgClass == 'bg3' || bgClass == 'lock') return
                 $('.decorate .item').removeClass('active')
                 $(e.target.parentElement).addClass('active')
                 var src = e.target.getAttribute('src')

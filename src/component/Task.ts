@@ -107,7 +107,7 @@ class Task extends eui.Group {
                                 foodAni.increaseMove()
                                 this.parent.removeChild(this)
 
-                                Http.getInstance().get(Url.HTTP_USER_INFO, res => {
+                                Http.getInstance().get(Url.HTTP_USER_INFO + '?isRandomOut=2', res => {
                                     if (res.data.isfinish) {
                                         daily_task_tips.visible = false
                                     }

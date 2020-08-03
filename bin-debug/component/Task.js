@@ -111,7 +111,7 @@ var Task = (function (_super) {
                                 scoreAni.move();
                                 foodAni.increaseMove();
                                 _this.parent.removeChild(_this);
-                                Http.getInstance().get(Url.HTTP_USER_INFO, function (res) {
+                                Http.getInstance().get(Url.HTTP_USER_INFO + '?isRandomOut=2', function (res) {
                                     if (res.data.isfinish) {
                                         daily_task_tips.visible = false;
                                     }

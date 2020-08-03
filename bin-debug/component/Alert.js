@@ -39,7 +39,7 @@ var Alert = (function (_super) {
         this.addChild(tail);
         this.visible = false;
         this.x = stage.stageWidth - bg.width - 32;
-        this.y = stage.stageHeight / 2 - bg.height + 80;
+        this.y = stage.stageHeight / 2 - bg.height + 150;
     };
     Alert.prototype.setText = function (text) {
         this.tips.text = text;

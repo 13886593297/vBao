@@ -31,7 +31,7 @@ class Alert extends egret.DisplayObjectContainer {
         this.addChild(tail)
         this.visible = false
         this.x = stage.stageWidth - bg.width - 32
-        this.y = stage.stageHeight / 2 - bg.height + 80
+        this.y = stage.stageHeight / 2 - bg.height + 150
     }
 
     public setText(text) {

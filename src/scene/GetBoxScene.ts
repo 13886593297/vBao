@@ -7,7 +7,7 @@ class GetBoxScene extends Scene {
     }
 
     public init() {
-        let bgName = window.localStorage.getItem('bgClass') || 'bg'
+        let bgName = JSON.parse(window.localStorage.getItem('bgClass')) || 'bg'
         let sceneBg = Util.createBitmapByName(bgName)
         sceneBg.width = this.stage.stageWidth
         sceneBg.height = this.stage.stageHeight
@@ -47,7 +47,7 @@ class GetBoxScene extends Scene {
             .wait(100)
             .to({ scaleX: 1, scaleY: 1 }, 800)
             
-        let label = Util.setTitle('主人，恭喜你找到我啦!', 50, 0x0064ff, 2)
+        let label = Util.setTitle('       这么快就找到我啦？真准！\n这里有个宝箱，我们打开看看可好？', 40, 0x0064ff, 2)
         label.x = Util.center(label)
         label.y = 206
         this.addChild(label)

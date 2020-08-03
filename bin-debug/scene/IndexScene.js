@@ -193,25 +193,17 @@ var IndexScene = (function (_super) {
         decorate.x = 510;
         decorate.y = this.stage.stageHeight - decorate.height - 40;
         this.addChild(decorate);
-        var score = ViewManager.getInstance().headInfo.score;
-        if (score >= 50 && score < 100) {
-            score = '_50';
-        }
-        else if (score >= 100) {
-            score = '_100';
-        }
-        var isDecorateTipShow = JSON.parse(window.localStorage.getItem("isDecorateTipShow" + score));
         var decorate_tip = Util.createBitmapByName('daily_task_tips');
         decorate_tip.x = 600;
         decorate_tip.y = decorate.y;
-        decorate_tip.visible = isDecorateTipShow;
+        decorate_tip.visible = this.userInfo.imgstatus == 1;
         this.decorate_tip = decorate_tip;
         this.addChild(decorate_tip);
         decorate.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             if (decorate_tip.visible) {
-                window.localStorage.setItem("isDecorateTipShow" + score, 'false');
+                Http.getInstance().get(Url.HTTP_USERBGIMG, null);
+                _this.decorate_tip.visible = false;
             }
-            _this.decorate_tip.visible = false;
             _decorate();
         }, this);
     };

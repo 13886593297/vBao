@@ -48,4 +48,7 @@ class Url {
 
     // 回家
     public static readonly HTTP_BACKHOME = '/game/api/around/backhome'
+
+    // 修改装饰按钮红点状态
+    public static readonly HTTP_USERBGIMG = '/game/api/user/userBgimg'
 }

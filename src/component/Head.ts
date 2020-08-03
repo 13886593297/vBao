@@ -78,13 +78,6 @@ class Head extends egret.DisplayObjectContainer {
     private setScore() {
         let score = ViewManager.getInstance().headInfo.score
         this.score.text = `积分：${score}`
-        let isDecorateTipShow_50 = window.localStorage.getItem('isDecorateTipShow_50')
-        let isDecorateTipShow_100 = window.localStorage.getItem('isDecorateTipShow_100')
-        if (score >= 50 && score < 100 && !isDecorateTipShow_50) {
-            window.localStorage.setItem('isDecorateTipShow_50', 'true')
-        } else if (score >= 100 && !isDecorateTipShow_100) {
-            window.localStorage.setItem('isDecorateTipShow_100', 'true')
-        }
         if (!this.flag) return
         this.flag = false
         this.tweenAni(this.score, () => {
