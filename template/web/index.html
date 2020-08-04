@@ -39,6 +39,7 @@
             background-size: 100% 100%;
             width: 100%;
             height: 100%;
+            transition: background .5s;
         }
 
         .egret-player .mask {
@@ -455,9 +456,9 @@
         })
 
         $('.decorate .list').click(function(e) {
-            if (userScore < 50) return
             var bgClass = e.target.getAttribute('class')
-            if (e.target.tagName == 'IMG' && bgClass != 'lock') {
+            if (userScore < 50 || bgClass == 'lock') return
+            if (e.target.tagName == 'IMG') {
                 $('.decorate .item').removeClass('active')
                 $(e.target.parentElement).addClass('active')
                 var src = e.target.getAttribute('src')
