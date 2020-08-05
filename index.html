@@ -24,7 +24,6 @@
         }
 
         html, body {
-            -ms-touch-action: none;
             font-family: 'MyFont', serif;
             background: #888888;
             padding: 0;
@@ -35,11 +34,8 @@
         }
 
         .egret-player, #htmlBox {
-            background: url(./resource/assets/bg.png) no-repeat;
-            background-size: 100% 100%;
             width: 100%;
             height: 100%;
-            transition: background .5s;
         }
 
         .egret-player .mask {
@@ -53,6 +49,8 @@
         }
 
         #htmlBox {
+            background: url('./resource/assets/bg.png') no-repeat;
+            background-size: 100% 100%;
             position: absolute;
             z-index: 1;
             display: none;
@@ -192,6 +190,43 @@
             top: 50%;
             transform: translate(-50%, -50%);
         }
+
+        .bgArr {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+        }
+
+        .bgArr ul {
+            width: 100vw;
+            height: 100%;
+        }
+
+        .bgArr li {
+            width: 100vw;
+            height: 100%;
+            display: none;
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+        }
+
+        .bgArr li:nth-child(1) {
+            background-image: url('./resource/assets/bg.png');
+        }
+
+        .bgArr li:nth-child(2) {
+            background-image: url('./resource/assets/bg2.png');
+        }
+
+        .bgArr li:nth-child(3) {
+            background-image: url('./resource/assets/bg3.png');
+        }
+
+        .bgArr li:nth-child(4) {
+            background-image: url('./resource/assets/bg4.png');
+        }
     </style>
 </head>
 
@@ -206,6 +241,14 @@
          data-multi-fingered="2"
          data-show-fps="false" data-show-log="false"
          data-show-fps-style="x:0,y:0,size:12,textColor:0xffffff,bgAlpha:0.9">
+         <div class="bgArr">
+            <ul>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+             </ul>
+         </div>
          <div id="htmlBox">
             <div>
                 <img src="./resource/assets/home/title.png" alt="">
@@ -337,20 +380,15 @@
                     if (data.data.level_id == 0) {
                         // 新用户
                         $('#htmlBox').show()
-                        window.localStorage.setItem('bgClass', null)
+                        window.localStorage.setItem('bgArrIndex', null)
                     } else {
                         // 老用户
                         $('#htmlBox').hide()
                     }
                     // 设置默认背景
-                    var bgClass = JSON.parse(window.localStorage.getItem('bgClass'))
-                    if (bgClass) {
-                        $('.' + bgClass).parent().addClass('active')
-                        var url = $('.' + bgClass).attr('src')
-                        $('.egret-player').css('backgroundImage', `url(${url})`)
-                    } else {
-                        $('.bg').parent().addClass('active')
-                    }
+                    var bgArrIndex = JSON.parse(window.localStorage.getItem('bgArrIndex')) || 0
+                    $('.bgArr li').eq(bgArrIndex).show()
+                    $('.decorate .item').eq(bgArrIndex).addClass('active')
                 }
             })
 
@@ -456,16 +494,14 @@
             $('.mask').hide()
         })
 
-        $('.decorate .list').click(function(e) {
-            var bgClass = e.target.getAttribute('class')
-            if (userScore < 50 || bgClass == 'lock') return
-            if (e.target.tagName == 'IMG') {
-                $('.decorate .item').removeClass('active')
-                $(e.target.parentElement).addClass('active')
-                var src = e.target.getAttribute('src')
-                $('.egret-player').css('backgroundImage', `url(${src})`)
-                window.localStorage.setItem('bgClass', JSON.stringify(bgClass))
-            }
+        $('.decorate .list .item').each(function(i, ele) {
+            $(ele).click(function(e) {
+                var bgClass = e.target.getAttribute('class')
+                if (!bgClass || !bgClass.startsWith('bg')) return
+                $('.decorate .item').removeClass('active').eq(i).addClass('active')
+                $('.bgArr li').hide().eq(i).show()
+                window.localStorage.setItem('bgArrIndex', i)
+            })
         })
     </script>
 </body>
