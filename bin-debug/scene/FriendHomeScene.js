@@ -127,7 +127,7 @@ var FriendHomeScene = (function (_super) {
             var myVbao = new Bones({
                 id: visitId,
                 level: level,
-                x: visitId == 2 ? w - 150 : w - 200,
+                x: visitId == 2 ? w - 100 : w - 200,
                 y: arr[visitId],
                 vbaoIsHere: vbaoIsHere,
             });
@@ -138,7 +138,7 @@ var FriendHomeScene = (function (_super) {
         var type;
         var scaleX = 1;
         if (visitedId == 2 && !vbaoIsHere) {
-            x = w + 50;
+            x = w + 120;
         }
         else if (vbaoIsHere) {
             if (visitedId == 1) {
@@ -146,7 +146,7 @@ var FriendHomeScene = (function (_super) {
                 type = 'box2_r';
             }
             else {
-                x = visitedId == 2 ? -150 : -200;
+                x = visitedId == 2 ? -100 : -200;
                 scaleX = -1;
             }
         }

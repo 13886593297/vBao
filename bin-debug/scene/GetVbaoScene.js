@@ -75,8 +75,8 @@ var GetVbaoScene = (function (_super) {
                     y: 1080
                 },
                 {
-                    x: this.stage.stageWidth + 50,
-                    y: 1150
+                    x: this.stage.stageWidth + 120,
+                    y: 1220
                 },
             ]];
         var bones = new Bones({

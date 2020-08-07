@@ -130,7 +130,7 @@ var IndexScene = (function (_super) {
             [
                 { x: w, y: h - 5 },
                 { x: w, y: h - 20 },
-                { x: w + 50, y: h + 130 },
+                { x: w + 120, y: h + 130 },
             ],
         ];
         var bones = new Bones({

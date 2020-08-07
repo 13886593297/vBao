@@ -889,6 +889,8 @@ var egret;
                 video.src = url;
                 video.setAttribute("autoplay", "autoplay");
                 video.setAttribute("webkit-playsinline", "true");
+                video.setAttribute("playsinline", "true");
+                video.setAttribute("x5-video-player-type", "h5-page");
                 video.addEventListener("canplay", this.onVideoLoaded);
                 video.addEventListener("error", function () { return _this.onVideoError(); });
                 video.addEventListener("ended", function () { return _this.onVideoEnded(); });
@@ -969,6 +971,7 @@ var egret;
                 if (playFullScreen) {
                     if (video.parentElement == null) {
                         video.removeAttribute("webkit-playsinline");
+                        video.removeAttribute("playsinline");
                         document.body.appendChild(video);
                     }
                     egret.stopTick(this.markDirty, this);
@@ -979,6 +982,7 @@ var egret;
                         video.parentElement.removeChild(video);
                     }
                     video.setAttribute("webkit-playsinline", "true");
+                    video.setAttribute("playsinline", "true");
                     this.setFullScreenMonitor(false);
                     egret.startTick(this.markDirty, this);
                     if (egret.Capabilities.isMobile) {
@@ -1040,6 +1044,10 @@ var egret;
                     document['webkitExitFullscreen']();
                 }
                 else {
+                    this.video.style.display = "none";
+                }
+                if (this.video && this.video.parentElement) {
+                    this.video.parentElement.removeChild(this.video);
                 }
             };
             /**
@@ -1049,6 +1057,9 @@ var egret;
             WebVideo.prototype.onVideoEnded = function () {
                 this.pause();
                 this.isPlayed = false;
+                if (this._fullscreen) {
+                    this.exitFullscreen();
+                }
                 this.dispatchEventWith(egret.Event.ENDED);
             };
             /**
@@ -1056,6 +1067,7 @@ var egret;
              *
              */
             WebVideo.prototype.onVideoError = function () {
+                console.error("video errorCode:", this.video.error.code);
                 this.dispatchEventWith(egret.IOErrorEvent.IO_ERROR);
             };
             /**
@@ -1964,7 +1976,8 @@ var egret;
              * @private
              *
              */
-            HTML5StageText.prototype.$show = function () {
+            HTML5StageText.prototype.$show = function (active) {
+                if (active === void 0) { active = true; }
                 if (!this.htmlInput.isCurrentStageText(this)) {
                     this.inputElement = this.htmlInput.getInputElement(this);
                     if (!this.$textfield.multiline) {
@@ -1982,6 +1995,22 @@ var egret;
                 //标记当前文本被选中
                 this._isNeedShow = true;
                 this._initElement();
+                if (active) {
+                    this.activeShowKeyboard();
+                }
+            };
+            HTML5StageText.prototype.activeShowKeyboard = function () {
+                if (this.htmlInput._needShow) {
+                    // this.htmlInput._needShow = false;
+                    this._isNeedShow = false;
+                    this.dispatchEvent(new egret.Event("focus"));
+                    this.executeShow();
+                    this.htmlInput.show();
+                }
+                else {
+                    this.htmlInput.blurInputElement();
+                    this.htmlInput.disposeInputElement();
+                }
             };
             /**
              * @private
@@ -2009,9 +2038,10 @@ var egret;
              *
              */
             HTML5StageText.prototype.executeShow = function () {
-                var self = this;
                 //打开
-                this.inputElement.value = this.$getText();
+                if (this.inputElement.value !== this.$getText()) {
+                    this.inputElement.value = this.$getText();
+                }
                 if (this.inputElement.onblur == null) {
                     this.inputElement.onblur = this.onBlurHandler.bind(this);
                 }
@@ -2131,8 +2161,8 @@ var egret;
                     e.stopImmediatePropagation();
                     //e.preventDefault();
                     this._isNeedShow = false;
-                    this.executeShow();
                     this.dispatchEvent(new egret.Event("focus"));
+                    this.executeShow();
                 }
             };
             /**
@@ -2231,6 +2261,7 @@ var egret;
          */
         var HTMLInput = (function () {
             function HTMLInput() {
+                var _this = this;
                 /**
                  * @private
                  */
@@ -2243,6 +2274,17 @@ var egret;
                  * @private
                  */
                 this.$scaleY = 1;
+                this.stageTextClickHandler = function (e) {
+                    if (_this._needShow) {
+                        _this._needShow = false;
+                        _this._stageText._onClickHandler(e);
+                        _this.show();
+                    }
+                    else {
+                        _this.blurInputElement();
+                        _this.disposeInputElement();
+                    }
+                };
             }
             /**
              * @private
@@ -2317,20 +2359,31 @@ var egret;
                     self._inputDIV.style.top = "-100px";
                     self._inputDIV.style[egret.web.getPrefixStyleName("transformOrigin")] = "0% 0% 0px";
                     stageDelegateDiv.appendChild(self._inputDIV);
-                    this.canvas.addEventListener("click", function (e) {
-                        if (self._needShow) {
-                            self._needShow = false;
-                            self._stageText._onClickHandler(e);
-                            self.show();
-                        }
-                        else {
-                            if (self._inputElement) {
-                                self.clearInputElement();
-                                self._inputElement.blur();
-                                self._inputElement = null;
-                            }
-                        }
-                    });
+                    // if (egret.Capabilities.isMobile) {
+                    //     let downTime = 0;
+                    //     let screenX: number, screenY: number;
+                    //     this.canvas.addEventListener("touchstart", (e) => {
+                    //         downTime = egret.getTimer();
+                    //         for (let touch of e.touches) {
+                    //             screenX = touch.screenX;
+                    //             screenY = touch.screenY;
+                    //         }
+                    //     });
+                    //     this.canvas.addEventListener("touchend", (e) => {
+                    //         const upTime = egret.getTimer();
+                    //         const timeDelay = upTime - downTime;
+                    //         for (let touch of e.changedTouches) {
+                    //             const offset = Math.sqrt(Math.pow(touch.screenX - screenX, 2) + Math.pow(touch.screenY - screenY, 2))
+                    //             if (timeDelay < 300 && offset < 3) {
+                    //                 this.stageTextClickHandler(e);
+                    //             }
+                    //         }
+                    //         downTime = 0;
+                    //         screenX = screenY = 0;
+                    //     });
+                    // } else {
+                    this.canvas.addEventListener("click", this.stageTextClickHandler);
+                    // }
                     self.initInputElement(true);
                     self.initInputElement(false);
                 }
@@ -2395,8 +2448,8 @@ var egret;
                     if (this._inputElement && this._inputDIV.contains(this._inputElement)) {
                         this._inputDIV.removeChild(this._inputElement);
                     }
+                    this._needShow = false;
                 }
-                this._needShow = false;
             };
             /**
              * @private
@@ -2431,6 +2484,9 @@ var egret;
                     self._stageText._onDisconnect();
                     self._stageText = null;
                     this.canvas['userTyping'] = false;
+                    if (this.finishUserTyping) {
+                        this.finishUserTyping();
+                    }
                 }
             };
             /**
@@ -2462,6 +2518,21 @@ var egret;
                     this._inputDIV.appendChild(this._inputElement);
                 }
                 return self._inputElement;
+            };
+            /**
+             * @private
+             */
+            HTMLInput.prototype.blurInputElement = function () {
+                if (this._inputElement) {
+                    this.clearInputElement();
+                    this._inputElement.blur();
+                }
+            };
+            /**
+             * @private
+             */
+            HTMLInput.prototype.disposeInputElement = function () {
+                this._inputElement = null;
             };
             return HTMLInput;
         }());
@@ -2975,16 +3046,26 @@ var egret;
          * @private
          */
         web.WebLifeCycleHandler = function (context) {
-            var handleVisibilityChange = function () {
-                if (!document[hidden]) {
-                    context.resume();
-                }
-                else {
-                    context.pause();
+            var resume = function () {
+                context.resume();
+                /** 解决 ios13 页面切到后台再拉起，声音无法播放 */
+                if (web.WebAudioDecode.initAudioContext) {
+                    web.WebAudioDecode.initAudioContext();
                 }
             };
-            window.addEventListener("focus", context.resume, false);
-            window.addEventListener("blur", context.pause, false);
+            var pause = function () {
+                context.pause();
+            };
+            var handleVisibilityChange = function () {
+                if (!document[hidden]) {
+                    resume();
+                }
+                else {
+                    pause();
+                }
+            };
+            window.addEventListener("focus", resume, false);
+            window.addEventListener("blur", pause, false);
             var hidden, visibilityChange;
             if (typeof document.hidden !== "undefined") {
                 hidden = "hidden";
@@ -3007,8 +3088,8 @@ var egret;
                 visibilityChange = "ovisibilitychange";
             }
             if ("onpageshow" in window && "onpagehide" in window) {
-                window.addEventListener("pageshow", context.resume, false);
-                window.addEventListener("pagehide", context.pause, false);
+                window.addEventListener("pageshow", resume, false);
+                window.addEventListener("pagehide", pause, false);
             }
             if (hidden && visibilityChange) {
                 document.addEventListener(visibilityChange, handleVisibilityChange, false);
@@ -3026,10 +3107,10 @@ var egret;
                 browser.execWebFn.postX5GamePlayerMessage = function (event) {
                     var eventType = event.type;
                     if (eventType == "app_enter_background") {
-                        context.pause();
+                        pause();
                     }
                     else if (eventType == "app_enter_foreground") {
-                        context.resume();
+                        resume();
                     }
                 };
                 window["browser"] = browser;
@@ -3112,7 +3193,17 @@ var egret;
                 if (canUseWebAudio) {
                     try {
                         //防止某些chrome版本创建异常问题
-                        web.WebAudioDecode.ctx = new (window["AudioContext"] || window["webkitAudioContext"] || window["mozAudioContext"])();
+                        web.WebAudioDecode.initAudioContext = function () {
+                            if (web.WebAudioDecode.ctx) {
+                                try {
+                                    web.WebAudioDecode.ctx.close();
+                                }
+                                catch (e) {
+                                }
+                            }
+                            web.WebAudioDecode.ctx = new (window["AudioContext"] || window["webkitAudioContext"] || window["mozAudioContext"])();
+                        };
+                        web.WebAudioDecode.initAudioContext();
                     }
                     catch (e) {
                         canUseWebAudio = false;
@@ -3273,7 +3364,11 @@ var egret;
          * 创建一个canvas。
          */
         function mainCanvas(width, height) {
-            return createCanvas(width, height);
+            var canvas = createCanvas(width, height);
+            if (egret.pro.egret2dDriveMode) {
+                egret.pro.mainCanvas = canvas;
+            }
+            return canvas;
         }
         egret.sys.mainCanvas = mainCanvas;
         function createCanvas(width, height) {
@@ -3576,6 +3671,21 @@ var egret;
             var ua = navigator.userAgent.toLowerCase();
             if (ua.indexOf("egretnative") >= 0 && ua.indexOf("egretwebview") == -1) {
                 egret.Capabilities["runtimeType" + ""] = egret.RuntimeType.RUNTIME2;
+            }
+            // 是否启动3d环境
+            if (options.pro) {
+                egret.pro.egret2dDriveMode = true;
+                try {
+                    if (window['startup']) {
+                        window['startup']();
+                    }
+                    else {
+                        console.error("EgretPro.js don't has function:window.startup");
+                    }
+                }
+                catch (e) {
+                    console.error(e);
+                }
             }
             if (ua.indexOf("egretnative") >= 0 && egret.nativeRender) {
                 egret_native.addModuleCallback(function () {
@@ -4232,11 +4342,13 @@ var egret;
             __extends(WebPlayer, _super);
             function WebPlayer(container, options) {
                 var _this = _super.call(this) || this;
+                _this.updateAfterTyping = false;
                 _this.init(container, options);
                 _this.initOrientation();
                 return _this;
             }
             WebPlayer.prototype.init = function (container, options) {
+                var _this = this;
                 console.log("Egret Engine Version:", egret.Capabilities.engineVersion);
                 var option = this.readOption(container, options);
                 var stage = new egret.Stage();
@@ -4266,6 +4378,14 @@ var egret;
                 this.player = player;
                 this.webTouchHandler = webTouch;
                 this.webInput = webInput;
+                webInput.finishUserTyping = function () {
+                    if (_this.updateAfterTyping) {
+                        setTimeout(function () {
+                            _this.updateScreenSize();
+                            _this.updateAfterTyping = false;
+                        }, 300);
+                    }
+                };
                 egret.web.$cacheTextAdapter(webInput, stage, container, canvas);
                 this.updateScreenSize();
                 this.updateMaxTouches();
@@ -4328,8 +4448,10 @@ var egret;
              */
             WebPlayer.prototype.updateScreenSize = function () {
                 var canvas = this.canvas;
-                if (canvas['userTyping'])
+                if (canvas['userTyping']) {
+                    this.updateAfterTyping = true;
                     return;
+                }
                 var option = this.playerOption;
                 var screenRect = this.container.getBoundingClientRect();
                 var top = 0;
@@ -4490,6 +4612,9 @@ var egret;
                 var renderTexture = void 0;
                 //webgl下非RenderTexture纹理先画到RenderTexture
                 if (!texture.$renderBuffer) {
+                    if (egret.sys.systemRenderer.renderClear) {
+                        egret.sys.systemRenderer.renderClear();
+                    }
                     renderTexture = new egret.RenderTexture();
                     renderTexture.drawToTexture(new egret.Bitmap(texture));
                 }
@@ -6256,9 +6381,16 @@ var egret;
                     this.etc1.name = 'WEBGL_compressed_texture_etc1';
                 }
                 //
-                egret.Capabilities._supportedCompressedTexture = egret.Capabilities._supportedCompressedTexture || {};
-                egret.Capabilities._supportedCompressedTexture.pvrtc = !!this.pvrtc;
-                egret.Capabilities._supportedCompressedTexture.etc1 = !!this.etc1;
+                if (egret.Capabilities._supportedCompressedTexture) {
+                    egret.Capabilities._supportedCompressedTexture = egret.Capabilities._supportedCompressedTexture || {};
+                    egret.Capabilities._supportedCompressedTexture.pvrtc = !!this.pvrtc;
+                    egret.Capabilities._supportedCompressedTexture.etc1 = !!this.etc1;
+                }
+                else {
+                    egret.Capabilities['supportedCompressedTexture'] = egret.Capabilities._supportedCompressedTexture || {};
+                    egret.Capabilities['supportedCompressedTexture'].pvrtc = !!this.pvrtc;
+                    egret.Capabilities['supportedCompressedTexture'].etc1 = !!this.etc1;
+                }
                 //
                 this._supportedCompressedTextureInfo = this._buildSupportedCompressedTextureInfo(/*this.context, compressedTextureExNames,*/ [this.etc1, this.pvrtc]);
             };
@@ -6423,6 +6555,7 @@ var egret;
             WebGLRenderContext.prototype.updateTexture = function (texture, bitmapData) {
                 var gl = this.context;
                 gl.bindTexture(gl.TEXTURE_2D, texture);
+                gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bitmapData);
             };
             Object.defineProperty(WebGLRenderContext.prototype, "defaultEmptyTexture", {
@@ -6835,7 +6968,7 @@ var egret;
                 return offset;
             };
             WebGLRenderContext.prototype.activeProgram = function (gl, program) {
-                if (program != this.currentProgram) {
+                if (egret.pro.egret2dDriveMode || program != this.currentProgram) {
                     gl.useProgram(program.id);
                     // 目前所有attribute buffer的绑定方法都是一致的
                     var attribute = program.attributes;
@@ -6860,6 +6993,9 @@ var egret;
                 var uniforms = program.uniforms;
                 var isCustomFilter = filter && filter.type === "custom";
                 for (var key in uniforms) {
+                    if (key == "$filterScale") {
+                        continue;
+                    }
                     if (key === "projectionVector") {
                         uniforms[key].setValue({ x: this.projectionX, y: this.projectionY });
                     }
@@ -6875,8 +7011,17 @@ var egret;
                     else {
                         var value = filter.$uniforms[key];
                         if (value !== undefined) {
-                            if (filter instanceof egret.GlowFilter && (key == "blurX" || key == "blurY" || key == "dist")) {
-                                value = value * filter.$filterScale;
+                            if ((filter.type == "glow" || filter.type.indexOf("blur") == 0)) {
+                                if ((key == "blurX" || key == "blurY" || key == "dist")) {
+                                    value = value * (filter.$uniforms.$filterScale || 1);
+                                }
+                                else if (key == "blur" && value.x != undefined && value.y != undefined) {
+                                    var newValue = { x: 0, y: 0 };
+                                    newValue.x = value.x * (filter.$uniforms.$filterScale != undefined ? filter.$uniforms.$filterScale : 1);
+                                    newValue.y = value.y * (filter.$uniforms.$filterScale != undefined ? filter.$uniforms.$filterScale : 1);
+                                    uniforms[key].setValue(newValue);
+                                    continue;
+                                }
                             }
                             uniforms[key].setValue(value);
                         }
@@ -7024,7 +7169,9 @@ var egret;
                     var blurYFilter = filter.blurYFilter;
                     if (blurXFilter.blurX != 0 && blurYFilter.blurY != 0) {
                         temp = web.WebGLRenderBuffer.create(width, height);
+                        var scale_1 = Math.max(egret.sys.DisplayList.$canvasScaleFactor, 2);
                         temp.setTransform(1, 0, 0, 1, 0, 0);
+                        temp.transform(scale_1, 0, 0, scale_1, 0, 0);
                         temp.globalAlpha = 1;
                         this.drawToRenderTarget(filter.blurXFilter, input, temp);
                         if (input != originInput) {
@@ -7757,8 +7904,13 @@ var egret;
                 // 为显示对象创建一个新的buffer
                 var scale = Math.max(egret.sys.DisplayList.$canvasScaleFactor, 2);
                 filters.forEach(function (filter) {
-                    if (filter instanceof egret.GlowFilter) {
-                        filter.$filterScale = scale;
+                    if (filter instanceof egret.GlowFilter || filter instanceof egret.BlurFilter) {
+                        filter.$uniforms.$filterScale = scale;
+                        if (filter.type == 'blur') {
+                            var blurFilter = filter;
+                            blurFilter.blurXFilter.$uniforms.$filterScale = scale;
+                            blurFilter.blurYFilter.$uniforms.$filterScale = scale;
+                        }
                     }
                 });
                 var displayBuffer = this.createRenderBuffer(scale * displayBoundsWidth, scale * displayBoundsHeight);
@@ -8632,6 +8784,14 @@ var egret;
                     buffer.$computeDrawCall = false;
                 }
                 return buffer;
+            };
+            WebGLRenderer.prototype.renderClear = function () {
+                var renderContext = web.WebGLRenderContext.getInstance();
+                var gl = renderContext.context;
+                renderContext.$beforeRender();
+                var width = renderContext.surface.width;
+                var height = renderContext.surface.height;
+                gl.viewport(0, 0, width, height);
             };
             return WebGLRenderer;
         }());
