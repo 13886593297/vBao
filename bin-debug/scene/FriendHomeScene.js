@@ -122,7 +122,7 @@ var FriendHomeScene = (function (_super) {
         var h = this.stage.stageHeight;
         var level = data.visitInfo.level_id;
         var visitId = data.visitInfo.kind_id - 1;
-        var arr = [h - 5, h - 20, h + 130];
+        var arr = [h - 5, h - 40, h + 130];
         if (vbaoIsHere) {
             var myVbao = new Bones({
                 id: visitId,
@@ -138,7 +138,7 @@ var FriendHomeScene = (function (_super) {
         var type;
         var scaleX = 1;
         if (visitedId == 2 && !vbaoIsHere) {
-            x = w + 120;
+            x = w + 100;
         }
         else if (vbaoIsHere) {
             if (visitedId == 1) {
@@ -200,8 +200,8 @@ var FriendHomeScene = (function (_super) {
         present.x = 180;
         present.y = this.stage.stageHeight - present.height - 40;
         this.addChild(present);
-        var feedTip = new Alert('谢谢你的礼物！好\n吃又营养！');
-        var feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧');
+        var feedTip = new Alert('谢谢你的礼物！\n好吃又营养！');
+        var feedTipNone = new Alert('我喜欢的食材\n不够了呢，快\n通过每日任务\n和串门收集吧');
         var getGiftTips = new GiftTip(FoodList[data.visitedInfo.kind_id - 1].image);
         this.addChild(feedTip);
         this.addChild(feedTipNone);

@@ -130,7 +130,7 @@ class IndexScene extends Scene {
             [
                 { x: w, y: h -5 },
                 { x: w, y: h - 20 },
-                { x: w + 120, y: h + 130 },
+                { x: w + 100, y: h + 130 },
             ],
         ]
 
@@ -151,9 +151,9 @@ class IndexScene extends Scene {
         feed.name = 'feed'
         this.addChild(feed)
 
-        let feedTip = new Alert('谢谢主人！好吃又\n营养！')
-        let feedTipDone = new Alert('每日2次就够啦！明\n天请再来投喂V宝哦！')
-        let feedTipNone = new Alert('我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧')
+        let feedTip = new Alert('谢谢主人！\n好吃又营养！')
+        let feedTipDone = new Alert('每日2次就够\n啦！明天请再\n来投喂V宝哦！')
+        let feedTipNone = new Alert('我喜欢的食材\n不够了呢，快\n通过每日任务\n和串门收集吧')
         this.addChild(feedTip)
         this.addChild(feedTipDone)
         this.addChild(feedTipNone)

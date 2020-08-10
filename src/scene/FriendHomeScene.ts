@@ -139,7 +139,7 @@ class FriendHomeScene extends Scene {
         let h = this.stage.stageHeight
         let level = data.visitInfo.level_id
         let visitId = data.visitInfo.kind_id - 1
-        let arr = [h - 5, h - 20, h + 130]
+        let arr = [h - 5, h - 40, h + 130]
         if (vbaoIsHere) {
             let myVbao = new Bones({
                 id: visitId,
@@ -156,7 +156,7 @@ class FriendHomeScene extends Scene {
         let type
         let scaleX = 1
         if (visitedId == 2 && !vbaoIsHere) {
-            x = w + 120
+            x = w + 100
         } else if (vbaoIsHere) {
             if (visitedId == 1) {
                 x = w + 200
@@ -223,9 +223,9 @@ class FriendHomeScene extends Scene {
         present.y = this.stage.stageHeight - present.height - 40
         this.addChild(present)
 
-        let feedTip = new Alert('谢谢你的礼物！好\n吃又营养！')
+        let feedTip = new Alert('谢谢你的礼物！\n好吃又营养！')
         let feedTipNone = new Alert(
-            '我喜欢的食材不够了\n呢，快通过每日任务\n和串门收集吧'
+            '我喜欢的食材\n不够了呢，快\n通过每日任务\n和串门收集吧'
         )
         let getGiftTips = new GiftTip(
             FoodList[data.visitedInfo.kind_id - 1].image
