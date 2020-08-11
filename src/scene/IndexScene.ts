@@ -128,9 +128,9 @@ class IndexScene extends Scene {
                 { x: w, y: h - 120 },
             ],
             [
-                { x: w, y: h -5 },
-                { x: w, y: h - 20 },
-                { x: w + 100, y: h + 130 },
+                { x: w, y: h - 5 },
+                { x: w, y: h - 40 },
+                { x: w + 100, y: h + 180 },
             ],
         ]
 

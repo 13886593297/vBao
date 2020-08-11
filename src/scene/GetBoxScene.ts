@@ -7,8 +7,8 @@ class GetBoxScene extends Scene {
     }
 
     public init() {
-        let bgArrIndex = JSON.parse(window.localStorage.getItem('bgArrIndex')) || 0
-        let bgName = bgArrIndex == 0 ? 'bg' : 'bg' + (bgArrIndex + 1)
+        let bgId = JSON.parse(window.localStorage.getItem('bgId')) || 0
+        let bgName = bgId == 0 ? 'bg' : 'bg' + (bgId + 1)
         let sceneBg = Util.createBitmapByName(bgName)
         sceneBg.width = this.stage.stageWidth
         sceneBg.height = this.stage.stageHeight

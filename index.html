@@ -380,15 +380,15 @@
                     if (data.data.level_id == 0) {
                         // 新用户
                         $('#htmlBox').show()
-                        window.localStorage.setItem('bgArrIndex', null)
                     } else {
                         // 老用户
                         $('#htmlBox').hide()
                     }
                     // 设置默认背景
-                    var bgArrIndex = JSON.parse(window.localStorage.getItem('bgArrIndex')) || 0
-                    $('.bgArr li').eq(bgArrIndex).show()
-                    $('.decorate .item').eq(bgArrIndex).addClass('active')
+                    var bgId = data.data.img
+                    window.localStorage.setItem('bgId', bgId)
+                    $('.bgArr li').eq(bgId).show()
+                    $('.decorate .item').eq(bgId).addClass('active')
                 }
             })
 
@@ -500,7 +500,8 @@
                 if (!bgClass || !bgClass.startsWith('bg')) return
                 $('.decorate .item').removeClass('active').eq(i).addClass('active')
                 $('.bgArr li').hide().eq(i).show()
-                window.localStorage.setItem('bgArrIndex', i)
+                $.ajax({url: host + '/game/api/user/updateImg?img=' + i})
+                window.localStorage.setItem('bgId', i)
             })
         })
     </script>

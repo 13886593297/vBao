@@ -139,13 +139,13 @@ class FriendHomeScene extends Scene {
         let h = this.stage.stageHeight
         let level = data.visitInfo.level_id
         let visitId = data.visitInfo.kind_id - 1
-        let arr = [h - 5, h - 40, h + 130]
+        let arr = [h - 5, h - 40, h + 180]
         if (vbaoIsHere) {
             let myVbao = new Bones({
                 id: visitId,
                 level,
                 x: visitId == 2 ? w - 100 : w - 200,
-                y: arr[visitId],
+                y: visitId == 2 ? h + 100 : arr[visitId],
                 vbaoIsHere,
             })
             this.addChild(myVbao)
@@ -163,6 +163,7 @@ class FriendHomeScene extends Scene {
                 type = 'box2_r'
             } else {
                 x = visitedId == 2 ? -100 : -200
+                arr[2] = visitedId == 2 ? h + 100 : arr[visitedId]
                 scaleX = -1
             }
         }
