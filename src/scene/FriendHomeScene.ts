@@ -135,63 +135,67 @@ class FriendHomeScene extends Scene {
     }
 
     private showVbao(data, vbaoIsHere = false) {
-        let w = this.stage.stageWidth
-        let h = this.stage.stageHeight
+        let position = Util.getVbaoPosition
+        
         let level = data.visitInfo.level_id
         let visitId = data.visitInfo.kind_id - 1
-        let arr = [h - 5, h - 40, h + 180]
+        let visitedId = data.visitedInfo.kind_id - 1
         if (vbaoIsHere) {
-            let myVbao = new Bones({
+            let leftVbao = new Bones({
                 id: visitId,
                 level,
-                x: visitId == 2 ? w - 100 : w - 200,
-                y: visitId == 2 ? h + 100 : arr[visitId],
+                x: position[3][visitId].x,
+                y: position[3][visitId].y,
                 vbaoIsHere,
+                type: visitId == 2 ? 'pilot2_r' : undefined,
             })
-            this.addChild(myVbao)
-        }
+            this.addChild(leftVbao)
 
-        let visitedId = data.visitedInfo.kind_id - 1
-        let x
-        let type
-        let scaleX = 1
-        if (visitedId == 2 && !vbaoIsHere) {
-            x = w + 100
-        } else if (vbaoIsHere) {
+            let type
             if (visitedId == 1) {
-                x = w + 200
                 type = 'box2_r'
-            } else {
-                x = visitedId == 2 ? -100 : -200
-                arr[2] = visitedId == 2 ? h + 100 : arr[visitedId]
-                scaleX = -1
+            } else if (visitedId == 2) {
+                type = 'pilot2_r'
             }
+
+            let rightVbao = new Bones({
+                id: visitedId,
+                level,
+                x: position[4][visitedId].x,
+                y: position[4][visitedId].y,
+                vbaoIsHere,
+                type
+            })
+            rightVbao.scaleX = visitedId == 1 ? 1 : -1
+            this.addChild(rightVbao)
+
+            this.vbaoTalk()
+        } else {
+            let vBao = new Bones({
+                id: visitedId,
+                level,
+                x: position[level][visitedId].x,
+                y: position[level][visitedId].y,
+            })
+            this.addChild(vBao)
         }
-
-        let friendVbao = new Bones({
-            id: visitedId,
-            level,
-            x,
-            y: arr[visitedId],
-            vbaoIsHere,
-            type,
-        })
-        friendVbao.scaleX = scaleX
-        this.addChild(friendVbao)
-
-        if (vbaoIsHere) this.vbaoTalk()
     }
 
+    private talkGroup
     private timer
     private intervalTimer
     private vbaoTalk() {
+        let group = new eui.Group
+        this.addChild(group)
+        this.talkGroup = group
+
         let initalText = '!@#$%^&*()_+-=`'
         let text = initalText.split('')
         let left = new Alert(initalText, 'right', true)
         left.x = 30
         left.y = this.stage.stageHeight / 2 - left.height
         left.visible = true
-        this.addChild(left)
+        group.addChild(left)
         setInterval(() => {
             this.randomTalk(text)
             left.setText(text.join(''))
@@ -202,7 +206,7 @@ class FriendHomeScene extends Scene {
             right.x = this.stage.stageWidth - right.width - left.x
             right.y = left.y
             right.visible = true
-            this.addChild(right)
+            group.addChild(right)
 
             this.intervalTimer = setInterval(() => {
                 this.randomTalk(text)
@@ -240,9 +244,12 @@ class FriendHomeScene extends Scene {
         this.addChild(scoreAni)
 
         let flag = true
+        
+
         present.addEventListener(
             egret.TouchEvent.TOUCH_TAP,
             () => {
+                this.talkGroup && (this.talkGroup.visible = false)
                 if (
                     ViewManager.getInstance().headInfo.food[
                         data.visitedInfo.food_type_id - 1
@@ -282,6 +289,10 @@ class FriendHomeScene extends Scene {
             },
             this
         )
+
+        present.addEventListener(egret.TouchEvent.TOUCH_TAP, Util.debounce(() => {
+            this.talkGroup && (this.talkGroup.visible = true)
+        }, 2000), this)
     }
 
     // 回家

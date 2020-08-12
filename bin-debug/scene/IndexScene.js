@@ -117,27 +117,14 @@ var IndexScene = (function (_super) {
         }, this);
     };
     IndexScene.prototype.showVbao = function () {
+        var position = Util.getVbaoPosition;
         var id = this.userInfo.kind_id - 1;
         var level = this.userInfo.level_id;
-        var w = this.stage.stageWidth;
-        var h = this.stage.stageHeight;
-        var arr = [
-            [
-                { x: w + 50, y: h },
-                { x: w + 50, y: h - 100 },
-                { x: w, y: h - 120 },
-            ],
-            [
-                { x: w, y: h - 5 },
-                { x: w, y: h - 40 },
-                { x: w + 100, y: h + 180 },
-            ],
-        ];
         var bones = new Bones({
             id: id,
             level: level,
-            x: arr[level - 1][id].x,
-            y: arr[level - 1][id].y,
+            x: position[level][id].x,
+            y: position[level][id].y,
         });
         this.addChild(bones);
     };

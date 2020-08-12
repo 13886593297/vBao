@@ -120,6 +120,57 @@ var Util = (function () {
             sound.play();
         }
     };
+    /**
+     * 防抖函数
+     * @param fn
+     * @param delay
+     */
+    Util.debounce = function (fn, delay) {
+        var timer = null;
+        return function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            if (timer) {
+                clearTimeout(timer);
+            }
+            timer = setTimeout(function () {
+                fn.apply(void 0, args);
+            }, delay);
+        };
+    };
+    Object.defineProperty(Util, "getVbaoPosition", {
+        get: function () {
+            var stage = ViewManager.getInstance().stage;
+            var w = stage.stageWidth;
+            var h = stage.stageHeight;
+            return {
+                '1': [
+                    { x: w + 50, y: h },
+                    { x: w + 50, y: h - 100 },
+                    { x: w, y: h - 120 },
+                ],
+                '2': [
+                    { x: w, y: h - 25 },
+                    { x: w, y: h - 40 },
+                    { x: w + 100, y: h + 180 },
+                ],
+                '3': [
+                    { x: w - 200, y: h - 25 },
+                    { x: w - 200, y: h - 40 },
+                    { x: w - 160, y: h + 130 },
+                ],
+                '4': [
+                    { x: -200, y: h - 25 },
+                    { x: w + 200, y: h - 40 },
+                    { x: -160, y: h + 130 },
+                ]
+            };
+        },
+        enumerable: true,
+        configurable: true
+    });
     return Util;
 }());
 __reflect(Util.prototype, "Util");

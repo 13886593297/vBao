@@ -27,7 +27,7 @@ var Bones = (function (_super) {
         var tex_png = RES.getRes(type + "_tex_png");
         var bone = ViewManager.getInstance().getBones(type);
         var stage = ViewManager.getInstance().stage;
-        if (bone && !this.option.vbaoIsHere && type != 'pilot2') {
+        if (bone && !this.option.vbaoIsHere) {
             bone.x = this.option.x ? this.option.x : stage.stageWidth;
             bone.y = this.option.y ? this.option.y : stage.stageHeight;
             this.addChild(bone);
@@ -43,11 +43,6 @@ var Bones = (function (_super) {
             armatureDisplay.y = this.option.y ? this.option.y : stage.stageHeight;
             armatureDisplay.anchorOffsetX = armatureDisplay.width;
             armatureDisplay.anchorOffsetY = armatureDisplay.height;
-            var leaf = armatureDisplay.armature.getSlot('叶子');
-            if (this.option.vbaoIsHere && leaf) {
-                leaf.visible = false;
-                armatureDisplay.y = armatureDisplay.y + 100;
-            }
             var scale = this.option.level == 1 ? 0.4 : 0.22;
             armatureDisplay.scaleX = scale;
             armatureDisplay.scaleY = scale;

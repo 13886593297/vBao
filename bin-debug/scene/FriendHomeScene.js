@@ -118,61 +118,61 @@ var FriendHomeScene = (function (_super) {
     };
     FriendHomeScene.prototype.showVbao = function (data, vbaoIsHere) {
         if (vbaoIsHere === void 0) { vbaoIsHere = false; }
-        var w = this.stage.stageWidth;
-        var h = this.stage.stageHeight;
+        var position = Util.getVbaoPosition;
         var level = data.visitInfo.level_id;
         var visitId = data.visitInfo.kind_id - 1;
-        var arr = [h - 5, h - 40, h + 180];
+        var visitedId = data.visitedInfo.kind_id - 1;
         if (vbaoIsHere) {
-            var myVbao = new Bones({
+            var leftVbao = new Bones({
                 id: visitId,
                 level: level,
-                x: visitId == 2 ? w - 100 : w - 200,
-                y: visitId == 2 ? h + 100 : arr[visitId],
+                x: position[3][visitId].x,
+                y: position[3][visitId].y,
                 vbaoIsHere: vbaoIsHere,
+                type: visitId == 2 ? 'pilot2_r' : undefined,
             });
-            this.addChild(myVbao);
-        }
-        var visitedId = data.visitedInfo.kind_id - 1;
-        var x;
-        var type;
-        var scaleX = 1;
-        if (visitedId == 2 && !vbaoIsHere) {
-            x = w + 100;
-        }
-        else if (vbaoIsHere) {
+            this.addChild(leftVbao);
+            var type = void 0;
             if (visitedId == 1) {
-                x = w + 200;
                 type = 'box2_r';
             }
-            else {
-                x = visitedId == 2 ? -100 : -200;
-                arr[2] = visitedId == 2 ? h + 100 : arr[visitedId];
-                scaleX = -1;
+            else if (visitedId == 2) {
+                type = 'pilot2_r';
             }
-        }
-        var friendVbao = new Bones({
-            id: visitedId,
-            level: level,
-            x: x,
-            y: arr[visitedId],
-            vbaoIsHere: vbaoIsHere,
-            type: type,
-        });
-        friendVbao.scaleX = scaleX;
-        this.addChild(friendVbao);
-        if (vbaoIsHere)
+            var rightVbao = new Bones({
+                id: visitedId,
+                level: level,
+                x: position[4][visitedId].x,
+                y: position[4][visitedId].y,
+                vbaoIsHere: vbaoIsHere,
+                type: type
+            });
+            rightVbao.scaleX = visitedId == 1 ? 1 : -1;
+            this.addChild(rightVbao);
             this.vbaoTalk();
+        }
+        else {
+            var vBao = new Bones({
+                id: visitedId,
+                level: level,
+                x: position[level][visitedId].x,
+                y: position[level][visitedId].y,
+            });
+            this.addChild(vBao);
+        }
     };
     FriendHomeScene.prototype.vbaoTalk = function () {
         var _this = this;
+        var group = new eui.Group;
+        this.addChild(group);
+        this.talkGroup = group;
         var initalText = '!@#$%^&*()_+-=`';
         var text = initalText.split('');
         var left = new Alert(initalText, 'right', true);
         left.x = 30;
         left.y = this.stage.stageHeight / 2 - left.height;
         left.visible = true;
-        this.addChild(left);
+        group.addChild(left);
         setInterval(function () {
             _this.randomTalk(text);
             left.setText(text.join(''));
@@ -182,7 +182,7 @@ var FriendHomeScene = (function (_super) {
             right.x = _this.stage.stageWidth - right.width - left.x;
             right.y = left.y;
             right.visible = true;
-            _this.addChild(right);
+            group.addChild(right);
             _this.intervalTimer = setInterval(function () {
                 _this.randomTalk(text);
                 right.setText(text.join(''));
@@ -212,6 +212,7 @@ var FriendHomeScene = (function (_super) {
         this.addChild(scoreAni);
         var flag = true;
         present.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
+            _this.talkGroup && (_this.talkGroup.visible = false);
             if (ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] > 0) {
                 if (!flag)
                     return;
@@ -240,6 +241,9 @@ var FriendHomeScene = (function (_super) {
                 Util.animate(feedTipNone);
             }
         }, this);
+        present.addEventListener(egret.TouchEvent.TOUCH_TAP, Util.debounce(function () {
+            _this.talkGroup && (_this.talkGroup.visible = true);
+        }, 2000), this);
     };
     // 回家
     FriendHomeScene.prototype.goHome = function () {

@@ -118,6 +118,51 @@ class Util {
             sound.play()
         }
     }
+
+    /**
+     * 防抖函数
+     * @param fn 
+     * @param delay 
+     */
+    public static debounce(fn, delay) {
+        let timer = null
+        return function(...args) {
+            if (timer) {
+                clearTimeout(timer)
+            }
+            timer = setTimeout(() => {
+                fn(...args)
+            }, delay)
+        }
+    }
+    
+    public static get getVbaoPosition() {
+        let stage = ViewManager.getInstance().stage
+        let w = stage.stageWidth
+        let h = stage.stageHeight
+        return {
+            '1': [ // 卵状态
+                { x: w + 50, y: h },
+                { x: w + 50, y: h - 100 },
+                { x: w, y: h - 120 },
+            ],
+            '2': [ // 虫状态---只有一个宝宝在
+                { x: w, y: h - 25 },
+                { x: w, y: h - 40 },
+                { x: w + 100, y: h + 180 },
+            ],
+            '3': [ // 虫状态---2个宝宝---左边的宝宝
+                { x: w - 200, y: h - 25 },
+                { x: w - 200, y: h - 40 },
+                { x: w - 160, y: h + 130 },
+            ],
+            '4': [ // 虫状态---2个宝宝---右边的宝宝
+                { x: -200, y: h - 25 },
+                { x: w + 200, y: h - 40 },
+                { x: -160, y: h + 130 },
+            ]
+        }
+    }
 }
 
 declare function shareFriend(id, callback)

@@ -117,28 +117,15 @@ class IndexScene extends Scene {
     }
 
     private showVbao() {
+        let position = Util.getVbaoPosition
+        
         let id = this.userInfo.kind_id - 1
         let level = this.userInfo.level_id
-        let w = this.stage.stageWidth
-        let h = this.stage.stageHeight
-        let arr = [
-            [
-                { x: w + 50, y: h },
-                { x: w + 50, y: h - 100 },
-                { x: w, y: h - 120 },
-            ],
-            [
-                { x: w, y: h - 5 },
-                { x: w, y: h - 40 },
-                { x: w + 100, y: h + 180 },
-            ],
-        ]
-
         let bones = new Bones({
             id,
             level,
-            x: arr[level - 1][id].x,
-            y: arr[level - 1][id].y,
+            x: position[level][id].x,
+            y: position[level][id].y,
         })
         this.addChild(bones)
     }
