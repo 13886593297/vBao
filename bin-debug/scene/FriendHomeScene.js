@@ -12,7 +12,7 @@ var FriendHomeScene = (function (_super) {
     __extends(FriendHomeScene, _super);
     function FriendHomeScene(userId, befeedId) {
         var _this = _super.call(this) || this;
-        _this.interval = 300;
+        _this.interval = 300; // 动画时间间隔
         _this.vbaoIsHere = false;
         _this.userId = userId;
         _this.befeedId = befeedId;
@@ -36,8 +36,8 @@ var FriendHomeScene = (function (_super) {
                 }, function (res) {
                     var head = new Head(res.data.visitInfo);
                     _this.addChild(head);
-                    _this.vBaoInfo(res.data.visitedInfo);
-                    _this.showVbao(res.data, _this.vbaoIsHere);
+                    _this.friendDetail(res.data.visitedInfo);
+                    _this.showVbao(res.data);
                     _this.present(res.data);
                     _this.randomGift(res.data);
                     _this.goHome();
@@ -47,22 +47,23 @@ var FriendHomeScene = (function (_super) {
     };
     FriendHomeScene.prototype.randomGift = function (data) {
         var _this = this;
-        Http.getInstance().post(Url.HTTP_GIFT, {
-            userId: this.befeedId,
-        }, function (res) {
+        Http.getInstance().post(Url.HTTP_GIFT, { userId: this.befeedId }, function (res) {
             var foodAni = new FoodAni(data.visitedInfo.kind_id);
             _this.addChild(foodAni);
             _this.foodAni = foodAni;
+            var food = ViewManager.getInstance().headInfo.food;
+            var type_id = data.visitedInfo.food_type_id - 1;
             if (res.data.code) {
-                setTimeout(function () {
-                    ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] += 1;
-                }, _this.interval);
-                Util.animate(_this.getGiftTips);
+                setTimeout(function () { food[type_id] += 1; }, _this.interval);
+                var getGiftTips = new GiftTip(FoodList[data.visitedInfo.kind_id - 1].image);
+                _this.addChild(getGiftTips);
+                Util.animate(getGiftTips);
                 _this.foodAni.increaseMove();
             }
         });
     };
-    FriendHomeScene.prototype.vBaoInfo = function (data) {
+    // 好友详细信息
+    FriendHomeScene.prototype.friendDetail = function (data) {
         var group = new eui.Group();
         this.addChild(group);
         var bg = Util.drawRoundRect(0, 0x000000, 0x000000, 260, 230, 10, 0.3);
@@ -71,64 +72,59 @@ var FriendHomeScene = (function (_super) {
         group.height = bg.height;
         group.x = 42;
         group.y = 200;
-        var alias = data.kind_id == 1
-            ? '小博士'
-            : data.kind_id == 2
-                ? '小斗士'
-                : '小勇士';
+        var names = ['小博士', '小斗士', '小勇士'];
         var name = new egret.TextField();
-        name.text = alias;
+        name.text = names[data.kind_id - 1];
         name.bold = true;
         name.x = name.y = 25;
         group.addChild(name);
-        var _width = 220;
-        var _height = 30;
+        var w = 220;
+        var h = 30;
         var nick_name = new egret.TextField();
         nick_name.text = "\u540D\u5B57\uFF1A" + data.nick_name;
-        nick_name.width = _width;
-        nick_name.height = _height;
+        nick_name.width = w;
+        nick_name.height = h;
         nick_name.x = name.x;
         nick_name.y = 80;
         nick_name.size = 22;
         group.addChild(nick_name);
         var constellation = new egret.TextField();
         constellation.text = "\u661F\u5EA7\uFF1A" + data.constellation;
-        constellation.width = _width;
-        constellation.height = _height;
+        constellation.width = w;
+        constellation.height = h;
         constellation.x = name.x;
         constellation.y = nick_name.y + 35;
         constellation.size = 22;
         group.addChild(constellation);
         var blood = new egret.TextField();
         blood.text = "\u8840\u578B\uFF1A" + data.blood;
-        blood.width = _width;
-        blood.height = _height;
+        blood.width = w;
+        blood.height = h;
         blood.x = name.x;
         blood.y = constellation.y + 35;
         blood.size = 22;
         group.addChild(blood);
         var hobby = new egret.TextField();
         hobby.text = "\u7231\u597D\uFF1A" + data.hobby;
-        hobby.width = _width;
-        hobby.height = _height;
+        hobby.width = w;
+        hobby.height = h;
         hobby.x = name.x;
         hobby.y = blood.y + 35;
         hobby.size = 22;
         group.addChild(hobby);
     };
-    FriendHomeScene.prototype.showVbao = function (data, vbaoIsHere) {
-        if (vbaoIsHere === void 0) { vbaoIsHere = false; }
+    FriendHomeScene.prototype.showVbao = function (data) {
         var position = Util.getVbaoPosition;
         var level = data.visitInfo.level_id;
         var visitId = data.visitInfo.kind_id - 1;
         var visitedId = data.visitedInfo.kind_id - 1;
-        if (vbaoIsHere) {
+        if (this.vbaoIsHere) {
             var leftVbao = new Bones({
                 id: visitId,
                 level: level,
                 x: position[3][visitId].x,
                 y: position[3][visitId].y,
-                vbaoIsHere: vbaoIsHere,
+                vbaoIsHere: this.vbaoIsHere,
                 type: visitId == 2 ? 'pilot2_r' : undefined,
             });
             this.addChild(leftVbao);
@@ -144,7 +140,7 @@ var FriendHomeScene = (function (_super) {
                 level: level,
                 x: position[4][visitedId].x,
                 y: position[4][visitedId].y,
-                vbaoIsHere: vbaoIsHere,
+                vbaoIsHere: this.vbaoIsHere,
                 type: type
             });
             rightVbao.scaleX = visitedId == 1 ? 1 : -1;
@@ -173,26 +169,26 @@ var FriendHomeScene = (function (_super) {
         left.y = this.stage.stageHeight / 2 - left.height;
         left.visible = true;
         group.addChild(left);
-        setInterval(function () {
-            _this.randomTalk(text);
+        this.leftTalkTimer = setInterval(function () {
+            randomTalk(text);
             left.setText(text.join(''));
         }, 3000);
-        this.timer = setTimeout(function () {
+        this.rightTimeoutTimer = setTimeout(function () {
             var right = new Alert(initalText, 'left', true);
             right.x = _this.stage.stageWidth - right.width - left.x;
             right.y = left.y;
             right.visible = true;
             group.addChild(right);
-            _this.intervalTimer = setInterval(function () {
-                _this.randomTalk(text);
+            _this.rightTalkTimer = setInterval(function () {
+                randomTalk(text);
                 right.setText(text.join(''));
             }, 3000);
         }, 1500);
-    };
-    FriendHomeScene.prototype.randomTalk = function (arr) {
-        arr.sort(function () {
-            return Math.random() - 0.5;
-        });
+        function randomTalk(arr) {
+            arr.sort(function () {
+                return Math.random() - 0.5;
+            });
+        }
     };
     // 送礼
     FriendHomeScene.prototype.present = function (data) {
@@ -203,17 +199,19 @@ var FriendHomeScene = (function (_super) {
         this.addChild(present);
         var feedTip = new Alert('谢谢你的礼物！\n好吃又营养！');
         var feedTipNone = new Alert('我喜欢的食材\n不够了呢，快\n通过每日任务\n和串门收集吧');
-        var getGiftTips = new GiftTip(FoodList[data.visitedInfo.kind_id - 1].image);
         this.addChild(feedTip);
         this.addChild(feedTipNone);
-        this.addChild(getGiftTips);
-        this.getGiftTips = getGiftTips;
+        // 积分动画
         var scoreAni = new ScoreAni(1);
         this.addChild(scoreAni);
+        // 等待后台响应返回后才能继续送礼
         var flag = true;
+        var food = ViewManager.getInstance().headInfo.food;
+        var type_id = data.visitedInfo.food_type_id - 1;
         present.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
+            // 送礼时宝宝对话group暂时隐藏
             _this.talkGroup && (_this.talkGroup.visible = false);
-            if (ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] > 0) {
+            if (food[type_id] > 0) {
                 if (!flag)
                     return;
                 flag = false;
@@ -223,7 +221,7 @@ var FriendHomeScene = (function (_super) {
                     type: 6,
                 }, function (res) {
                     if (res.data.code == 1) {
-                        ViewManager.getInstance().headInfo.food[data.visitedInfo.food_type_id - 1] -= 1;
+                        food[type_id] -= 1;
                         setTimeout(function () {
                             ViewManager.getInstance().headInfo.score += 1;
                         }, _this.interval);
@@ -238,12 +236,14 @@ var FriendHomeScene = (function (_super) {
                 });
             }
             else {
+                if (feedTip.visible)
+                    feedTip.visible = false;
                 Util.animate(feedTipNone);
             }
         }, this);
         present.addEventListener(egret.TouchEvent.TOUCH_TAP, Util.debounce(function () {
             _this.talkGroup && (_this.talkGroup.visible = true);
-        }, 2000), this);
+        }, 2300), this);
     };
     // 回家
     FriendHomeScene.prototype.goHome = function () {
@@ -266,8 +266,9 @@ var FriendHomeScene = (function (_super) {
         }, this);
     };
     FriendHomeScene.prototype.release = function () {
-        clearTimeout(this.timer);
-        clearInterval(this.intervalTimer);
+        clearInterval(this.leftTalkTimer);
+        clearTimeout(this.rightTimeoutTimer);
+        clearInterval(this.rightTalkTimer);
     };
     return FriendHomeScene;
 }(Scene));

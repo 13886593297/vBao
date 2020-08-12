@@ -52,38 +52,13 @@ var GetVbaoScene = (function (_super) {
         light.anchorOffsetY = light.height / 2;
         group.addChild(light);
         egret.Tween.get(light, { loop: true }).to({ rotation: 360 }, 6000);
-        var arr = [[
-                {
-                    x: this.stage.stageWidth + 50,
-                    y: 1050
-                },
-                {
-                    x: this.stage.stageWidth + 50,
-                    y: 940
-                },
-                {
-                    x: this.stage.stageWidth,
-                    y: 910
-                },
-            ], [
-                {
-                    x: this.stage.stageWidth - 30,
-                    y: 1100
-                },
-                {
-                    x: this.stage.stageWidth - 30,
-                    y: 1080
-                },
-                {
-                    x: this.stage.stageWidth + 120,
-                    y: 1220
-                },
-            ]];
+        var status = this.level == 1 ? 5 : 6;
+        var position = Util.getVbaoPosition;
         var bones = new Bones({
             id: this.id,
             level: this.level,
-            x: arr[this.level - 1][this.id].x,
-            y: arr[this.level - 1][this.id].y,
+            x: position[status][this.id].x,
+            y: position[status][this.id].y,
         });
         group.addChild(bones);
         // vbao类型

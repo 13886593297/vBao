@@ -48,7 +48,7 @@ class LoadingUI extends egret.Sprite implements RES.PromiseTaskReporter {
         this.addChild(this.textField)
 
          // loading gif
-         let loading_gif = new MyMovieClip('loading_gif')
+         let loading_gif = new FrameAnimate('loading_gif')
          loading_gif.x = (stage.stageWidth - loading_gif.width) / 2 - 35
          loading_gif.y = this.height - 400
          this.addChild(loading_gif)

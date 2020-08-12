@@ -1,7 +1,7 @@
 class IndexScene extends Scene {
     private userInfo // 用户信息
     private shareScene // 分享
-    private isRandomOut
+    private isRandomOut // 是否触发串门逻辑，刚升2级即值为true时不触发
     public constructor(isRandomOut?) {
         super()
         this.isRandomOut = isRandomOut
@@ -24,9 +24,11 @@ class IndexScene extends Scene {
                 this.daily_task()
                 this.legendary()
 
+                // v宝串门中
                 if (this.userInfo.level_id == 2 && this.userInfo.isoutdoor) {
                     this.showTipBoard()
                 } else {
+                    // v宝在家
                     this.showVbao()
                 }
 
@@ -63,8 +65,6 @@ class IndexScene extends Scene {
         group.addChild(daily_task_btn)
         
         this.daily_task_tips = Util.createBitmapByName('daily_task_tips')
-        this.daily_task_tips.x = 0
-        this.daily_task_tips.y = 0
         this.daily_task_tips.visible = this.userInfo.isfinish == 0
         group.addChild(this.daily_task_tips)
 
@@ -105,6 +105,7 @@ class IndexScene extends Scene {
         }, this)
     }
 
+    /** 串门提示 */
     private showTipBoard() {
         let tip_board = Util.createBitmapByName('tip_board')
         tip_board.x = Util.center(tip_board)
@@ -145,25 +146,28 @@ class IndexScene extends Scene {
         this.addChild(feedTipDone)
         this.addChild(feedTipNone)
 
+        // 积分动画
         let scoreAni = new ScoreAni(1)
         this.addChild(scoreAni)
         
-        let food_type_id = this.userInfo.food_type_id - 1
+        let food = ViewManager.getInstance().headInfo.food
+        let type_id = this.userInfo.food_type_id - 1
         feed.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             if (this.userInfo.isoutdoor) return
-            if (ViewManager.getInstance().headInfo.food[food_type_id] > 0) {
+            if (food[type_id] > 0) {
                 Http.getInstance().post(Url.HTTP_FEED, {
                     feedId: this.userInfo.id,
                     type: 5,
                 }, res => {
                     if (res.data.code) {
-                        ViewManager.getInstance().headInfo.food[food_type_id] -= 1
+                        food[type_id] -= 1
                         ViewManager.getInstance().headInfo.score += 1
 
                         scoreAni.move()
                         Util.animate(feedTip)
 
                         Http.getInstance().get(Url.HTTP_USER_INFO + '?isRandomOut=2', res => {
+                            // 任务完成，红点隐藏
                             if (res.data.isfinish) {
                                 this.daily_task_tips.visible = false
                             }
@@ -173,6 +177,7 @@ class IndexScene extends Scene {
                     }
                 })
             } else {
+                if (feedTip.visible) feedTip.visible = false
                 Util.animate(feedTipNone)
             }
         }, this)
@@ -185,6 +190,7 @@ class IndexScene extends Scene {
         decorate.y = this.stage.stageHeight - decorate.height - 40
         this.addChild(decorate)
 
+        // 提示装扮背景有更新
         let decorate_tip = Util.createBitmapByName('daily_task_tips')
         decorate_tip.x = 600
         decorate_tip.y = decorate.y
@@ -216,7 +222,7 @@ class IndexScene extends Scene {
     }
 
     private currentIdx = 1  // 好友列表当前页数
-    private aroundSize: number  // 当前页数好友数量
+    private curFriLen: number  // 当前页数好友数量
     private friendList  // 好友列表
     private showAround() {
         let group = new eui.Group
@@ -245,11 +251,11 @@ class IndexScene extends Scene {
             this.addChild(share)
         }, this)
 
-        let around_close = new BtnBase('around_close')
-        around_close.x = this.stage.stageWidth - around_close.width - 32
-        around_close.y = 36
-        group.addChild(around_close)
-        around_close.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
+        let closeBtn = new BtnBase('around_close')
+        closeBtn.x = this.stage.stageWidth - closeBtn.width - 32
+        closeBtn.y = 36
+        group.addChild(closeBtn)
+        closeBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, () => {
             group.visible = false
         }, this)
 
@@ -257,7 +263,8 @@ class IndexScene extends Scene {
             page: this.currentIdx,
             pageSize: 10
         }, res => {
-            this.aroundSize = res.data.length
+            this.curFriLen = res.data.length
+
             let friendList = new eui.Group
             this.friendList = friendList
 
@@ -280,13 +287,13 @@ class IndexScene extends Scene {
     }
 
     private loadMoreData() {
-        if (this.aroundSize == 10) {
+        if (this.curFriLen % 10 == 0) {
             this.currentIdx += 1
             Http.getInstance().post(Url.HTTP_AROUNDLIST, {
                 page: this.currentIdx,
                 pageSize: 10
             }, res => {
-                this.aroundSize = res.data.length
+                this.curFriLen = res.data.length
                 this.addItem(res.data)
             })
         }

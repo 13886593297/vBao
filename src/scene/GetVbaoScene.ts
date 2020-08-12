@@ -45,39 +45,14 @@ class GetVbaoScene extends Scene {
         group.addChild(light)
         egret.Tween.get(light, { loop: true }).to({ rotation: 360 }, 6000)
 
-        let arr = [[
-            {
-                x: this.stage.stageWidth + 50,
-                y: 1050
-            },
-            {
-                x: this.stage.stageWidth + 50,
-                y: 940
-            },
-            {
-                x: this.stage.stageWidth,
-                y: 910
-            },
-        ], [
-            {
-                x: this.stage.stageWidth - 30,
-                y: 1100
-            },
-            {
-                x: this.stage.stageWidth - 30,
-                y: 1080
-            },
-            {
-                x: this.stage.stageWidth + 120,
-                y: 1220
-            },
-        ]]
-        
+        let status = this.level == 1 ? 5 : 6
+        let position = Util.getVbaoPosition
+
         let bones = new Bones({
             id: this.id, 
             level: this.level,
-            x: arr[this.level - 1][this.id].x,
-            y: arr[this.level - 1][this.id].y,
+            x: position[status][this.id].x,
+            y: position[status][this.id].y,
         })
         group.addChild(bones)
 

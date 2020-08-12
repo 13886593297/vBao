@@ -136,6 +136,9 @@ class Util {
         }
     }
     
+    /**
+     * 宝宝位置
+     */
     public static get getVbaoPosition() {
         let stage = ViewManager.getInstance().stage
         let w = stage.stageWidth
@@ -160,7 +163,17 @@ class Util {
                 { x: -200, y: h - 25 },
                 { x: w + 200, y: h - 40 },
                 { x: -160, y: h + 130 },
-            ]
+            ],
+            '5': [ // 卵状态---获取宝宝页面
+                { x: w + 50, y: 1050 },
+                { x: w + 50, y: 940 },
+                { x: w, y: 910 },
+            ],
+            '6': [ // 虫状态---获取宝宝页面
+                { x: w - 30, y: 1100 },
+                { x: w - 30, y: 1080 },
+                { x: w + 120, y: 1220 },
+            ],
         }
     }
 }

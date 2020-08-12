@@ -19,7 +19,7 @@ class Bones extends egret.DisplayObjectContainer {
         let bone = ViewManager.getInstance().getBones(type)
         let stage = ViewManager.getInstance().stage
 
-        if (bone && !this.option.vbaoIsHere) {
+        if (bone) {
             bone.x = this.option.x ? this.option.x : stage.stageWidth
             bone.y = this.option.y ? this.option.y : stage.stageHeight
             this.addChild(bone)

@@ -54,7 +54,7 @@ var LoadingUI = (function (_super) {
         this.textField.textAlign = 'center';
         this.addChild(this.textField);
         // loading gif
-        var loading_gif = new MyMovieClip('loading_gif');
+        var loading_gif = new FrameAnimate('loading_gif');
         loading_gif.x = (stage.stageWidth - loading_gif.width) / 2 - 35;
         loading_gif.y = this.height - 400;
         this.addChild(loading_gif);

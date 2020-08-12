@@ -33,10 +33,12 @@ var IndexScene = (function (_super) {
                 _this.addChild(head);
                 _this.daily_task();
                 _this.legendary();
+                // v宝串门中
                 if (_this.userInfo.level_id == 2 && _this.userInfo.isoutdoor) {
                     _this.showTipBoard();
                 }
                 else {
+                    // v宝在家
                     _this.showVbao();
                 }
                 if (_this.userInfo.level_id == 2) {
@@ -67,8 +69,6 @@ var IndexScene = (function (_super) {
         daily_task_btn.y = group.height - daily_task_btn.height;
         group.addChild(daily_task_btn);
         this.daily_task_tips = Util.createBitmapByName('daily_task_tips');
-        this.daily_task_tips.x = 0;
-        this.daily_task_tips.y = 0;
         this.daily_task_tips.visible = this.userInfo.isfinish == 0;
         group.addChild(this.daily_task_tips);
         group.touchEnabled = true;
@@ -105,6 +105,7 @@ var IndexScene = (function (_super) {
             });
         }, this);
     };
+    /** 串门提示 */
     IndexScene.prototype.showTipBoard = function () {
         var _this = this;
         var tip_board = Util.createBitmapByName('tip_board');
@@ -142,23 +143,26 @@ var IndexScene = (function (_super) {
         this.addChild(feedTip);
         this.addChild(feedTipDone);
         this.addChild(feedTipNone);
+        // 积分动画
         var scoreAni = new ScoreAni(1);
         this.addChild(scoreAni);
-        var food_type_id = this.userInfo.food_type_id - 1;
+        var food = ViewManager.getInstance().headInfo.food;
+        var type_id = this.userInfo.food_type_id - 1;
         feed.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             if (_this.userInfo.isoutdoor)
                 return;
-            if (ViewManager.getInstance().headInfo.food[food_type_id] > 0) {
+            if (food[type_id] > 0) {
                 Http.getInstance().post(Url.HTTP_FEED, {
                     feedId: _this.userInfo.id,
                     type: 5,
                 }, function (res) {
                     if (res.data.code) {
-                        ViewManager.getInstance().headInfo.food[food_type_id] -= 1;
+                        food[type_id] -= 1;
                         ViewManager.getInstance().headInfo.score += 1;
                         scoreAni.move();
                         Util.animate(feedTip);
                         Http.getInstance().get(Url.HTTP_USER_INFO + '?isRandomOut=2', function (res) {
+                            // 任务完成，红点隐藏
                             if (res.data.isfinish) {
                                 _this.daily_task_tips.visible = false;
                             }
@@ -170,6 +174,8 @@ var IndexScene = (function (_super) {
                 });
             }
             else {
+                if (feedTip.visible)
+                    feedTip.visible = false;
                 Util.animate(feedTipNone);
             }
         }, this);
@@ -180,6 +186,7 @@ var IndexScene = (function (_super) {
         decorate.x = 510;
         decorate.y = this.stage.stageHeight - decorate.height - 40;
         this.addChild(decorate);
+        // 提示装扮背景有更新
         var decorate_tip = Util.createBitmapByName('daily_task_tips');
         decorate_tip.x = 600;
         decorate_tip.y = decorate.y;
@@ -229,18 +236,18 @@ var IndexScene = (function (_super) {
             _this.shareScene = share;
             _this.addChild(share);
         }, this);
-        var around_close = new BtnBase('around_close');
-        around_close.x = this.stage.stageWidth - around_close.width - 32;
-        around_close.y = 36;
-        group.addChild(around_close);
-        around_close.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
+        var closeBtn = new BtnBase('around_close');
+        closeBtn.x = this.stage.stageWidth - closeBtn.width - 32;
+        closeBtn.y = 36;
+        group.addChild(closeBtn);
+        closeBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, function () {
             group.visible = false;
         }, this);
         Http.getInstance().post(Url.HTTP_AROUNDLIST, {
             page: this.currentIdx,
             pageSize: 10
         }, function (res) {
-            _this.aroundSize = res.data.length;
+            _this.curFriLen = res.data.length;
             var friendList = new eui.Group;
             _this.friendList = friendList;
             var myScroller = new eui.Scroller();
@@ -260,13 +267,13 @@ var IndexScene = (function (_super) {
     };
     IndexScene.prototype.loadMoreData = function () {
         var _this = this;
-        if (this.aroundSize == 10) {
+        if (this.curFriLen % 10 == 0) {
             this.currentIdx += 1;
             Http.getInstance().post(Url.HTTP_AROUNDLIST, {
                 page: this.currentIdx,
                 pageSize: 10
             }, function (res) {
-                _this.aroundSize = res.data.length;
+                _this.curFriLen = res.data.length;
                 _this.addItem(res.data);
             });
         }

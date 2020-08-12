@@ -141,6 +141,9 @@ var Util = (function () {
         };
     };
     Object.defineProperty(Util, "getVbaoPosition", {
+        /**
+         * 宝宝位置
+         */
         get: function () {
             var stage = ViewManager.getInstance().stage;
             var w = stage.stageWidth;
@@ -165,7 +168,17 @@ var Util = (function () {
                     { x: -200, y: h - 25 },
                     { x: w + 200, y: h - 40 },
                     { x: -160, y: h + 130 },
-                ]
+                ],
+                '5': [
+                    { x: w + 50, y: 1050 },
+                    { x: w + 50, y: 940 },
+                    { x: w, y: 910 },
+                ],
+                '6': [
+                    { x: w - 30, y: 1100 },
+                    { x: w - 30, y: 1080 },
+                    { x: w + 120, y: 1220 },
+                ],
             };
         },
         enumerable: true,
