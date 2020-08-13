@@ -13,6 +13,7 @@ class GetVbaoScene extends Scene {
     }
 
     public init() {
+        // 获取vbao时显示纯色背景
         if (this.level == 1) {
             let sceneBg = Util.createBitmapByName('getVbao_bg')
             sceneBg.width = this.stage.stageWidth

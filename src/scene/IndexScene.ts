@@ -190,7 +190,7 @@ class IndexScene extends Scene {
         decorate.y = this.stage.stageHeight - decorate.height - 40
         this.addChild(decorate)
 
-        // 提示装扮背景有更新
+        // 装扮有更新的提示
         let decorate_tip = Util.createBitmapByName('daily_task_tips')
         decorate_tip.x = 600
         decorate_tip.y = decorate.y
@@ -264,7 +264,7 @@ class IndexScene extends Scene {
             pageSize: 10
         }, res => {
             this.curFriLen = res.data.length
-
+            
             let friendList = new eui.Group
             this.friendList = friendList
 
@@ -272,7 +272,7 @@ class IndexScene extends Scene {
             myScroller.width = this.stage.stageWidth
             myScroller.height = 190
             myScroller.y = 110
-            myScroller.scrollPolicyV = 'false'
+            myScroller.scrollPolicyV = 'false' // 禁止竖向滚动
             myScroller.viewport = friendList
             group.addChild(myScroller)
 
@@ -287,7 +287,7 @@ class IndexScene extends Scene {
     }
 
     private loadMoreData() {
-        if (this.curFriLen % 10 == 0) {
+        if (this.curFriLen == 10) {
             this.currentIdx += 1
             Http.getInstance().post(Url.HTTP_AROUNDLIST, {
                 page: this.currentIdx,

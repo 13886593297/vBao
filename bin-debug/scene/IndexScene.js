@@ -186,7 +186,7 @@ var IndexScene = (function (_super) {
         decorate.x = 510;
         decorate.y = this.stage.stageHeight - decorate.height - 40;
         this.addChild(decorate);
-        // 提示装扮背景有更新
+        // 装扮有更新的提示
         var decorate_tip = Util.createBitmapByName('daily_task_tips');
         decorate_tip.x = 600;
         decorate_tip.y = decorate.y;
@@ -254,7 +254,7 @@ var IndexScene = (function (_super) {
             myScroller.width = _this.stage.stageWidth;
             myScroller.height = 190;
             myScroller.y = 110;
-            myScroller.scrollPolicyV = 'false';
+            myScroller.scrollPolicyV = 'false'; // 禁止竖向滚动
             myScroller.viewport = friendList;
             group.addChild(myScroller);
             myScroller.addEventListener(eui.UIEvent.CHANGE_END, function () {
@@ -267,7 +267,7 @@ var IndexScene = (function (_super) {
     };
     IndexScene.prototype.loadMoreData = function () {
         var _this = this;
-        if (this.curFriLen % 10 == 0) {
+        if (this.curFriLen == 10) {
             this.currentIdx += 1;
             Http.getInstance().post(Url.HTTP_AROUNDLIST, {
                 page: this.currentIdx,

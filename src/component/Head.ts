@@ -24,13 +24,13 @@ class Head extends egret.DisplayObjectContainer {
         this.addChild(avatar)
     }
 
-    /** 设置积分和食物数量代理，当数量改变自动改变DOM */
+    /** 设置积分和食物数量代理，当数据变化时自动更新视图 */
     private setProxy() {
         let self = this
         function _addProxy(obj) {
             return new Proxy(obj, {
-                set: (target, key: string, newval) => {
-                    target[key] = newval
+                set: (target, key: string, value) => {
+                    Reflect.set(target, key, value)
                     if (typeof target == 'object' && key.length == 1) {
                         self.setFood(key)
                     } else if (key == 'score') {
@@ -66,15 +66,13 @@ class Head extends egret.DisplayObjectContainer {
         this.score.text = `积分：${this.userInfo.total_score}`
         this.score.x = 200
         this.score.y = this.userInfo.level_id == 1 ? 100 : 150
-        this.score.size = 30
         this.score.bold = true
         this.score.strokeColor = Config.COLOR_DOC
         this.score.stroke = 1
         this.addChild(this.score)
     }
 
-    /** 预防用户连续点击时动画出现异常 */
-    private flag = true
+    private flag = true // 防止用户连续点击时动画出现异常
     private setScore() {
         let score = ViewManager.getInstance().headInfo.score
         this.score.text = `积分：${score}`
@@ -90,7 +88,7 @@ class Head extends egret.DisplayObjectContainer {
         let header_group = new eui.Group
         header_group.x = 180
         header_group.y = 48
-        header_group.visible = this.userInfo.level_id == 2 ? true : false
+        header_group.visible = this.userInfo.level_id == 2
         this.addChild(header_group)
 
         let header_bg = Util.createBitmapByName('header_bg')
@@ -108,8 +106,7 @@ class Head extends egret.DisplayObjectContainer {
         })
     }
 
-    /** 食物数量数组 */
-    private food_count_arr = []
+    private food_count_arr = [] // 食物数量数组
     private food(item, index) {
         let group = new eui.Group
         group.width = 170
@@ -117,18 +114,17 @@ class Head extends egret.DisplayObjectContainer {
         let icon = Util.createBitmapByName(item.image)
         group.addChild(icon)
 
-        // 类型文字
-        let label = Util.setTitle(item.name, 24, Config.COLOR_DOC) 
+        let size = 26
+        // 类型
+        let label = Util.setTitle(item.name, size, Config.COLOR_DOC) 
         label.x = icon.width + 8
         label.y = 8
         group.addChild(label)
         
         // 食物数量
         let food_count = new egret.TextField
-        food_count.textFlow = [
-            {text: 'X', style: { size: 26 }},
-            {text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 26 }}
-        ]
+        food_count.text = `X  ${ViewManager.getInstance().headInfo.food[index]}`
+        food_count.size = size
         food_count.strokeColor = Config.COLOR_DOC
         food_count.stroke = 2
         food_count.x = label.x
@@ -138,13 +134,9 @@ class Head extends egret.DisplayObjectContainer {
         return group
     }
 
-    /** 预防用户连续点击时动画出现异常 */
-    private flagArr = [1, 1, 1]
+    private flagArr = [1, 1, 1] // 预防用户连续点击时动画出现异常
     private setFood(index) {
-        this.food_count_arr[index].textFlow = [
-            {text: 'X', style: { size: 26 }},
-            {text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 26 }}
-        ]
+        this.food_count_arr[index].text = `X  ${ViewManager.getInstance().headInfo.food[index]}`
         
         if (!this.flagArr[index]) return
         this.flagArr[index] = 0

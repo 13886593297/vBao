@@ -56,9 +56,8 @@ class FriendAvatar extends eui.Group {
                 }
 
                 // 好友名称下面的背景
-                let name_bg = Util.drawRoundRect(0, 0x000000, 0x000000, 107, 26, 0, 0.4)
-                name_bg.x = 2
-                name_bg.y = 82
+                let name_bg = Util.drawRoundRect(0, 0x000000, 0x000000, 110, 26, 10, 0.4)
+                name_bg.y = 83
                 this.addChild(name_bg)
 
                 // 好友名称

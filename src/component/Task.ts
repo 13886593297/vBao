@@ -142,7 +142,8 @@ class Task extends eui.Group {
 
     private taskItem(item, cb) {
         let group = new eui.Group
-        let bg = Util.drawRoundRect(0, 0xffffff, 0xffffff, 580, item.id == 3 ? 280 : item.id == 4 ? 120 : 190, 40)
+        let w = item.id == 3 ? 280 : item.id == 4 ? 120 : 190
+        let bg = Util.drawRoundRect(0, 0xffffff, 0xffffff, 580, w, 40)
         group.width = bg.width
         group.height = bg.height
         group.addChild(bg)

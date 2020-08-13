@@ -14,12 +14,9 @@ var Head = (function (_super) {
     function Head(userInfo) {
         var _this = _super.call(this) || this;
         _this.score = new egret.TextField;
-        /** 预防用户连续点击时动画出现异常 */
-        _this.flag = true;
-        /** 食物数量数组 */
-        _this.food_count_arr = [];
-        /** 预防用户连续点击时动画出现异常 */
-        _this.flagArr = [1, 1, 1];
+        _this.flag = true; // 防止用户连续点击时动画出现异常
+        _this.food_count_arr = []; // 食物数量数组
+        _this.flagArr = [1, 1, 1]; // 预防用户连续点击时动画出现异常
         _this.userInfo = userInfo;
         _this.init();
         return _this;
@@ -39,13 +36,13 @@ var Head = (function (_super) {
         avatar.y = 45;
         this.addChild(avatar);
     };
-    /** 设置积分和食物数量代理，当数量改变自动改变DOM */
+    /** 设置积分和食物数量代理，当数据变化时自动更新视图 */
     Head.prototype.setProxy = function () {
         var self = this;
         function _addProxy(obj) {
             return new Proxy(obj, {
-                set: function (target, key, newval) {
-                    target[key] = newval;
+                set: function (target, key, value) {
+                    Reflect.set(target, key, value);
                     if (typeof target == 'object' && key.length == 1) {
                         self.setFood(key);
                     }
@@ -77,7 +74,6 @@ var Head = (function (_super) {
         this.score.text = "\u79EF\u5206\uFF1A" + this.userInfo.total_score;
         this.score.x = 200;
         this.score.y = this.userInfo.level_id == 1 ? 100 : 150;
-        this.score.size = 30;
         this.score.bold = true;
         this.score.strokeColor = Config.COLOR_DOC;
         this.score.stroke = 1;
@@ -100,7 +96,7 @@ var Head = (function (_super) {
         var header_group = new eui.Group;
         header_group.x = 180;
         header_group.y = 48;
-        header_group.visible = this.userInfo.level_id == 2 ? true : false;
+        header_group.visible = this.userInfo.level_id == 2;
         this.addChild(header_group);
         var header_bg = Util.createBitmapByName('header_bg');
         header_group.width = header_bg.width;
@@ -120,17 +116,16 @@ var Head = (function (_super) {
         group.width = 170;
         var icon = Util.createBitmapByName(item.image);
         group.addChild(icon);
-        // 类型文字
-        var label = Util.setTitle(item.name, 24, Config.COLOR_DOC);
+        var size = 26;
+        // 类型
+        var label = Util.setTitle(item.name, size, Config.COLOR_DOC);
         label.x = icon.width + 8;
         label.y = 8;
         group.addChild(label);
         // 食物数量
         var food_count = new egret.TextField;
-        food_count.textFlow = [
-            { text: 'X', style: { size: 26 } },
-            { text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 26 } }
-        ];
+        food_count.text = "X  " + ViewManager.getInstance().headInfo.food[index];
+        food_count.size = size;
         food_count.strokeColor = Config.COLOR_DOC;
         food_count.stroke = 2;
         food_count.x = label.x;
@@ -141,10 +136,7 @@ var Head = (function (_super) {
     };
     Head.prototype.setFood = function (index) {
         var _this = this;
-        this.food_count_arr[index].textFlow = [
-            { text: 'X', style: { size: 26 } },
-            { text: '  ' + ViewManager.getInstance().headInfo.food[index], style: { size: 26 } }
-        ];
+        this.food_count_arr[index].text = "X  " + ViewManager.getInstance().headInfo.food[index];
         if (!this.flagArr[index])
             return;
         this.flagArr[index] = 0;

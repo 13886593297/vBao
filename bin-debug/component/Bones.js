@@ -27,7 +27,7 @@ var Bones = (function (_super) {
         var tex_png = RES.getRes(type + "_tex_png");
         var bone = ViewManager.getInstance().getBones(type);
         var stage = ViewManager.getInstance().stage;
-        if (bone) {
+        if (bone && !this.option.vbaoIsHere) {
             bone.x = this.option.x ? this.option.x : stage.stageWidth;
             bone.y = this.option.y ? this.option.y : stage.stageHeight;
             this.addChild(bone);
